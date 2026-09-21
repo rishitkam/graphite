@@ -90,3 +90,61 @@ listed first in the brief, so it's the default for now unless there's a
 reason to run Community Edition locally instead (offline work, wanting
 more control over the instance). Easy to switch early on since nothing has
 been built against it yet.
+
+## The dataset's own README replaces most of the earlier guesswork
+The hackathon brief alone didn't say what the exact action names were, what
+the approval routing looked like, or what fields an answer file needed. The
+dataset's README turned out to have all of that spelled out: fourteen named
+actions, three approval routes, ten numbered policy rules, exact stopping
+thresholds, and the full JSON schema for what gets submitted per case.
+
+This doesn't change the architecture from the design phase, the propose
+versus execute split, the cost aware stopping logic, the structural
+detection underneath the five patterns all still hold. What it does is
+replace the parts that were reasonable guesses with the actual literal
+spec. The stopping rule in particular is now a concrete pair of numbers
+(fraud probability at or above 0.85, or at or below 0.15, backed by two
+independent pieces of evidence) rather than an abstract cost function.
+The cost of waiting reasoning from the design phase still matters, it's
+what decides which cheap action to take while evidence is still coming in,
+it just isn't what decides when to stop anymore. The policy already
+decides that.
+
+## Left the 377 opaque Vesta columns out of the graph schema
+Transaction has amount, timestamp, product code, channel, risk score,
+billing region, and distance fields as real attributes. It does not have
+the fourteen C columns, fifteen D columns, nine M columns, or three
+hundred thirty nine V columns. The dataset README describes all four
+groups the same way: real model features, no names given, usable as
+signals. There's no reason to treat any one group as more graph worthy
+than another, and no reason to put three hundred seventy seven mostly
+opaque numeric attributes on every transaction vertex when none of them
+support traversal or relationship reasoning, which is the actual point of
+using a graph here instead of a table. They stay in transactions.csv,
+readable by txn_id whenever the agent wants to look at raw feature values
+for a specific transaction.
+
+## Named the case vertex FraudCase, not Case
+CASE is a reserved word in GSQL's own expression syntax. Naming a vertex
+type Case would have worked until the day it didn't, in whatever query
+first tried to use a CASE WHEN expression near it. FraudCase costs nothing
+and avoids that entirely.
+
+## Wrote the schema now, holding the loading jobs until there's a live instance
+The schema is just type declarations, low risk to get right without a
+running database to check it against. The loading jobs are a different
+story: composite device keys built from four concatenated fields, date
+parsing, pipe separated lists that need to become multiple edges. Writing
+that blind, with no GSQL console to throw an error back, is a good way to
+produce something that looks plausible and takes several rounds to
+actually get working. Better to write it once against real feedback than
+guess at the syntax three times.
+
+## Real transaction IDs are bare numbers, not the README example's style
+The dataset README's own worked example uses IDs like T0412877, and a case
+ID, HHG-017, that doesn't exist in the real twenty. That example is
+illustrative only. The actual transactions.csv has plain numeric IDs like
+3514030. Since made up IDs score zero on the actual submission, this is
+worth being explicit about now rather than finding out after the agent's
+already writing answer files: never invent an ID format, always use
+exactly what's in the CSV.

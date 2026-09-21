@@ -1,0 +1,150 @@
+// Graphite graph schema, TigerGraph GSQL.
+// Starts from the schema the dataset README suggests, extended with the case,
+// evidence, and action layer the agent actually writes to.
+//
+// Not run against a live instance yet, there isn't one stood up. Treat this
+// as a first draft to load and fix syntax errors against once Savanna or
+// Community Edition is up, not as verified working GSQL.
+//
+// Deliberately left out: the 339 V columns, the 14 C columns, the 15 D
+// columns, and the 9 M columns from Transaction. The README describes all
+// four groups the same way, real model features with no names. Adding 377
+// mostly opaque numeric attributes to every transaction vertex buys nothing
+// for traversal or relationship reasoning, which is the actual point of
+// putting this in a graph instead of a table. They stay in transactions.csv,
+// keyed by txn_id, and get pulled by the agent on demand when it wants to
+// look at raw feature values for a specific transaction.
+
+CREATE VERTEX Customer (
+  PRIMARY_ID customer_id STRING
+)
+
+CREATE VERTEX Card (
+  PRIMARY_ID card_id STRING,
+  card_network STRING,
+  card_type STRING
+)
+
+CREATE VERTEX Transaction (
+  PRIMARY_ID txn_id STRING,
+  amount DOUBLE,
+  ts DATETIME,
+  product_cd STRING,
+  channel STRING,
+  risk_score DOUBLE,
+  addr1 STRING,
+  addr2 STRING,
+  dist1 DOUBLE,
+  dist2 DOUBLE
+)
+
+// keyed on a composite of DeviceInfo plus OS, browser, and screen, since
+// none of those alone reliably identifies one physical device. built at
+// load time from identity.csv, online transactions only, per the README.
+CREATE VERTEX DeviceProfile (
+  PRIMARY_ID device_key STRING,
+  device_type STRING,
+  device_info STRING,
+  os STRING,
+  browser STRING,
+  screen STRING
+)
+
+CREATE VERTEX EmailDomain (
+  PRIMARY_ID domain STRING
+)
+
+// addr1 is the anonymized billing region code
+CREATE VERTEX BillingRegion (
+  PRIMARY_ID region_code STRING
+)
+
+// the bank's own finished investigations, july through october. this is
+// both the labeled history and the agent's starting memory.
+CREATE VERTEX ClosedCase (
+  PRIMARY_ID case_id STRING,
+  customer_id STRING,
+  card_id STRING,
+  opened_at DATETIME,
+  closed_at DATETIME,
+  outcome STRING,
+  pattern STRING,
+  first_fraud_txn_id STRING,
+  txn_ids_raw STRING,
+  n_txns INT,
+  exposure_usd DOUBLE,
+  connected_card_ids_raw STRING,
+  actions_taken STRING,
+  report_filed STRING,
+  analyst_notes STRING
+)
+
+// named FraudCase, not Case, because CASE is a reserved word in GSQL
+// expressions and colliding with it is asking for a parser headache later.
+// this is the live investigation record the agent creates and updates,
+// separate from ClosedCase, which is historical and read only.
+CREATE VERTEX FraudCase (
+  PRIMARY_ID case_id STRING,
+  status STRING,
+  verdict STRING,
+  fraud_probability DOUBLE,
+  pattern STRING,
+  pattern_description STRING,
+  first_suspicious_txn_id STRING,
+  exposure_usd DOUBLE,
+  summary STRING,
+  stop_reason STRING,
+  written_to_graph BOOL,
+  created_at DATETIME,
+  updated_at DATETIME
+)
+
+CREATE VERTEX Evidence (
+  PRIMARY_ID evidence_id STRING,
+  claim STRING,
+  source STRING,
+  ref STRING,
+  created_at DATETIME
+)
+
+// one per recommended action, phase is "initial" or "final" so both
+// checkpoints the policy asks for live on the same case without one
+// overwriting the other.
+CREATE VERTEX CaseAction (
+  PRIMARY_ID action_id STRING,
+  action_type STRING,
+  route STRING,
+  reason STRING,
+  phase STRING
+)
+
+CREATE DIRECTED EDGE OWNS (FROM Customer, TO Card) WITH REVERSE_EDGE="OWNED_BY"
+CREATE DIRECTED EDGE MADE (FROM Card, TO Transaction) WITH REVERSE_EDGE="MADE_BY"
+CREATE DIRECTED EDGE FROM_DEVICE (FROM Transaction, TO DeviceProfile) WITH REVERSE_EDGE="DEVICE_USED_IN"
+CREATE DIRECTED EDGE PURCHASER_EMAIL (FROM Transaction, TO EmailDomain) WITH REVERSE_EDGE="EMAIL_USED_IN"
+CREATE DIRECTED EDGE BILLED_IN (FROM Transaction, TO BillingRegion) WITH REVERSE_EDGE="REGION_OF"
+
+// sequential order of transactions on the same card, by ts. built by a
+// query after the base load, not by the CSV loading job itself, since it
+// needs everything sorted per card first.
+CREATE DIRECTED EDGE NEXT (FROM Transaction, TO Transaction) WITH REVERSE_EDGE="PREVIOUS"
+
+CREATE DIRECTED EDGE INVOLVES (FROM ClosedCase, TO Transaction) WITH REVERSE_EDGE="INVOLVED_IN"
+CREATE DIRECTED EDGE ON_CARD (FROM ClosedCase, TO Card) WITH REVERSE_EDGE="HAS_CLOSED_CASE"
+CREATE DIRECTED EDGE CONNECTED_TO (FROM ClosedCase, TO Card) WITH REVERSE_EDGE="CONNECTED_FROM"
+
+CREATE DIRECTED EDGE OPENED_FOR (FROM FraudCase, TO Customer) WITH REVERSE_EDGE="HAS_CASE"
+CREATE DIRECTED EDGE HAS_EVIDENCE (FROM FraudCase, TO Evidence) WITH REVERSE_EDGE="EVIDENCE_FOR"
+CREATE DIRECTED EDGE ABOUT_TXN (FROM FraudCase, TO Transaction) WITH REVERSE_EDGE="TXN_IN_CASE"
+CREATE DIRECTED EDGE ABOUT_CARD (FROM FraudCase, TO Card) WITH REVERSE_EDGE="CARD_IN_CASE"
+CREATE DIRECTED EDGE LINKED_DEVICE (FROM FraudCase, TO DeviceProfile) WITH REVERSE_EDGE="DEVICE_IN_CASE"
+CREATE DIRECTED EDGE RESULTED_IN (FROM FraudCase, TO CaseAction) WITH REVERSE_EDGE="ACTION_FOR"
+CREATE DIRECTED EDGE CITES_CASE (FROM FraudCase, TO ClosedCase) WITH REVERSE_EDGE="CITED_BY"
+
+CREATE GRAPH Graphite (
+  Customer, Card, Transaction, DeviceProfile, EmailDomain, BillingRegion,
+  ClosedCase, FraudCase, Evidence, CaseAction,
+  OWNS, MADE, FROM_DEVICE, PURCHASER_EMAIL, BILLED_IN, NEXT,
+  INVOLVES, ON_CARD, CONNECTED_TO,
+  OPENED_FOR, HAS_EVIDENCE, ABOUT_TXN, ABOUT_CARD, LINKED_DEVICE, RESULTED_IN, CITES_CASE
+)

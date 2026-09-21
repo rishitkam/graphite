@@ -1,5 +1,8 @@
-Schema and queries go here once the dataset's own README has been read.
+- `01_schema.gsql`: vertex and edge definitions. Written against the real
+  dataset README and validated column headers, not guessed. Not yet run
+  against a live instance, so treat it as a first draft until it's actually
+  loaded once and any syntax errors are fixed.
 
-The public IEEE-CIS columns are a reasonable guess but the HHGOA package
-renames or trims things, so nothing gets written here until we've actually
-looked at case_pack.csv, closed_cases_history.csv and the dataset README.
+Loading jobs come next, once there's a TigerGraph instance to iterate
+against. Writing those blind, with no GSQL console to check them against,
+is a worse use of time than writing them against real error messages.
