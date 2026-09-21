@@ -1,0 +1,729 @@
+<title>Graphite</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Lora:ital,wght@0,400;0,500;0,600;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --paper:#EEF0F0;
+    --panel:#F7F8F7;
+    --sunken:#E1E5E3;
+    --ink:#1E2226;
+    --ink-soft:#4B5359;
+    --ink-faint:#838C8F;
+    --line:#CBD0CD;
+    --accent:#A6392A;
+    --accent-soft:#C65C48;
+    --risk-low:#3E7A63;
+    --risk-med:#A9791F;
+    --risk-high:#A6392A;
+    --shadow: 0 1px 2px rgba(20,24,22,0.06), 0 6px 20px -8px rgba(20,24,22,0.18);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#15181B;
+      --panel:#1D2124;
+      --sunken:#0F1214;
+      --ink:#E8E6E0;
+      --ink-soft:#AEB5B2;
+      --ink-faint:#6E7577;
+      --line:#33393C;
+      --accent:#D9654E;
+      --accent-soft:#E48470;
+      --risk-low:#63AE8F;
+      --risk-med:#D2A24C;
+      --risk-high:#D9654E;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 10px 30px -10px rgba(0,0,0,0.55);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#15181B;
+    --panel:#1D2124;
+    --sunken:#0F1214;
+    --ink:#E8E6E0;
+    --ink-soft:#AEB5B2;
+    --ink-faint:#6E7577;
+    --line:#33393C;
+    --accent:#D9654E;
+    --accent-soft:#E48470;
+    --risk-low:#63AE8F;
+    --risk-med:#D2A24C;
+    --risk-high:#D9654E;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 10px 30px -10px rgba(0,0,0,0.55);
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Lora', Georgia, 'Times New Roman', serif;
+    font-size:16px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:'Bricolage Grotesque','Lora',sans-serif; font-weight:600; text-wrap:balance; margin:0;}
+  .mono{font-family:'IBM Plex Mono',ui-monospace,monospace;}
+  a{color:inherit;}
+  ::selection{background:var(--accent); color:var(--panel);}
+  :focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:2px;}
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
+
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.11em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+  }
+
+  /* ---------- layout ---------- */
+  .layout{
+    display:grid;
+    grid-template-columns: 232px minmax(0,1fr);
+    max-width:1240px;
+    margin-inline:auto;
+  }
+  .nav{
+    position:sticky;
+    top:0;
+    align-self:start;
+    height:100dvh;
+    overflow-y:auto;
+    padding: calc(env(safe-area-inset-top,0px) + 28px) 12px 28px 24px;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+  }
+  .nav .brand{
+    font-family:'Bricolage Grotesque',sans-serif;
+    font-size:1.3rem;
+    font-weight:700;
+    margin-bottom:18px;
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+  }
+  .nav .brand .dot{color:var(--accent);}
+  .nav a{
+    text-decoration:none;
+    color:var(--ink-soft);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.76rem;
+    letter-spacing:0.04em;
+    padding:7px 10px;
+    border-radius:5px;
+    border-left:2px solid transparent;
+  }
+  .nav a:hover{color:var(--ink); background:var(--panel);}
+  .nav a.active{color:var(--accent); border-left-color:var(--accent); background:var(--panel);}
+  .nav .tag{color:var(--ink-faint); font-weight:600; margin-right:6px;}
+
+  main{padding: 0 clamp(18px,4vw,56px) 100px; min-width:0;}
+  section{padding-block:56px; border-bottom:1px solid var(--line);}
+  section:last-of-type{border-bottom:none;}
+  .measure{max-width:66ch;}
+  .wide{max-width:920px;}
+
+  h2.exhibit-title{font-size:clamp(1.5rem,1.1rem + 1.6vw,2.05rem); margin-bottom:6px;}
+  .exhibit-kicker{margin-bottom:10px;}
+  .exhibit-lede{font-size:1.05rem; color:var(--ink-soft); max-width:62ch; margin-top:14px;}
+
+  /* ---------- mobile nav ---------- */
+  @media (max-width:900px){
+    .layout{display:block;}
+    .nav{
+      position:sticky; top:env(safe-area-inset-top,0px); height:auto;
+      flex-direction:row; overflow-x:auto; overflow-y:visible;
+      background:var(--paper); border-bottom:1px solid var(--line);
+      padding:12px 16px; z-index:20; gap:4px;
+      -ms-overflow-style:none; scrollbar-width:none;
+    }
+    .nav::-webkit-scrollbar{display:none;}
+    .nav .brand{display:none;}
+    .nav a{white-space:nowrap; border-left:none; border-bottom:2px solid transparent;}
+    .nav a.active{border-left-color:transparent; border-bottom-color:var(--accent);}
+    main{padding:0 16px 80px;}
+  }
+
+  /* ---------- hero ---------- */
+  .hero{padding-top:clamp(28px,6vw,64px); border-bottom:1px solid var(--line); padding-bottom:48px;}
+  .hero h1{font-size:clamp(3rem,2.2rem + 4vw,5.4rem); line-height:0.95; letter-spacing:-0.01em;}
+  .hero .sub{font-size:1.15rem; color:var(--ink-soft); max-width:56ch; margin:18px 0 8px;}
+  .stamp{
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:'IBM Plex Mono',monospace; font-size:0.72rem; letter-spacing:0.08em;
+    border:1.5px solid var(--accent); color:var(--accent);
+    padding:6px 12px; border-radius:3px; transform:rotate(-2deg);
+    margin-top:22px;
+  }
+  .stamp b{font-weight:700;}
+
+  .demo{
+    margin-top:36px;
+    display:grid;
+    grid-template-columns: minmax(280px,380px) minmax(0,1fr);
+    gap:32px;
+    align-items:center;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:28px;
+    box-shadow:var(--shadow);
+  }
+  @media (max-width:760px){ .demo{grid-template-columns:1fr;} }
+  .demo svg{width:100%; height:auto; color:var(--ink);}
+  .demo-controls label{display:block; font-size:0.78rem; color:var(--ink-faint); margin-bottom:8px;}
+  .demo-controls .mono{font-size:0.72rem;}
+  input[type="range"]{
+    -webkit-appearance:none; appearance:none; width:100%; height:4px;
+    background:var(--line); border-radius:2px; outline-offset:6px;
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:18px; height:18px; border-radius:50%;
+    background:var(--accent); border:3px solid var(--panel); box-shadow:0 0 0 1.5px var(--accent);
+    cursor:pointer; margin-top:-7px;
+  }
+  input[type="range"]::-moz-range-thumb{
+    width:18px; height:18px; border-radius:50%; background:var(--accent);
+    border:3px solid var(--panel); box-shadow:0 0 0 1.5px var(--accent); cursor:pointer;
+  }
+  input[type="range"]::-moz-range-track{background:var(--line); height:4px; border-radius:2px;}
+  .status-badge{font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:1.05rem; letter-spacing:0.03em;}
+  .status-low{color:var(--risk-low);}
+  .status-med{color:var(--risk-med);}
+  .status-high{color:var(--risk-high);}
+  .sketch-action{margin-top:8px; font-size:0.92rem; color:var(--ink-soft); min-height:2.6em;}
+  .slider-ends{display:flex; justify-content:space-between; font-size:0.68rem; color:var(--ink-faint); margin-top:6px; font-family:'IBM Plex Mono',monospace;}
+
+  /* ---------- two-pass comparison ---------- */
+  .passes{display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-top:28px;}
+  @media (max-width:720px){ .passes{grid-template-columns:1fr;} }
+  .pass-card{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:22px 22px 20px;}
+  .pass-card h3{font-size:1.02rem; margin-bottom:4px;}
+  .pass-card .who{font-size:0.76rem; color:var(--ink-faint); margin-bottom:14px;}
+  .pass-card ul{margin:0; padding-left:1.1em; display:flex; flex-direction:column; gap:10px;}
+  .pass-card li{font-size:0.93rem; color:var(--ink-soft);}
+  .pass-card li::marker{color:var(--ink-faint);}
+  .converge{
+    margin-top:22px; background:var(--sunken); border-left:3px solid var(--accent);
+    border-radius:0 10px 10px 0; padding:20px 24px;
+  }
+  .converge .eyebrow{color:var(--accent);}
+  .converge ul{margin:10px 0 0; padding-left:1.1em; display:flex; flex-direction:column; gap:8px;}
+  .converge li{font-size:0.93rem;}
+
+  /* ---------- diagram figures ---------- */
+  figure{margin:28px 0 0;}
+  .diagram-wrap{
+    overflow-x:auto; background:var(--panel); border:1px solid var(--line);
+    border-radius:12px; padding:18px; box-shadow:var(--shadow);
+  }
+  .diagram-wrap svg{display:block; margin-inline:auto; min-width:640px;}
+  .diagram-wrap.chart svg{min-width:420px; max-width:520px;}
+  figcaption{font-size:0.87rem; color:var(--ink-soft); margin-top:12px; max-width:62ch;}
+  .chart-legend{display:flex; gap:22px; justify-content:center; margin-top:14px; font-size:0.78rem; font-family:'IBM Plex Mono',monospace; flex-wrap:wrap;}
+  .chart-legend span{display:inline-flex; align-items:center; gap:7px;}
+  .swatch{width:11px; height:11px; border-radius:2px; display:inline-block;}
+
+  .callout{
+    margin-top:20px; border:1px dashed var(--line); border-radius:10px;
+    padding:16px 20px; font-size:0.92rem; color:var(--ink-soft); background:var(--sunken);
+  }
+  .callout b{color:var(--ink);}
+
+  /* ---------- precedent cards ---------- */
+  .precedents{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:24px;}
+  @media (max-width:720px){ .precedents{grid-template-columns:1fr;} }
+  .precedent{border-radius:10px; padding:18px 20px; border:1px solid var(--line); background:var(--panel);}
+  .precedent .head{display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:8px;}
+  .precedent .case-id{font-family:'IBM Plex Mono',monospace; font-size:0.78rem; color:var(--ink-faint);}
+  .verdict-tag{font-family:'IBM Plex Mono',monospace; font-size:0.68rem; letter-spacing:0.06em; padding:3px 8px; border-radius:20px; font-weight:600;}
+  .verdict-agree{color:var(--risk-low); background:color-mix(in srgb, var(--risk-low) 14%, transparent);}
+  .verdict-disagree{color:var(--risk-high); background:color-mix(in srgb, var(--risk-high) 14%, transparent);}
+  .precedent .match{font-size:0.82rem; color:var(--ink-faint); margin-bottom:10px;}
+  .precedent p{margin:0; font-size:0.93rem;}
+
+  /* ---------- checkpoint cards ---------- */
+  .checkpoints{display:grid; grid-template-columns:1fr auto 1fr; gap:18px; align-items:center; margin-top:26px;}
+  @media (max-width:720px){ .checkpoints{grid-template-columns:1fr;} .checkpoints .arrow-between{transform:rotate(90deg); margin:4px auto;} }
+  .checkpoint{border-radius:10px; padding:20px 22px;}
+  .checkpoint .eyebrow{margin-bottom:10px;}
+  .checkpoint dl{margin:12px 0 0; display:flex; flex-direction:column; gap:8px;}
+  .checkpoint dt{font-family:'IBM Plex Mono',monospace; font-size:0.68rem; color:var(--ink-faint); text-transform:uppercase; letter-spacing:0.05em;}
+  .checkpoint dd{margin:2px 0 0; font-size:0.92rem;}
+  .checkpoint.pencil{border:1.5px dashed var(--ink-faint); background:transparent;}
+  .checkpoint.pencil .eyebrow, .checkpoint.pencil dt{color:var(--ink-faint);}
+  .checkpoint.ink{border:1.5px solid var(--accent); background:var(--panel); box-shadow:var(--shadow);}
+  .checkpoint.ink .eyebrow{color:var(--accent);}
+  .arrow-between{font-size:0.76rem; color:var(--ink-soft); text-align:center; max-width:120px; font-family:'IBM Plex Mono',monospace;}
+  .arrow-between svg{width:34px; height:16px; display:block; margin:0 auto 6px;}
+
+  /* ---------- trade-off table ---------- */
+  .table-wrap{overflow-x:auto; margin-top:24px;}
+  table{border-collapse:collapse; width:100%; min-width:640px; font-size:0.9rem;}
+  th{font-family:'IBM Plex Mono',monospace; font-size:0.7rem; letter-spacing:0.05em; text-transform:uppercase; color:var(--ink-faint); text-align:left; padding:0 14px 10px; border-bottom:1px solid var(--line);}
+  td{padding:14px 14px; border-bottom:1px solid var(--line); vertical-align:top; color:var(--ink-soft);}
+  td.strong{color:var(--ink); font-weight:600; white-space:nowrap;}
+  tr:last-child td{border-bottom:none;}
+
+  /* ---------- scorecard ---------- */
+  .scorecard{display:flex; flex-direction:column; gap:22px; margin-top:26px;}
+  .score-row{display:grid; grid-template-columns:200px 1fr; gap:16px; align-items:center;}
+  @media (max-width:640px){ .score-row{grid-template-columns:1fr; gap:8px;} }
+  .score-label{font-size:0.9rem;}
+  .score-label .pct{font-family:'IBM Plex Mono',monospace; color:var(--accent); font-weight:600; margin-right:8px;}
+  .bar-col{display:flex; flex-direction:column; gap:8px;}
+  .bar-track{background:var(--sunken); border-radius:5px; height:14px; position:relative; overflow:hidden;}
+  .bar-fill{
+    position:absolute; inset:0 auto 0 0; background:var(--accent-soft); border-radius:5px;
+  }
+  .bar-note{font-size:0.8rem; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace;}
+
+  footer{padding:56px 0 40px;}
+  footer .files{display:flex; flex-wrap:wrap; gap:10px; margin:16px 0 24px;}
+  footer .files span{font-family:'IBM Plex Mono',monospace; font-size:0.76rem; color:var(--ink-soft); background:var(--panel); border:1px solid var(--line); padding:5px 10px; border-radius:5px;}
+  footer .revisit{margin:0; padding-left:1.2em; color:var(--ink-soft); font-size:0.92rem; display:flex; flex-direction:column; gap:6px;}
+</style>
+
+<div class="layout">
+  <nav class="nav" aria-label="Exhibit navigation">
+    <div class="brand"><span>Graphite</span><span class="dot">&middot;</span></div>
+    <a href="#top"><span class="tag">&mdash;</span>Cover</a>
+    <a href="#a-reads"><span class="tag">A</span>Two reads</a>
+    <a href="#b-build"><span class="tag">B</span>The build</a>
+    <a href="#c-stop"><span class="tag">C</span>When to stop</a>
+    <a href="#d-memory"><span class="tag">D</span>Case memory</a>
+    <a href="#e-checkpoints"><span class="tag">E</span>Two checkpoints</a>
+    <a href="#f-tradeoffs"><span class="tag">F</span>Trade-offs</a>
+    <a href="#g-score"><span class="tag">G</span>Scorecard</a>
+  </nav>
+
+  <main>
+    <section class="hero" id="top">
+      <p class="eyebrow">TigerGraph Agentic Fraud Investigation &middot; HHGOA hackathon</p>
+      <h1>Graphite</h1>
+      <p class="sub">A fraud investigation is a sketch, not a snapshot: faint on the first signal, darker with every fact, filed the moment it's dark enough to act on &mdash; never certain in one stroke, never held for a finished portrait.</p>
+      <div class="stamp"><b>CASE NO. 2026-0921-HHGOA</b> &middot; STATUS: ACTIONABLE</div>
+
+      <div class="demo">
+        <figure style="margin:0;">
+          <svg viewBox="0 0 360 260" role="img" aria-label="An account's neighborhood graph, drawn faintly at first and darkening as more connected evidence is gathered" id="sketchSvg" style="color:var(--ink);">
+            <line id="e-subject-merchant" x1="180" y1="130" x2="290" y2="204" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <line id="e-subject-device" x1="180" y1="130" x2="68" y2="58" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <line id="e-subject-email" x1="180" y1="130" x2="292" y2="58" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <line id="e-subject-linked" x1="180" y1="130" x2="68" y2="204" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <line id="e-device-linked" x1="68" y1="58" x2="68" y2="204" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+            <circle id="n-subject" cx="180" cy="130" r="21" fill="currentColor"/>
+            <text x="180" y="134" text-anchor="middle" font-size="9.5" fill="var(--panel)" font-family="'IBM Plex Mono',monospace">SUBJ</text>
+
+            <circle id="n-merchant" cx="290" cy="204" r="12" fill="currentColor"/>
+            <text x="290" y="225" text-anchor="middle" font-size="10" fill="currentColor" font-family="'IBM Plex Mono',monospace">merchant</text>
+
+            <circle id="n-device" cx="68" cy="58" r="12" fill="currentColor"/>
+            <text x="68" y="40" text-anchor="middle" font-size="10" fill="currentColor" font-family="'IBM Plex Mono',monospace">device</text>
+
+            <circle id="n-email" cx="292" cy="58" r="12" fill="currentColor"/>
+            <text x="292" y="40" text-anchor="middle" font-size="10" fill="currentColor" font-family="'IBM Plex Mono',monospace">email</text>
+
+            <circle id="n-linked" cx="68" cy="204" r="12" fill="currentColor"/>
+            <text x="68" y="225" text-anchor="middle" font-size="10" fill="currentColor" font-family="'IBM Plex Mono',monospace">2nd account</text>
+          </svg>
+          <figcaption class="mono" style="text-align:center; font-size:0.72rem; color:var(--ink-faint); margin-top:4px;">drag the slider &rarr;</figcaption>
+        </figure>
+
+        <div class="demo-controls">
+          <label class="mono" for="evidenceSlider">EVIDENCE GATHERED</label>
+          <input type="range" min="0" max="100" value="14" id="evidenceSlider">
+          <div class="slider-ends"><span>first signal</span><span>ring confirmed</span></div>
+          <div style="margin-top:20px;">
+            <span id="sketchStatus" class="status-badge status-low">FAINT</span>
+            <p class="sketch-action" id="sketchAction">One signal. Not enough to draw conclusions &mdash; keep watching.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="a-reads">
+      <p class="eyebrow exhibit-kicker">Exhibit A</p>
+      <h2 class="exhibit-title">Two reads, on purpose</h2>
+      <p class="exhibit-lede">The brief got read twice, independently &mdash; once as a judge deciding what actually earns points, once as an engineer looking for where the thing breaks. Pass two was written without re-opening pass one's notes, so agreement between them is a real signal, not an echo. Both full passes and the line-by-line comparison are saved as their own files alongside this page.</p>
+
+      <div class="passes">
+        <div class="pass-card">
+          <h3>Pass 1 &mdash; read it like a judge</h3>
+          <div class="who">what is this rubric actually rewarding?</div>
+          <ul>
+            <li>No <span class="mono">isFraud</span> column anywhere &mdash; this is graded like a case-file audit, not a leaderboard.</li>
+            <li>"Not every pattern is documented" &mdash; the five typologies are a floor, not the whole test.</li>
+            <li>The answer file wants the recommendation <em>twice</em>: before new evidence, and after. A one-shot pipeline structurally can't produce that.</li>
+            <li>TigerGraph MCP is a required, separately-graded component &mdash; not incidental plumbing.</li>
+            <li>Actions may be stubbed &mdash; judges are scoring the decision layer, not a Twilio integration.</li>
+          </ul>
+        </div>
+        <div class="pass-card">
+          <h3>Pass 2 &mdash; break it like an engineer</h3>
+          <div class="who">where does this actually fail in the real world?</div>
+          <ul>
+            <li>Any threshold tuned by eyeballing the 20 benchmark cases is overfit to a hand-picked sample.</li>
+            <li>"Similar case was cleared" can just be a human's old mistake, laundered as data.</li>
+            <li>A fully transparent, deterministic policy is exactly what an adaptive fraud ring learns to route around.</li>
+            <li>Heavy graph algorithms computed live, per case, will not survive a real latency budget &mdash; or a demo.</li>
+            <li>"Enough evidence to act" is a cost-of-waiting problem, not a confidence percentage.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="converge">
+        <p class="eyebrow">Where they agreed &mdash; highest-confidence signal</p>
+        <ul>
+          <li><strong>Action execution needs a hard gate</strong> &mdash; one pass got there from the grading rules ("only authorized actions may be executed"), the other from safety (a poisoned merchant-name field shouldn't be able to talk an LLM into moving money). Same conclusion, unrelated reasons.</li>
+          <li><strong>Case memory has to justify itself</strong>, not just retrieve &mdash; one pass flagged it as the innovation opportunity, the other as the bias-laundering risk.</li>
+          <li><strong>The five typologies are a floor</strong> &mdash; the brief says so outright, and separately, pattern-matching against a fixed list simply doesn't generalize.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="b-build">
+      <p class="eyebrow exhibit-kicker">Exhibit B</p>
+      <h2 class="exhibit-title">The build: propose everywhere, execute nowhere near the model</h2>
+      <p class="exhibit-lede">The orchestrator &mdash; call it the detective &mdash; can read anything on the graph and propose anything as a next step. It cannot execute anything. The only way an action actually runs is through a separate, boring, deterministic rulebook that reads structured fields, never model output, and hands out an approval ticket. That single split answers both halves of Exhibit A's first convergence point at once.</p>
+
+      <figure>
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 920 580" role="img" aria-label="Architecture diagram: triggers flow into an intake and dedup step, then an orchestrator loop of open, sketch, value-of-information check, decide, explain, file. The orchestrator can query read tools and propose actions to a policy engine, but has no direct path to the action executors &mdash; only the policy engine can issue an approval ticket that unlocks execution. Everything reads from and writes to TigerGraph." style="color:var(--ink); width:100%; height:auto;">
+            <defs>
+              <marker id="arrowMain" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+              </marker>
+              <marker id="arrowAccent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+              </marker>
+            </defs>
+
+            <!-- triggers -->
+            <rect x="140" y="20" width="190" height="36" rx="18" fill="none" stroke="currentColor" stroke-width="1.4"/>
+            <text x="235" y="43" text-anchor="middle" font-size="13" font-family="'IBM Plex Mono',monospace">risk-score event</text>
+            <rect x="365" y="20" width="190" height="36" rx="18" fill="none" stroke="currentColor" stroke-width="1.4"/>
+            <text x="460" y="43" text-anchor="middle" font-size="13" font-family="'IBM Plex Mono',monospace">customer report</text>
+            <rect x="590" y="20" width="190" height="36" rx="18" fill="none" stroke="currentColor" stroke-width="1.4"/>
+            <text x="685" y="43" text-anchor="middle" font-size="13" font-family="'IBM Plex Mono',monospace">analyst request</text>
+
+            <line x1="235" y1="56" x2="350" y2="94" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrowMain)"/>
+            <line x1="460" y1="56" x2="460" y2="94" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrowMain)"/>
+            <line x1="685" y1="56" x2="570" y2="94" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrowMain)"/>
+
+            <!-- intake -->
+            <rect x="280" y="96" width="360" height="48" rx="6" fill="var(--panel)" stroke="currentColor" stroke-width="1.4"/>
+            <text x="460" y="115" text-anchor="middle" font-size="13" font-weight="600" font-family="'IBM Plex Mono',monospace">INTAKE &amp; ENTITY LOCK</text>
+            <text x="460" y="132" text-anchor="middle" font-size="11" fill="var(--ink-soft)">already an open case on this account? attach, don't duplicate</text>
+
+            <line x1="460" y1="144" x2="460" y2="178" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrowMain)"/>
+
+            <!-- orchestrator -->
+            <rect x="60" y="180" width="800" height="156" rx="10" fill="none" stroke="currentColor" stroke-width="1.4"/>
+            <text x="82" y="203" font-size="13" font-weight="600" font-family="'IBM Plex Mono',monospace">THE DETECTIVE &mdash; orchestrator (stateful loop)</text>
+
+            <!-- loop back -->
+            <path d="M396,228 L396,196 L268,196 L268,228" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrowMain)"/>
+            <text x="332" y="190" text-anchor="middle" font-size="10.5" fill="var(--ink-soft)" font-style="italic">gather more &mdash; only if it's worth the wait</text>
+
+            <!-- step chain -->
+            <g font-family="'IBM Plex Mono',monospace" font-size="12.5" font-weight="600">
+              <rect x="90" y="228" width="100" height="40" rx="20" fill="var(--panel)" stroke="currentColor" stroke-width="1.3"/>
+              <text x="140" y="252" text-anchor="middle">OPEN</text>
+              <rect x="218" y="228" width="100" height="40" rx="20" fill="var(--panel)" stroke="currentColor" stroke-width="1.3"/>
+              <text x="268" y="252" text-anchor="middle">SKETCH</text>
+              <rect x="346" y="228" width="100" height="40" rx="20" fill="var(--panel)" stroke="currentColor" stroke-width="1.3"/>
+              <text x="396" y="252" text-anchor="middle" font-size="11">VOI CHECK</text>
+              <rect x="474" y="228" width="100" height="40" rx="20" fill="var(--panel)" stroke="currentColor" stroke-width="1.3"/>
+              <text x="524" y="252" text-anchor="middle">DECIDE</text>
+              <rect x="602" y="228" width="100" height="40" rx="20" fill="var(--panel)" stroke="currentColor" stroke-width="1.3"/>
+              <text x="652" y="252" text-anchor="middle">EXPLAIN</text>
+              <rect x="730" y="228" width="100" height="40" rx="20" fill="var(--panel)" stroke="currentColor" stroke-width="1.3"/>
+              <text x="780" y="252" text-anchor="middle">FILE</text>
+            </g>
+            <line x1="190" y1="248" x2="216" y2="248" stroke="currentColor" stroke-width="1.3" marker-end="url(#arrowMain)"/>
+            <line x1="318" y1="248" x2="344" y2="248" stroke="currentColor" stroke-width="1.3" marker-end="url(#arrowMain)"/>
+            <line x1="446" y1="248" x2="472" y2="248" stroke="currentColor" stroke-width="1.3" marker-end="url(#arrowMain)"/>
+            <line x1="574" y1="248" x2="600" y2="248" stroke="currentColor" stroke-width="1.3" marker-end="url(#arrowMain)"/>
+            <line x1="702" y1="248" x2="728" y2="248" stroke="currentColor" stroke-width="1.3" marker-end="url(#arrowMain)"/>
+
+            <circle cx="450" cy="214" r="9.5" fill="var(--panel)" stroke="currentColor" stroke-width="1.3"/>
+            <text x="450" y="218" text-anchor="middle" font-size="10.5" font-weight="600">1</text>
+            <circle cx="578" cy="214" r="9.5" fill="var(--panel)" stroke="currentColor" stroke-width="1.3"/>
+            <text x="578" y="218" text-anchor="middle" font-size="10.5" font-weight="600">2</text>
+
+            <text x="82" y="320" font-size="11" fill="var(--ink-soft)" font-family="'IBM Plex Mono',monospace">step 1: pencil draft, before extra evidence &middot; step 2: inked verdict, after</text>
+
+            <!-- three boxes -->
+            <line x1="175" y1="336" x2="175" y2="378" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrowMain)"/>
+            <text x="186" y="360" font-size="11" fill="var(--ink-soft)">read</text>
+            <line x1="524" y1="336" x2="460" y2="378" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrowMain)"/>
+            <text x="500" y="360" font-size="11" fill="var(--ink-soft)">propose action</text>
+            <line x1="524" y1="336" x2="742" y2="378" stroke="currentColor" stroke-width="1.4" stroke-dasharray="4 4" opacity="0.55"/>
+            <circle cx="636" cy="357" r="10" fill="var(--panel)" stroke="var(--risk-high)" stroke-width="2"/>
+            <line x1="628" y1="349" x2="644" y2="365" stroke="var(--risk-high)" stroke-width="2"/>
+            <text x="636" y="380" text-anchor="middle" font-size="9.5" fill="var(--risk-high)">no direct execution</text>
+
+            <rect x="60" y="380" width="230" height="56" rx="6" fill="var(--panel)" stroke="currentColor" stroke-width="1.4"/>
+            <text x="80" y="402" font-size="12.5" font-weight="600" font-family="'IBM Plex Mono',monospace">READ TOOLS (MCP)</text>
+            <text x="80" y="418" font-size="10" fill="var(--ink-soft)">get_account_graph &middot; get_ring_membership</text>
+            <text x="80" y="430" font-size="10" fill="var(--ink-soft)">get_similar_cases &middot; run_pattern_query</text>
+
+            <rect x="345" y="380" width="230" height="56" rx="6" fill="var(--panel)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="365" y="402" font-size="12.5" font-weight="600" fill="var(--accent)" font-family="'IBM Plex Mono',monospace">POLICY / APPROVAL ENGINE</text>
+            <text x="365" y="418" font-size="10" fill="var(--ink-soft)">deterministic &mdash; no LLM in this box</text>
+            <text x="365" y="430" font-size="10" fill="var(--ink-soft)">escalates to an analyst when required</text>
+
+            <rect x="630" y="380" width="230" height="56" rx="6" fill="var(--panel)" stroke="currentColor" stroke-width="1.4"/>
+            <text x="650" y="402" font-size="12.5" font-weight="600" font-family="'IBM Plex Mono',monospace">ACTION EXECUTORS</text>
+            <text x="650" y="418" font-size="10" fill="var(--ink-soft)">hold &middot; block &middot; step-up &middot; notify</text>
+            <text x="650" y="430" font-size="10" fill="var(--ink-soft)">(stubbed / mock APIs per brief)</text>
+
+            <line x1="575" y1="408" x2="628" y2="408" stroke="var(--accent)" stroke-width="2.4" marker-end="url(#arrowAccent)"/>
+            <text x="602" y="399" text-anchor="middle" font-size="10.5" fill="var(--accent)" font-family="'IBM Plex Mono',monospace">approval ticket</text>
+
+            <!-- TigerGraph -->
+            <line x1="175" y1="436" x2="175" y2="488" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrowMain)"/>
+            <text x="186" y="466" font-size="11" fill="var(--ink-soft)">traverse</text>
+            <line x1="460" y1="436" x2="460" y2="488" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrowMain)"/>
+            <text x="471" y="466" font-size="11" fill="var(--ink-soft)">structured fields</text>
+            <line x1="745" y1="436" x2="745" y2="488" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrowMain)"/>
+            <text x="700" y="466" font-size="11" fill="var(--ink-soft)">write outcome</text>
+
+            <rect x="60" y="490" width="800" height="64" rx="8" fill="var(--sunken)" stroke="currentColor" stroke-width="1.4"/>
+            <text x="460" y="516" text-anchor="middle" font-size="14" font-weight="700" font-family="'IBM Plex Mono',monospace">TIGERGRAPH</text>
+            <text x="460" y="536" text-anchor="middle" font-size="10.5" fill="var(--ink-soft)">raw entities &middot; scheduled ring &amp; propagated-risk &middot; case layer &middot; hybrid memory</text>
+          </svg>
+        </div>
+        <figcaption>Graphite's control boundary: the orchestrator can read anything and propose anything, but only the deterministic policy engine can issue the ticket that unlocks an action executor. There is no arrow from reasoning straight to execution &mdash; the dashed line is what doesn't exist.</figcaption>
+      </figure>
+    </section>
+
+    <section id="c-stop">
+      <p class="eyebrow exhibit-kicker">Exhibit C</p>
+      <h2 class="exhibit-title">When to stop investigating</h2>
+      <p class="exhibit-lede">A confidence threshold treats every extra fact as free. It isn't: a step-up prompt spends a customer's patience, an analyst request spends their afternoon, and a card that's actively being drained spends real money by the minute it waits. Graphite prices the next fact against the cost of waiting for it, and stops exactly when the answer to "is one more question worth it" turns from yes to no.</p>
+
+      <figure>
+        <div class="diagram-wrap chart">
+          <svg viewBox="0 0 480 260" role="img" aria-label="Conceptual chart showing the cost of waiting rising over time while the value of the next piece of evidence falls, crossing at a stop point where the system should act rather than keep gathering evidence" style="color:var(--ink); width:100%; height:auto;">
+            <line x1="50" y1="220" x2="450" y2="220" stroke="currentColor" stroke-width="1.3" opacity="0.6" marker-end="url(#arrowMain)"/>
+            <line x1="50" y1="220" x2="50" y2="30" stroke="currentColor" stroke-width="1.3" opacity="0.6" marker-end="url(#arrowMain)"/>
+            <text x="250" y="245" text-anchor="middle" font-size="11" font-family="'IBM Plex Mono',monospace" fill="var(--ink-soft)">evidence gathered / time &rarr;</text>
+            <text x="20" y="125" text-anchor="middle" font-size="11" font-family="'IBM Plex Mono',monospace" fill="var(--ink-soft)" transform="rotate(-90 20 125)">cost &middot; value</text>
+
+            <polyline points="50,205 130,185 210,160 290,132 370,95 450,55" fill="none" stroke="var(--risk-high)" stroke-width="2.5" stroke-linecap="round"/>
+            <polyline points="50,50 130,85 210,112 290,132 370,175 450,205" fill="none" stroke="currentColor" stroke-width="2.5" opacity="0.8" stroke-linecap="round"/>
+
+            <text x="380" y="88" font-size="11" fill="var(--risk-high)" font-family="'IBM Plex Mono',monospace">cost of waiting</text>
+            <text x="298" y="172" font-size="11" fill="currentColor" opacity="0.8" font-family="'IBM Plex Mono',monospace">value of the next fact</text>
+
+            <line x1="290" y1="132" x2="290" y2="220" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity="0.5"/>
+            <circle cx="290" cy="132" r="4.5" fill="var(--ink)"/>
+            <text x="301" y="120" text-anchor="start" font-size="10.5" font-family="'IBM Plex Mono',monospace" fill="var(--ink)">stop here</text>
+          </svg>
+        </div>
+        <div class="chart-legend">
+          <span><i class="swatch" style="background:var(--risk-high)"></i>cost of waiting</span>
+          <span><i class="swatch" style="background:var(--ink)"></i>value of the next fact</span>
+        </div>
+        <figcaption>Conceptual, not measured data: the stopping rule weighs the shrinking value of one more fact against the growing cost of waiting for it, and acts at the point where waiting stops paying for itself.</figcaption>
+      </figure>
+
+      <div class="callout">
+        <b>Cheap and reversible</b> (a temporary hold, a step-up prompt) &rarr; act immediately, keep investigating in parallel. <b>Expensive and irreversible</b> (closing an account, filing a report, denying a legitimate transaction) &rarr; the higher confidence bar still applies, no matter how urgent the exposure feels.
+      </div>
+    </section>
+
+    <section id="d-memory">
+      <p class="eyebrow exhibit-kicker">Exhibit D</p>
+      <h2 class="exhibit-title">Case memory that's allowed to disagree</h2>
+      <p class="exhibit-lede">Retrieval blends two signals: shared structure with past cases (same device, same email, same ring &mdash; cheap, high-precision) and semantic similarity of the case narrative (catches the same trick told in different words). The result has to name which shared entities justify the match &mdash; and the orchestrator explicitly checks whether its own read of the evidence agrees or disagrees with what the precedent concluded.</p>
+
+      <div class="precedents">
+        <div class="precedent">
+          <div class="head">
+            <span class="case-id">PRECEDENT &middot; CASE #4192 &mdash; confirmed fraud</span>
+            <span class="verdict-tag verdict-agree">AGREES</span>
+          </div>
+          <div class="match">match: shared device fingerprint + card BIN, 11 days apart</div>
+          <p>Same device funded two "different" identities before. This case shows the same shape &mdash; recommend block + SAR.</p>
+        </div>
+        <div class="precedent">
+          <div class="head">
+            <span class="case-id">PRECEDENT &middot; CASE #3810 &mdash; cleared</span>
+            <span class="verdict-tag verdict-disagree">DISAGREES</span>
+          </div>
+          <div class="match">match: similar merchant category and amount band only</div>
+          <p>Surface similarity only &mdash; no shared device, email, or IP. Treated as new and unrelated, not deferred to.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="e-checkpoints">
+      <p class="eyebrow exhibit-kicker">Exhibit E</p>
+      <h2 class="exhibit-title">Two checkpoints, not one verdict</h2>
+      <p class="exhibit-lede">The submission format asks for the recommendation before extra evidence is requested, and again after it arrives. That isn't an export quirk &mdash; it's the stopping rule's own bookkeeping, made visible.</p>
+
+      <div class="checkpoints">
+        <div class="checkpoint pencil">
+          <p class="eyebrow">Step 1 &middot; pencil draft</p>
+          <dl>
+            <div><dt>Trigger</dt><dd>Risk-score spike, 2:14am, new device</dd></div>
+            <div><dt>Recommendation</dt><dd>Hold transaction &middot; request step-up authentication</dd></div>
+            <div><dt>Approval route</dt><dd>Auto &mdash; reversible, low friction</dd></div>
+            <div><dt>Confidence</dt><dd>Forming</dd></div>
+          </dl>
+        </div>
+        <div class="arrow-between">
+          <svg viewBox="0 0 34 16" aria-hidden="true"><line x1="1" y1="8" x2="30" y2="8" stroke="currentColor" stroke-width="1.6" marker-end="url(#arrowMain)"/></svg>
+          step-up auth: no response in 15 min
+        </div>
+        <div class="checkpoint ink">
+          <p class="eyebrow">Step 2 &middot; inked verdict</p>
+          <dl>
+            <div><dt>Recommendation</dt><dd>Block card &middot; open case &middot; file SAR draft</dd></div>
+            <div><dt>Approval route</dt><dd>Analyst sign-off required &mdash; irreversible</dd></div>
+            <div><dt>Confidence</dt><dd>Dark enough to act</dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <section id="f-tradeoffs">
+      <p class="eyebrow exhibit-kicker">Exhibit F</p>
+      <h2 class="exhibit-title">Trade-offs made on purpose</h2>
+      <p class="exhibit-lede">Every one of these had a real alternative. Here's what got picked over what, and why.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Decision</th><th>Chosen</th><th>Over</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td class="strong">Orchestration</td><td>LangGraph state machine</td><td>Role-based multi-agent crew</td><td>The brief's flow is a strict sequence with one real loop-back &mdash; an explicit state graph matches that shape and makes the two checkpoints easy to pin down.</td></tr>
+            <tr><td class="strong">Action authorization</td><td>Deterministic policy engine issues tickets</td><td>LLM calls tools with a confirmation prompt</td><td>A confirmation still trusts the model's read of attacker-influenced text. Separating propose from execute removes that failure class entirely.</td></tr>
+            <tr><td class="strong">Pattern detection</td><td>Precomputed graph structure + typologies</td><td>Rule-matching the five typologies only</td><td>The brief says not every pattern is documented. Structure generalizes; a fixed rule list doesn't.</td></tr>
+            <tr><td class="strong">Stopping rule</td><td>Value of information (cost vs. gain)</td><td>Fixed confidence threshold</td><td>A threshold ignores that evidence has a cost and exposure is time-sensitive.</td></tr>
+            <tr><td class="strong">Heavy graph algorithms</td><td>Scheduled batch, cached as attributes</td><td>Computed live per investigation</td><td>Live computation doesn't scale to interactive latency; batch costs a staleness window, mitigated by timestamps.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="g-score" style="border-bottom:none;">
+      <p class="eyebrow exhibit-kicker">Exhibit G</p>
+      <h2 class="exhibit-title">Mapped back to the rubric</h2>
+      <p class="exhibit-lede">Nothing above was built to game the scorecard &mdash; but it's worth showing the seams line up.</p>
+
+      <div class="scorecard">
+        <div class="score-row">
+          <div class="score-label"><span class="pct">25%</span>Investigation accuracy</div>
+          <div class="bar-col"><div class="bar-track"><div class="bar-fill" style="width:100%;"></div></div><div class="bar-note">structural ring detection + real memory</div></div>
+        </div>
+        <div class="score-row">
+          <div class="score-label"><span class="pct">25%</span>Next best action</div>
+          <div class="bar-col"><div class="bar-track"><div class="bar-fill" style="width:100%;"></div></div><div class="bar-note">cost-aware stopping rule + two checkpoints</div></div>
+        </div>
+        <div class="score-row">
+          <div class="score-label"><span class="pct">15%</span>Agentic design &amp; engineering</div>
+          <div class="bar-col"><div class="bar-track"><div class="bar-fill" style="width:60%;"></div></div><div class="bar-note">propose/execute split, MCP as tool boundary</div></div>
+        </div>
+        <div class="score-row">
+          <div class="score-label"><span class="pct">15%</span>Innovation</div>
+          <div class="bar-col"><div class="bar-track"><div class="bar-fill" style="width:60%;"></div></div><div class="bar-note">disagreement-aware memory, sketch UI</div></div>
+        </div>
+        <div class="score-row">
+          <div class="score-label"><span class="pct">10%</span>Case summary &amp; explainability</div>
+          <div class="bar-col"><div class="bar-track"><div class="bar-fill" style="width:40%;"></div></div><div class="bar-note">clause-cited narrative, agree/disagree panel</div></div>
+        </div>
+        <div class="score-row">
+          <div class="score-label"><span class="pct">10%</span>Demo quality</div>
+          <div class="bar-col"><div class="bar-track"><div class="bar-fill" style="width:40%;"></div></div><div class="bar-note">one visual carries evidence + verdict</div></div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p class="eyebrow">Filed alongside this page</p>
+      <div class="files">
+        <span>design/thought-pass-1-rubric-lens.md</span>
+        <span>design/thought-pass-2-systems-lens.md</span>
+        <span>design/thought-comparison-synthesis.md</span>
+        <span>design/SYSTEM_DESIGN.md</span>
+      </div>
+      <p class="eyebrow">What we'd revisit with more time</p>
+      <ul class="revisit">
+        <li>Real probabilistic entity resolution instead of deterministic key-matching.</li>
+        <li>Fit the stopping rule's cost estimates against the full closed-case history instead of seeding them by hand.</li>
+        <li>A fairness pass on memory-driven recommendations &mdash; the disagreement signal guards against this, it doesn't solve it.</li>
+        <li>Version the policy engine's rules like code, since it's the one component a regulator would actually want to inspect.</li>
+      </ul>
+    </footer>
+  </main>
+</div>
+
+<script>
+(function(){
+  var thresholds = {
+    'e-subject-merchant': 0, 'n-merchant': 0,
+    'e-subject-device': 22, 'n-device': 22,
+    'e-subject-email': 46, 'n-email': 46,
+    'e-subject-linked': 68, 'n-linked': 68,
+    'e-device-linked': 86
+  };
+  function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+  function opacityFor(th, value){ return clamp(0.12 + (value - th) / 22, 0.12, 1); }
+  function bandFor(v){
+    if (v < 30) return {cls:'low', label:'FAINT', action:'One signal - not enough to draw conclusions. Keep watching.'};
+    if (v < 55) return {cls:'low', label:'FORMING', action:'A pattern is emerging. No customer-facing action yet.'};
+    if (v < 80) return {cls:'med', label:'DARKENING', action:'Recommended: step-up authentication - cheap and reversible.'};
+    if (v < 95) return {cls:'high', label:'DARK ENOUGH', action:'Recommended: temporary hold on the card plus analyst review.'};
+    return {cls:'high', label:'INKED', action:'Recommended: block card, open SAR draft - needs analyst sign-off.'};
+  }
+  function renderSketch(value){
+    Object.keys(thresholds).forEach(function(id){
+      var el = document.getElementById(id);
+      if (!el) return;
+      var op = opacityFor(thresholds[id], value);
+      el.style.opacity = op;
+      if (id === 'e-device-linked') {
+        el.style.stroke = op > 0.7 ? 'var(--accent)' : 'currentColor';
+        el.style.strokeWidth = op > 0.7 ? '3' : '2.5';
+      }
+    });
+    var b = bandFor(value);
+    var statusEl = document.getElementById('sketchStatus');
+    var actionEl = document.getElementById('sketchAction');
+    if (statusEl) { statusEl.textContent = b.label; statusEl.className = 'status-badge status-' + b.cls; }
+    if (actionEl) { actionEl.textContent = b.action; }
+  }
+  var slider = document.getElementById('evidenceSlider');
+  if (slider) {
+    slider.addEventListener('input', function(e){ renderSketch(Number(e.target.value)); });
+    renderSketch(Number(slider.value));
+  }
+
+  try {
+    var sections = Array.prototype.slice.call(document.querySelectorAll('main section[id]'));
+    var links = Array.prototype.slice.call(document.querySelectorAll('.nav a[href^="#"]'));
+    if (sections.length && links.length && 'IntersectionObserver' in window) {
+      var byId = {};
+      links.forEach(function(l){ byId[l.getAttribute('href').slice(1)] = l; });
+      var obs = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          var link = byId[entry.target.id];
+          if (!link) return;
+          if (entry.isIntersecting) {
+            links.forEach(function(l){ l.classList.remove('active'); });
+            link.classList.add('active');
+          }
+        });
+      }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+      sections.forEach(function(s){ obs.observe(s); });
+    }
+  } catch (e) {}
+})();
+</script>
