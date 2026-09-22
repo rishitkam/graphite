@@ -148,3 +148,54 @@ illustrative only. The actual transactions.csv has plain numeric IDs like
 worth being explicit about now rather than finding out after the agent's
 already writing answer files: never invent an ID format, always use
 exactly what's in the CSV.
+
+## Restructured as three comparable pipelines instead of one
+Got word from the organizers that grading actually compares three tiers
+built on the same model: plain RAG, GraphRAG, and Agentic GraphRAG, judged
+on the relative improvement between them plus architecture and token
+efficiency, not on absolute accuracy alone. That changes what gets built.
+
+Defined the three tiers for this specific task, since none of those words
+mean anything concrete on their own:
+
+- RAG: flat vector search over closed case narratives, no graph traversal,
+  one LLM call per case.
+- GraphRAG: same graph, but retrieval actually walks it, connected device,
+  region, shared entities, structurally similar closed cases. Still a
+  fixed retrieval pattern decided by the pipeline, not the model, still
+  basically one informed call.
+- Agentic GraphRAG: what was already being built. The model decides what
+  to query, gathers evidence across steps, runs the stopping check, can
+  ask for more evidence, hits the policy engine for actions.
+
+Principle going in: the RAG and GraphRAG tiers get genuinely competent
+implementations, not strawmen. Sandbagging a baseline to inflate the
+improvement number would make the whole comparison meaningless the moment
+anyone looked closely, and defeats the actual point being tested.
+
+## Built the accuracy comparison on held out closed cases, not the exam set
+The 20 exam cases have no visible answer key, so accuracy can't be
+measured on them directly. closed_cases_history.csv does have real
+outcomes though, confirmed_fraud or cleared. Plan is to hold out a
+stratified slice of it, roughly 80 confirmed fraud and 80 cleared, as an
+actual labeled benchmark for the three pipelines, kept separate from the
+20 required answer files.
+
+Two things matter for this to be honest. First, balance: the closed cases
+are 84 percent confirmed fraud, since they're a pre-filtered
+"worth investigating" sample, not the real rate, and evaluating on that
+mix would let a pipeline that always guesses fraud score 84 percent doing
+nothing. Second, no leakage: whatever's held out for evaluation gets
+removed from the retrievable memory pool for that run, so a pipeline
+can't score well by literally retrieving the case it's being tested on.
+
+## Standardizing on Claude Haiku 4.5 across all three pipelines
+Has to be the same model across all three for the comparison to mean
+anything, that part isn't optional. Picked Haiku over Sonnet mainly on
+volume, three pipelines times a large eval set times however many calls
+the agentic tier makes per case adds up, but also because the organizers
+said directly that a cheaper model with a better architecture should be
+able to beat an expensive model with a lazy pipeline. Using Haiku for
+everything makes that argument instead of just asserting it. Same model
+carries through to the actual 20 case submission too, no swapping to
+something bigger for the real thing.
