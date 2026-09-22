@@ -2,9 +2,9 @@
 // Starts from the schema the dataset README suggests, extended with the case,
 // evidence, and action layer the agent actually writes to.
 //
-// Not run against a live instance yet, there isn't one stood up. Treat this
-// as a first draft to load and fix syntax errors against once Savanna or
-// Community Edition is up, not as verified working GSQL.
+// Loaded and verified against TigerGraph Community Edition 4.2.5 (see
+// docker-compose.yml). scripts/verify_graph.py checks every count against
+// the source CSVs.
 //
 // Deliberately left out: the 339 V columns, the 14 C columns, the 15 D
 // columns, and the 9 M columns from Transaction. The README describes all
@@ -120,13 +120,16 @@ CREATE VERTEX CaseAction (
 
 CREATE DIRECTED EDGE OWNS (FROM Customer, TO Card) WITH REVERSE_EDGE="OWNED_BY"
 CREATE DIRECTED EDGE MADE (FROM Card, TO Transaction) WITH REVERSE_EDGE="MADE_BY"
-CREATE DIRECTED EDGE FROM_DEVICE (FROM Transaction, TO DeviceProfile) WITH REVERSE_EDGE="DEVICE_USED_IN"
+// device_seen is id_15 (New / Found / Unknown for this account) and proxy_type
+// is id_23. They live on the edge, not the device, because the same phone
+// can be New on one account and Found on another, which is the whole signal.
+CREATE DIRECTED EDGE FROM_DEVICE (FROM Transaction, TO DeviceProfile, device_seen STRING, proxy_type STRING) WITH REVERSE_EDGE="DEVICE_USED_IN"
 CREATE DIRECTED EDGE PURCHASER_EMAIL (FROM Transaction, TO EmailDomain) WITH REVERSE_EDGE="EMAIL_USED_IN"
 CREATE DIRECTED EDGE BILLED_IN (FROM Transaction, TO BillingRegion) WITH REVERSE_EDGE="REGION_OF"
 
-// sequential order of transactions on the same card, by ts. built by a
-// query after the base load, not by the CSV loading job itself, since it
-// needs everything sorted per card first.
+// sequential order of transactions on the same card, by ts. computed in
+// scripts/prepare_load.py, since it needs every transaction sorted per
+// card first.
 CREATE DIRECTED EDGE NEXT (FROM Transaction, TO Transaction) WITH REVERSE_EDGE="PREVIOUS"
 
 CREATE DIRECTED EDGE INVOLVES (FROM ClosedCase, TO Transaction) WITH REVERSE_EDGE="INVOLVED_IN"

@@ -199,3 +199,73 @@ able to beat an expensive model with a lazy pipeline. Using Haiku for
 everything makes that argument instead of just asserting it. Same model
 carries through to the actual 20 case submission too, no swapping to
 something bigger for the real thing.
+
+## Running TigerGraph Community Edition locally in Docker, not Savanna
+Savanna needed an account signup that only the repo owner could do, and
+that was sitting as a blocker for several rounds. Docker was already
+installed on this machine, so Community Edition 4.2.5 runs locally from
+docker-compose.yml instead. No account, no waiting, and the whole setup
+is reproducible from the repo. If a hosted instance matters later for the
+demo, the schema and loader scripts point at any host through .env.
+
+## Card IDs are derived, not given
+transactions.csv has customer_id but no card_id, while every case refers
+to cards like C12382-K1. Tested three rules for assigning the K number
+against every transaction the closed cases pair with a card. Card type
+(card6) sorted alphabetically within a customer matched 14,955 out of
+14,955. Order of first use and most used card both came in around 34
+percent. Then checked the winning rule against all 20 exam cases, which
+it was never fit on, and it matched all 20. Guessing here would have
+quietly broken every card level query in all three pipelines.
+
+## Device profiles require an actual device model
+The first version of the device key happily built profiles out of just a
+browser version. The most "shared" device in the data was Windows 10,
+Chrome 63, 1920x1080, used by 842 different customers. That's a popular
+laptop, not a fraud ring. A profile now only exists when DeviceInfo is
+present, and each transaction's device edge carries whether the device
+was New or Found for that account and whether it went through a proxy,
+since those are what actually separate a ring from a common setup.
+
+## The eval set is score matched, because the unmatched one was broken
+First version of the holdout was just balanced, 80 fraud and 80 cleared.
+Then checked the risk score: cleared cases averaged 0.88, fraud averaged
+0.46. The bank only opened a case on a legitimate transaction when the
+model flagged it, while fraud got opened by customer reports at any
+score. A rule as dumb as "high score means cleared" scored 91 percent on
+that set. Every tier with retrieval would have learned it from the closed
+case notes, which literally say "model scored $X at 0.91, cleared," and
+the comparison would have measured nothing.
+
+Rebuilt it so each cleared case is paired with a confirmed fraud case at
+nearly the same score (within 0.01). The two sides now have identical
+score distributions and the best score-only rule gets exactly 50
+percent. Whatever each tier scores now comes from evidence it actually
+found. Card testing and undocumented cases are too rare to match on
+score, so they sit in a separate small slice graded only on whether the
+pattern gets named.
+
+## Eval alerts don't carry the original trigger
+Same problem, different field. In the closed cases every confirmed fraud
+was opened by a customer report and every cleared case by a model score,
+a perfect 100 percent split both ways. Eval alerts use a neutral trigger
+with just the transaction, card, amount, and score, so the trigger type
+can't give the answer away.
+
+## All three tiers share one policy engine
+The policy is implemented once, as a plain function of a structured
+assessment (probability, exposure, evidence count, reply, shared origin,
+and so on), with tests against the rule text and the README's own worked
+example. Every tier produces an assessment and hands it to the same
+engine. If each tier wrote its own action logic, a better next best action
+score could come from better rule writing instead of better evidence,
+and the comparison couldn't tell those apart.
+
+## Load over REST instead of TigerGraph's file loader
+The first load through the built in file loader hung with no loader
+process running, and on every restart RESTPP tried to resume that dead
+job and stopped answering anything else. Aborting it needed RESTPP too.
+Recreated the instance (it only held the schema) and now post each CSV to
+the same loading job over REST from Python, in 50,000 line chunks, with
+valid and rejected counts reported per file. Slower to start, but it
+can't silently hang and it says exactly what went in.

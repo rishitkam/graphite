@@ -1,0 +1,18 @@
+services:
+  tigergraph:
+    image: tigergraph/community:4.2.5
+    container_name: graphite-tg
+    ports:
+      - "14240:14240"
+    volumes:
+      - ./data:/home/tigergraph/data:ro
+      - ./gsql:/home/tigergraph/gsql:ro
+      - tg-state:/home/tigergraph/tigergraph/data
+    ulimits:
+      nofile:
+        soft: 1000000
+        hard: 1000000
+    restart: unless-stopped
+
+volumes:
+  tg-state:

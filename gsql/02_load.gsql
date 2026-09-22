@@ -1,0 +1,84 @@
+// Loading job for the narrow CSVs written by scripts/prepare_load.py.
+// All transforms (card ids, device keys, sequencing, list explosion)
+// already happened there, so every statement is a plain column mapping.
+//
+// Columns are positional because scripts/load_graph.py posts chunks over
+// REST with the header stripped. Posting with the header in place loaded
+// every header row as a real vertex (a Customer named "customer_id", a
+// Transaction named "next_txn_id"), so the header never reaches this job.
+// Column order for each file is listed next to its LOAD statement.
+
+USE GRAPH Graphite
+
+CREATE LOADING JOB load_graphite FOR GRAPH Graphite {
+  DEFINE FILENAME f_customers;
+  DEFINE FILENAME f_cards;
+  DEFINE FILENAME f_tx;
+  DEFINE FILENAME f_tx_email;
+  DEFINE FILENAME f_tx_region;
+  DEFINE FILENAME f_tx_next;
+  DEFINE FILENAME f_devices;
+  DEFINE FILENAME f_tx_device;
+  DEFINE FILENAME f_cc;
+  DEFINE FILENAME f_cc_involves;
+  DEFINE FILENAME f_cc_on_card;
+  DEFINE FILENAME f_cc_connected;
+
+  // customer_id
+  LOAD f_customers TO VERTEX Customer VALUES ($0)
+    USING SEPARATOR=",", QUOTE="double";
+
+  // card_id, customer_id, card_network, card_type
+  LOAD f_cards
+    TO VERTEX Card VALUES ($0, $2, $3),
+    TO EDGE OWNS VALUES ($1, $0)
+    USING SEPARATOR=",", QUOTE="double";
+
+  // txn_id, card_id, amount, ts, product_cd, channel, risk_score, addr1, addr2, dist1, dist2
+  LOAD f_tx
+    TO VERTEX Transaction VALUES ($0, $2, $3, $4, $5, $6, $7, $8, $9, $10),
+    TO EDGE MADE VALUES ($1, $0)
+    USING SEPARATOR=",", QUOTE="double";
+
+  // txn_id, domain
+  LOAD f_tx_email
+    TO VERTEX EmailDomain VALUES ($1),
+    TO EDGE PURCHASER_EMAIL VALUES ($0, $1)
+    USING SEPARATOR=",", QUOTE="double";
+
+  // txn_id, region_code
+  LOAD f_tx_region
+    TO VERTEX BillingRegion VALUES ($1),
+    TO EDGE BILLED_IN VALUES ($0, $1)
+    USING SEPARATOR=",", QUOTE="double";
+
+  // txn_id, next_txn_id
+  LOAD f_tx_next TO EDGE NEXT VALUES ($0, $1)
+    USING SEPARATOR=",", QUOTE="double";
+
+  // device_key, device_type, device_info, os, browser, screen
+  LOAD f_devices TO VERTEX DeviceProfile VALUES ($0, $1, $2, $3, $4, $5)
+    USING SEPARATOR=",", QUOTE="double";
+
+  // txn_id, device_key, device_seen, proxy_type
+  LOAD f_tx_device TO EDGE FROM_DEVICE VALUES ($0, $1, $2, $3)
+    USING SEPARATOR=",", QUOTE="double";
+
+  // case_id, customer_id, card_id, opened_at, closed_at, outcome, pattern,
+  // first_fraud_txn_id, txn_ids_raw, n_txns, exposure_usd,
+  // connected_card_ids_raw, actions_taken, report_filed, analyst_notes
+  LOAD f_cc TO VERTEX ClosedCase VALUES ($0, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+    USING SEPARATOR=",", QUOTE="double";
+
+  // case_id, txn_id
+  LOAD f_cc_involves TO EDGE INVOLVES VALUES ($0, $1)
+    USING SEPARATOR=",", QUOTE="double";
+
+  // case_id, card_id
+  LOAD f_cc_on_card TO EDGE ON_CARD VALUES ($0, $1)
+    USING SEPARATOR=",", QUOTE="double";
+
+  // case_id, card_id
+  LOAD f_cc_connected TO EDGE CONNECTED_TO VALUES ($0, $1)
+    USING SEPARATOR=",", QUOTE="double";
+}

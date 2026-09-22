@@ -9,7 +9,12 @@ dependencies = [
     "anthropic>=0.34",
     "pydantic>=2.7",
     "python-dotenv>=1.0",
+    "pandas>=2.2",
+    "pyarrow>=17",
 ]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
 
 [build-system]
 requires = ["setuptools>=68"]
