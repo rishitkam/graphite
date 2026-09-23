@@ -1,0 +1,119 @@
+// Investigation queries. These are the graph tools: GraphRAG calls a fixed
+// set in a fixed order, the agent chooses among them. Every query takes an
+// as-of time (t_end) and never returns anything after it, and every query
+// touching closed cases takes an exclude set, so held-out eval cases and
+// anything closed after the investigation time can't leak in as memory.
+
+USE GRAPH Graphite
+
+CREATE QUERY txn_detail(VERTEX<Transaction> t) FOR GRAPH Graphite {
+  SetAccum<STRING> @@card, @@email, @@device, @@device_seen, @@proxy;
+  S = {t};
+  X = SELECT c FROM S:s -(MADE_BY:e)-> Card:c ACCUM @@card += c.card_id;
+  X = SELECT m FROM S:s -(PURCHASER_EMAIL:e)-> EmailDomain:m ACCUM @@email += m.domain;
+  X = SELECT d FROM S:s -(FROM_DEVICE:e)-> DeviceProfile:d
+      ACCUM @@device += d.device_key, @@device_seen += e.device_seen, @@proxy += e.proxy_type;
+  PRINT S[S.amount, S.ts, S.product_cd, S.channel, S.risk_score, S.addr1, S.addr2, S.dist1, S.dist2] AS txn;
+  PRINT @@card AS card, @@email AS email, @@device AS device, @@device_seen AS device_seen, @@proxy AS proxy;
+}
+
+// Every transaction on a card in [t_end - days, t_end], with device and email.
+CREATE QUERY card_window(VERTEX<Card> c, DATETIME t_end, INT days) FOR GRAPH Graphite {
+  MaxAccum<STRING> @device, @device_seen, @proxy, @email;
+  DATETIME t_start = datetime_sub(t_end, INTERVAL days DAY);
+  S = {c};
+  T = SELECT t FROM S:s -(MADE:e)-> Transaction:t WHERE t.ts >= t_start AND t.ts <= t_end;
+  X = SELECT t FROM T:t -(FROM_DEVICE:e)-> DeviceProfile:d
+      ACCUM t.@device += d.device_key, t.@device_seen += e.device_seen, t.@proxy += e.proxy_type;
+  X = SELECT t FROM T:t -(PURCHASER_EMAIL:e)-> EmailDomain:m ACCUM t.@email += m.domain;
+  PRINT T[T.amount, T.ts, T.product_cd, T.channel, T.addr1, T.dist1, T.@device, T.@device_seen, T.@proxy, T.@email] AS txns;
+}
+
+// The card's long-run baseline before t_end: what's normal for it.
+CREATE QUERY card_profile(VERTEX<Card> c, DATETIME t_end) FOR GRAPH Graphite {
+  MapAccum<STRING, SumAccum<INT>> @@region, @@product, @@channel, @@email, @@device;
+  SumAccum<INT> @@n;
+  AvgAccum @@avg_amount;
+  MaxAccum<DOUBLE> @@max_amount;
+  MinAccum<DATETIME> @@first_seen;
+  S = {c};
+  T = SELECT t FROM S:s -(MADE:e)-> Transaction:t WHERE t.ts < t_end
+      ACCUM @@n += 1, @@avg_amount += t.amount, @@max_amount += t.amount, @@first_seen += t.ts,
+            @@region += (t.addr1 -> 1), @@product += (t.product_cd -> 1), @@channel += (t.channel -> 1);
+  X = SELECT m FROM T:t -(PURCHASER_EMAIL:e)-> EmailDomain:m ACCUM @@email += (m.domain -> 1);
+  X = SELECT d FROM T:t -(FROM_DEVICE:e)-> DeviceProfile:d ACCUM @@device += (d.device_key -> 1);
+  PRINT @@n AS n_txns, @@avg_amount AS avg_amount, @@max_amount AS max_amount, @@first_seen AS first_seen,
+        @@region AS regions, @@product AS products, @@channel AS channels, @@email AS emails, @@device AS devices;
+}
+
+// Who else used this device profile, and did any of them end up in fraud?
+CREATE QUERY device_neighbors(VERTEX<DeviceProfile> d, DATETIME t_end, INT days, SET<STRING> exclude) FOR GRAPH Graphite {
+  OrAccum @in_window;
+  SetAccum<STRING> @@customers_window, @@customers_ever, @@fraud_cases;
+  MapAccum<STRING, SumAccum<INT>> @@card_uses_window;
+  SumAccum<INT> @@uses_window, @@new_uses_window, @@proxy_uses_window;
+  DATETIME t_start = datetime_sub(t_end, INTERVAL days DAY);
+  S = {d};
+  T = SELECT t FROM S:s -(DEVICE_USED_IN:e)-> Transaction:t WHERE t.ts <= t_end
+      ACCUM IF t.ts >= t_start THEN
+              t.@in_window += TRUE, @@uses_window += 1,
+              IF e.device_seen == "New" THEN @@new_uses_window += 1 END,
+              IF e.proxy_type != "" THEN @@proxy_uses_window += 1 END
+            END;
+  C = SELECT c FROM T:t -(MADE_BY:e)-> Card:c
+      ACCUM IF t.@in_window THEN c.@in_window += TRUE, @@card_uses_window += (c.card_id -> 1) END;
+  X = SELECT u FROM C:c -(OWNED_BY:e)-> Customer:u
+      ACCUM @@customers_ever += u.customer_id, IF c.@in_window THEN @@customers_window += u.customer_id END;
+  X = SELECT k FROM T:t -(INVOLVED_IN:e)-> ClosedCase:k
+      WHERE k.outcome == "confirmed_fraud" AND k.closed_at < t_end AND NOT exclude.contains(k.case_id)
+      ACCUM @@fraud_cases += k.case_id;
+  PRINT @@uses_window AS uses_window, @@new_uses_window AS new_uses_window, @@proxy_uses_window AS proxy_uses_window,
+        @@card_uses_window AS card_uses_window, @@customers_window AS customers_window,
+        @@customers_ever.size() AS customers_ever, @@fraud_cases AS fraud_cases_on_device;
+}
+
+// The customer's other cards and their own case history before t_end.
+CREATE QUERY customer_overview(VERTEX<Customer> u, DATETIME t_end, SET<STRING> exclude) FOR GRAPH Graphite {
+  TYPEDEF TUPLE<STRING case_id, STRING card_id, STRING outcome, STRING pattern, DATETIME closed_at, STRING notes> CaseRow;
+  ListAccum<CaseRow> @@cases;
+  MapAccum<STRING, STRING> @@cards;
+  S = {u};
+  C = SELECT c FROM S:s -(OWNS:e)-> Card:c ACCUM @@cards += (c.card_id -> c.card_type);
+  X = SELECT k FROM C:c -(HAS_CLOSED_CASE:e)-> ClosedCase:k
+      WHERE k.closed_at < t_end AND NOT exclude.contains(k.case_id)
+      ACCUM @@cases += CaseRow(k.case_id, k.card_id, k.outcome, k.pattern, k.closed_at, k.analyst_notes);
+  PRINT @@cards AS cards, @@cases AS prior_cases;
+}
+
+// Closed cases that share structure with this transaction: the same device
+// profile or the same billing region. Rarer shared elements count for more,
+// so a device used by three people outweighs a region used by thousands.
+// Each shared element counts once per case, at its weight, so a case with
+// 24 transactions in a common region doesn't outrank a case sharing the
+// exact device just by having more rows.
+CREATE QUERY structural_precedent(VERTEX<Transaction> t, DATETIME t_end, SET<STRING> exclude, INT k) FOR GRAPH Graphite {
+  TYPEDEF TUPLE<STRING case_id, STRING outcome, STRING pattern, STRING via, DOUBLE weight, STRING notes> Hit;
+  MaxAccum<DOUBLE> @dev_w = 0, @reg_w = 0;
+  HeapAccum<Hit>(20, weight DESC) @@hits;
+  S = {t};
+  D = SELECT d FROM S:s -(FROM_DEVICE:e)-> DeviceProfile:d;
+  R = SELECT r FROM S:s -(BILLED_IN:e)-> BillingRegion:r;
+  DT = SELECT x FROM D:d -(DEVICE_USED_IN:e)-> Transaction:x WHERE x != t AND x.ts <= t_end
+       ACCUM x.@dev_w += 3.0 / log(2.0 + d.outdegree("DEVICE_USED_IN"));
+  RT = SELECT x FROM R:r -(REGION_OF:e)-> Transaction:x WHERE x != t AND x.ts <= t_end
+       ACCUM x.@reg_w += 1.0 / log(2.0 + r.outdegree("REGION_OF"));
+  ALL_T = DT UNION RT;
+  K = SELECT c FROM ALL_T:x -(INVOLVED_IN:e)-> ClosedCase:c
+      WHERE c.closed_at < t_end AND NOT exclude.contains(c.case_id)
+      ACCUM c.@dev_w += x.@dev_w, c.@reg_w += x.@reg_w
+      POST-ACCUM
+        STRING via = "",
+        IF c.@dev_w > 0 THEN via = "device" END,
+        IF c.@reg_w > 0 THEN IF via == "" THEN via = "region" ELSE via = via + "+region" END END,
+        @@hits += Hit(c.case_id, c.outcome, c.pattern, via, c.@dev_w + c.@reg_w, c.analyst_notes);
+  ListAccum<Hit> @@top;
+  FOREACH h IN @@hits DO
+    IF @@top.size() < k THEN @@top += h; END;
+  END;
+  PRINT @@top AS precedent;
+}
