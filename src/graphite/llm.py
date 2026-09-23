@@ -67,6 +67,12 @@ def chat(messages, usage, tools=None, json_mode=False, max_tokens=1500):
             time.sleep(wait + 1)
             continue
         except APIStatusError as e:
+            # Strict JSON mode rejects small slips (the model once wrote "0. nine"
+            # for a probability). Retry without it; parse_json copes with the text.
+            if e.status_code == 400 and "json_validate_failed" in str(e) and "response_format" in kwargs:
+                kwargs.pop("response_format")
+                kwargs["temperature"] = 0.3
+                continue
             if e.status_code >= 500 and attempt < 11:
                 time.sleep(2 ** min(attempt, 5))
                 continue

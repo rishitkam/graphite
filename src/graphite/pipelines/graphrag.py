@@ -23,7 +23,9 @@ def run(alert, t_end, exclude):
     cust, cust_lines = evidence.customer(alert.customer_id, t_end, exclude)
     prec, prec_lines = evidence.precedent(alert.flagged_txn_id, t_end, exclude)
     mem, mem_lines = evidence.situation_memory(alert.flagged_txn_id, t_end, exclude)
-    _, rec_lines = evidence.recurring(alert.flagged_txn_id, t_end)
+    # R7 is about disputes: a repeated amount is not evidence of legitimacy on
+    # an ordinary alert, since fraud repeats amounts too.
+    rec_lines = evidence.recurring(alert.flagged_txn_id, t_end)[1] if alert.trigger_type == "customer_report" else []
     usage.tool_calls += 9
 
     user = "\n".join(

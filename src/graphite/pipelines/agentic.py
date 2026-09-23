@@ -96,6 +96,9 @@ class Session:
                 self.known |= {h["case_id"] for h in hits}
                 return "\n".join(lines)
             if name == "recurring_check":
+                if a.trigger_type != "customer_report":
+                    return ("Not a customer dispute, so R7 does not apply: a repeated amount on an ordinary alert "
+                            "is not evidence either way, since fraud repeats amounts too.")
                 return "\n".join(evidence.recurring(a.flagged_txn_id, self.t_end)[1])
             if name == "search_cases":
                 hits = rag.retrieve(str(args["query"]), self.t_end, self.exclude)
