@@ -347,3 +347,35 @@ window. The full comparison needs roughly 1.7 million, which is about
 eight days on free tier. Asked for an upgrade to the pay as you go
 developer tier; everything that doesn't need the model keeps moving in the
 meantime.
+
+## Ring detection with the library's connected components
+The brief asks for TigerGraph's graph algorithms, and the ring on HHG-014
+suggested a real use for one. Two customers get linked when the same device
+profile was New to both accounts, most of that device's new-account uses
+went through a proxy, and it isn't a mass-market profile. Then the
+library's own tg_wcc runs over customers and those links, unmodified. A ring
+that rotates across several devices comes out as one component, which a
+per-device check can't see. The first link rule was far too loose (a
+million links, one component of 4,188 customers) and was tightened on July
+to October only. There it finds 10 components where 64 percent of members
+have a confirmed fraud case; in November and December, six rings with 61
+customers, five of which contain none of the exam cases.
+
+## Case memory is corrected for what the bank chose to investigate
+Looking at memory's verdict on the 20 exam cases, with no model involved,
+it called 18 of them likely fraud, against the README's "about half are
+legitimate." Memory is 85 percent fraud because the bank only ever
+investigated a legitimate transaction when its model flagged it. For an in
+person alert or a dispute, memory has no legitimate lookalikes at all.
+Memory is now read against its own base rate: the odds ratio between the
+neighbourhood's fraud share and memory's overall share, applied at an even
+prior. On the exam that gives 9 of 20; on dev the ranking is unchanged and
+legitimate specificity rises from 0.70 to 0.90. The risk score also left
+the situation distance, for the same reason.
+
+## A recurring charge check for customer disputes
+In the history, every customer report turned out to be fraud, so memory
+can't recognise a legitimate dispute. The policy expects some (R7), and the
+data has them: HHG-003 disputes a $49.00 charge that matches 53 earlier
+$49.00 charges on the card, HHG-018 matches 143. The graph tiers get an
+explicit check for earlier same-amount, same-product charges on the card.

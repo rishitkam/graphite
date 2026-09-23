@@ -1,40 +1,59 @@
 # Progress
 
 ## Where things stand
-Design phase is done. Dataset is in hand and read. Schema is drafted. Scope just grew from one pipeline to three, see below. Need a live TigerGraph instance to go further either way.
+Everything is built and running end to end. What's left is compute: the
+held-out comparison and the 20 exam answer files need model tokens, and the
+Groq free tier allows 200,000 a day. Upgrading to the pay-as-you-go
+developer tier would finish it in hours instead of days.
 
-## The actual deliverable is now three pipelines, not one
-Grading compares plain RAG, GraphRAG, and Agentic GraphRAG built on the
-same model, scored on relative improvement between them plus architecture
-and token efficiency, not absolute accuracy alone. Full reasoning and the
-tier definitions are in DECISIONS.md. Short version: same graph, same
-model (Claude Haiku 4.5), three retrieval and agency strategies, evaluated
-against a held out balanced slice of closed_cases_history.csv since the
-real 20 exam cases have no visible answer key. The 20 required answer
-files still come from the agentic tier, the other two exist to prove it's
-actually earning its complexity, not to duplicate the submission.
+## Built
+- **Graph.** TigerGraph Community Edition 4.2.5 in Docker. 2.4 million
+  vertices and edges, every count checked against the source files.
+  `scripts/rebuild_graph.sh` rebuilds all of it from scratch.
+- **Investigation queries.** Six GSQL queries (card window, card baseline,
+  device neighbours, customer overview, structural precedent, transaction
+  detail), all as of an investigation time with an exclusion set.
+- **Vector search in TigerGraph.** Three indexes: closed case narratives,
+  closed case situation vectors (case memory), policy and pattern text.
+- **Graph algorithms.** The library's weakly connected components over a
+  projected customer graph finds fraud rings, including ones that rotate
+  across several devices.
+- **Three pipelines** on one model (gpt-oss-120b on Groq), sharing one prompt,
+  one output format and one policy engine: RAG, GraphRAG, Agentic GraphRAG.
+- **Policy engine** implementing R1 to R10, tested against the rule text.
+- **Case memory writes.** Every exam case becomes a FraudCase vertex linked to
+  its transactions, cards, devices, precedent, evidence and actions.
+- **SAR narratives,** only when a report is filed, with facts from the data.
+- **Proactive monitoring.** In November and December the ring detection finds
+  six rings, 61 customers; five of them, 28 customers, contain none of the
+  exam cases.
+- **Interface.** Case board, each investigation drawn as a graph, the
+  pencil-draft to inked-verdict action change, a proactive rings view, and a
+  scoreboard comparing tiers.
+- **Evaluation.** A score-matched held-out set, a separate dev split, and tests
+  that prove nothing after the investigation time can leak in.
+- **Docs.** README, blog post draft and demo script in `docs/`, every decision
+  in DECISIONS.md.
 
-## Done so far
-- Read through the full HHGOA brief and pulled apart what it's actually asking for, not just the obvious parts.
-- Ran two separate passes on the problem before designing anything: one reading the brief like a judge (what actually earns points), one breaking it like an engineer (where this fails once it's real). Wrote both down on their own, then compared them afterward.
-- Turned that into a full system design under design/, called Graphite. Core idea: a fraud case is treated like a sketch that darkens as evidence comes in, instead of jumping straight to a yes/no verdict.
-- Built an interactive walkthrough of the design (design/graphite-design.html) alongside the written version (design/SYSTEM_DESIGN.md).
-- Found the actual dataset link, which was buried in the PDF's link annotations rather than sitting in the visible text.
-- Confirmed the stack: Python, LangGraph for the orchestrator, pyTigerGraph plus the TigerGraph MCP server for the graph side.
-- Set up the repo itself: git initialized, .gitignore, basic project layout under src/, gsql/, data/, tests/.
-- Dataset landed in data/, unzipped, and checked against the README's own numbers: 590,742 transactions, 144,432 identity records, 5,565 closed cases (4,665 confirmed fraud, 900 cleared), 20 exam cases. All of it matches, no surprises.
-- Read the dataset's own README in full. It's much more specific than the hackathon brief alone: exact action names, exact approval routing (auto / L1 / L2), ten numbered policy rules, exact stopping thresholds (0.85 / 0.15 with two independent pieces of evidence), and the full JSON answer format field by field. This isn't guesswork anymore, it's a spec.
-- Drafted the graph schema (gsql/01_schema.gsql) starting from the schema the dataset README itself suggests, extended with the live case, evidence, and action vertices the agent needs to write. Not run against a live instance yet, so it's a first draft, not verified.
+## Measured so far (dev split, small samples, direction only)
+- Plain RAG: 33 to 42 percent accuracy, AUC 0.30 to 0.39. Below chance: it
+  reads new-phone purchases as fraud.
+- Graph case memory alone, no model: 77.5 percent, AUC 0.85 on all 40 dev
+  cases, after correcting for what the bank chose to investigate.
+- GraphRAG and the agent: being rerun on dev after the memory correction.
 
 ## Next
-- Stand up a TigerGraph instance. Still defaulting to Savanna, still an open call, still needs an account which only the owner of this repo can create. This blocks all three pipelines now, not just one.
-- Load the schema, fix whatever GSQL syntax it gets wrong on the first try, then write the actual loading jobs against real error messages instead of guessing at LOAD statement syntax blind.
-- Build the NEXT edge (sequential transactions per card) and the ring detection pass (shared device / region / email) as post load queries.
-- Build the held out evaluation split from closed_cases_history.csv before building any pipeline, so nothing accidentally gets tuned against it later.
-- Then the three pipelines: RAG first since it's the simplest and proves the harness works end to end, then GraphRAG, then the full agentic system with the LangGraph orchestrator, MCP tool wiring, and the ten numbered policy rules implemented literally.
-- Get one dumb version running end to end before polishing any single tier. Nothing has executed once yet and that's the actual risk right now, not lack of ideas.
+1. Finish the 16-case dev comparison for GraphRAG and the agent.
+2. Run the agent on the 20 exam cases, export `cases/`, validate every file.
+3. Run the proactive monitor for `cases_proactive/`.
+4. Freeze the code and run the held-out eval once for all three tiers.
+5. Fill the final numbers into the README, blog post and scoreboard.
 
 ## Watch for
-- The closed case history is 84 percent confirmed fraud. That's not the real fraud rate, it's just what gets escalated to a full investigation. The 20 exam cases are roughly half legitimate per the README. Don't let anything calibrate off the closed case mix.
-- The dataset README's own worked example uses invented transaction IDs like `T0412877`. The real data's IDs are bare numbers like `3514030`. Made up IDs score zero, so nothing should ever follow the example's ID style, only the real one.
-- `TransactionID`, `card1`, `TransactionDT`, and `TransactionAmt` were deliberately altered so the public Kaggle IEEE-CIS files can't be used to look up real outcomes. Don't go near the original public dataset for this project, that's a disqualification, not a shortcut.
+- Case memory reflects what the bank chose to investigate. Always read it
+  against its own base rate, never as a raw fraud share.
+- Customer disputes need the recurring charge check (R7): memory has no
+  legitimate disputes to learn from.
+- The README's worked example uses invented transaction IDs. Real IDs are bare
+  numbers, and `scripts/export_cases.py` rejects any ID not in the dataset.
+- Never use the public Kaggle IEEE-CIS files. That's disqualification.
