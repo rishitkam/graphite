@@ -95,7 +95,7 @@ CREATE QUERY customer_overview(VERTEX<Customer> u, DATETIME t_end, SET<STRING> e
 CREATE QUERY structural_precedent(VERTEX<Transaction> t, DATETIME t_end, SET<STRING> exclude, INT k) FOR GRAPH Graphite {
   TYPEDEF TUPLE<STRING case_id, STRING outcome, STRING pattern, STRING via, DOUBLE weight, STRING notes> Hit;
   MaxAccum<DOUBLE> @dev_w = 0, @reg_w = 0;
-  HeapAccum<Hit>(20, weight DESC) @@hits;
+  HeapAccum<Hit>(20, weight DESC, case_id ASC) @@hits;
   DOUBLE dw = 0;
   DOUBLE rw = 0;
   S = {t};

@@ -5,8 +5,10 @@ what these functions return, so keeping them small is where most of the token
 budget gets saved.
 """
 
+import os
 from collections import Counter
 
+from graphite import mcp_client
 from graphite.tg import connect
 
 _conn = None
@@ -20,7 +22,15 @@ def conn():
     return _conn
 
 
+# Graph queries go through the official TigerGraph MCP server by default.
+# GRAPHITE_TRANSPORT=direct uses pyTigerGraph instead (same queries, same
+# results), which is only there for debugging the MCP path.
+TRANSPORT = os.getenv("GRAPHITE_TRANSPORT", "mcp")
+
+
 def _run(query, params):
+    if TRANSPORT == "mcp":
+        return mcp_client.run_installed_query(query, params)
     fixed = {k: (v,) if k in ("t", "c", "d", "u") else v for k, v in params.items()}
     return conn().runInstalledQuery(query, fixed)
 
@@ -118,8 +128,8 @@ def structural_precedent(txn_id, t_end, exclude=(), k=5):
 
 
 def _vector_query(name, qv, t_end, exclude, k):
-    out = conn().runInstalledQuery(
-        name, {"qv": [float(x) for x in qv], "t_end": t_end, "exclude": _excl(exclude), "k": k}, usePost=True)
+    params = {"qv": [float(x) for x in qv], "t_end": t_end, "exclude": _excl(exclude), "k": k}
+    out = mcp_client.run_installed_query(name, params) if TRANSPORT == "mcp" else conn().runInstalledQuery(name, params, usePost=True)
     dist = {}
     for part in out:
         if "dist" in part:
@@ -141,5 +151,6 @@ def similar_situations(qv, t_end, exclude=(), k=15):
 
 
 def search_policy(qv, k=3):
-    out = conn().runInstalledQuery("search_policy", {"qv": [float(x) for x in qv], "k": k}, usePost=True)
+    params = {"qv": [float(x) for x in qv], "k": k}
+    out = mcp_client.run_installed_query("search_policy", params) if TRANSPORT == "mcp" else conn().runInstalledQuery("search_policy", params, usePost=True)
     return [{key.split(".", 1)[1]: val for key, val in v["attributes"].items()} for v in out[0]["hits"]]
