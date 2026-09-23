@@ -58,7 +58,7 @@ def memory_only(which, case_ids):
     """Reference row with no language model: predict the similarity-weighted
     fraud share of the 15 most similar past situations, from TigerGraph's
     vector index, under the same time and exclusion rules as the tiers."""
-    from graphite import alerts, evidence, run
+    from graphite import alerts, data, evidence, run
     wanted = {"dev": ("dev",), "eval": ("matched", "rare_patterns")}[which]
     rows = []
     for a in alerts.eval_alerts(wanted):
@@ -66,8 +66,7 @@ def memory_only(which, case_ids):
             continue
         t_end = run.investigation_time(a, which)
         hits, _ = evidence.situation_memory(a.flagged_txn_id, t_end, alerts.holdout_ids())
-        w = [1 / (0.5 + (h["distance"] or 0)) for h in hits]
-        share = sum(wi for wi, h in zip(w, hits) if h["outcome"] == "confirmed_fraud") / sum(w)
+        share = evidence.adjusted(evidence.memory_share(hits), data.memory_fraud_share(t_end, alerts.holdout_ids()))
         rows.append({"_initial_probability": share, "_meta": {"label": a.label, "label_pattern": a.label_pattern,
                      "eval_slice": a.eval_slice, "calls": 0}, "case": {"pattern": "none"}, "tokens": 0,
                      "tool_calls": 1, "latency_s": 0})

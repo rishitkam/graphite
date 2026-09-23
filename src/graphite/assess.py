@@ -35,7 +35,7 @@ Return this JSON (at most 5 evidence items, summary at most 3 sentences):
 # For tiers that have case memory. Ordinary base-rate reasoning, not anything
 # learned from this data: memory says how alerts like this one actually
 # ended, and specific evidence should move you off that, not replace it.
-MEMORY_GUIDE = """Weighing evidence: SITUATION MEMORY is the base rate (how the most similar past alerts actually ended). Anchor fraud_probability on its fraud share; move away only for specific evidence it cannot see (a device or region shared with other customers' fraud, card testing, the customer's own recurring pattern). Looking ordinary is not evidence of legitimacy, and looking unusual is not evidence of fraud. Say what moved you."""
+MEMORY_GUIDE = """Weighing evidence: SITUATION MEMORY gives the base rate for alerts like this one, corrected for what the bank chose to investigate. Anchor fraud_probability on that corrected base rate; move away only for specific evidence it cannot see (a device or region shared with other customers' fraud, card testing, the customer's own recurring pattern). Looking ordinary is not evidence of legitimacy, and looking unusual is not evidence of fraud. Say what moved you."""
 
 
 def clean(raw, known_ids):

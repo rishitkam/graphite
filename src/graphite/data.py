@@ -61,3 +61,15 @@ def customers_per_fraud_case(t_end, exclude):
     n = int(((cc["outcome"] == "confirmed_fraud") & (pd.to_datetime(cc["closed_at"]) < t)
              & ~cc["case_id"].isin(exclude)).sum())
     return active / n if n else None
+
+
+def memory_fraud_share(t_end, exclude):
+    """Share of case memory that is confirmed fraud, as of t_end.
+
+    Case memory is a record of what the bank chose to investigate, not of how
+    often fraud happens: legitimate transactions were only investigated when
+    the bank's model flagged them. So memory is read relative to this.
+    """
+    cc = closed_cases()
+    pool = cc[(pd.to_datetime(cc["closed_at"]) < pd.Timestamp(t_end)) & ~cc["case_id"].isin(exclude)]
+    return float((pool["outcome"] == "confirmed_fraud").mean()) if len(pool) else None

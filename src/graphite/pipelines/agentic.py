@@ -22,6 +22,7 @@ AGENT = assess.SYSTEM.split("Return this JSON")[0] + assess.MEMORY_GUIDE + """
 How you work:
 - You start with the alert, the flagged transaction and the card's baseline. Call tools to get more. Several tools can be called in one turn.
 - situation_memory is usually the first thing worth checking: it gives the base rate you should anchor on.
+- For a customer dispute, always run recurring_check: past cases contain no legitimate disputes, so memory cannot tell you if this is the customer's own repeating charge.
 - Each tool costs time and tokens. Call what would change your assessment, not everything. Stop as soon as the answer is clear.
 - Before concluding, name the most likely innocent explanation and check it (for example: were past alerts like this cleared, is this device or region just common, is this the cardholder's own pattern).
 - When you are done, make no tool calls and reply with only the final JSON:""" + assess.SYSTEM.split("Return this JSON")[1]
@@ -43,6 +44,8 @@ TOOLS = [
     _tool("structural_precedent", "Closed cases sharing the same device or billing region as a transaction, weighted by how rare the shared link is.",
           txn_id="string"),
     _tool("situation_memory", "How past alerts in the most similar graph situation ended (channel, device novelty, familiarity, velocity), from vector search over case memory. Best single check of the base rate for an alert like this one.",
+          txn_id="string"),
+    _tool("recurring_check", "Whether the flagged charge repeats the cardholder's own pattern: earlier charges on the card with the same product and amount. Essential for customer disputes (policy R7).",
           txn_id="string"),
     _tool("search_cases", "Search closed case narratives by text, for precedent on a specific hypothesis.", query="string"),
     _tool("transaction", "Full detail of one transaction.", txn_id="string"),
@@ -92,6 +95,8 @@ class Session:
                 hits, lines = evidence.situation_memory(a.flagged_txn_id, self.t_end, self.exclude)
                 self.known |= {h["case_id"] for h in hits}
                 return "\n".join(lines)
+            if name == "recurring_check":
+                return "\n".join(evidence.recurring(a.flagged_txn_id, self.t_end)[1])
             if name == "search_cases":
                 hits = rag.retrieve(str(args["query"]), self.t_end, self.exclude)
                 self.known |= {h["case_id"] for h in hits}

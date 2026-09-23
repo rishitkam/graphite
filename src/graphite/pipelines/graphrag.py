@@ -23,11 +23,12 @@ def run(alert, t_end, exclude):
     cust, cust_lines = evidence.customer(alert.customer_id, t_end, exclude)
     prec, prec_lines = evidence.precedent(alert.flagged_txn_id, t_end, exclude)
     mem, mem_lines = evidence.situation_memory(alert.flagged_txn_id, t_end, exclude)
-    usage.tool_calls += 8
+    _, rec_lines = evidence.recurring(alert.flagged_txn_id, t_end)
+    usage.tool_calls += 9
 
     user = "\n".join(
         [f"ALERT ({alert.trigger_type}): {alert.trigger_text}", "", "GRAPH EVIDENCE:", flag_line]
-        + base + recent + mem_lines + dev_lines + cust_lines + prec_lines
+        + base + rec_lines + recent + mem_lines + dev_lines + cust_lines + prec_lines
         + ["", "SIMILAR PAST CASES BY TEXT:"]
         + [f"  {h['case_id']} [{h['outcome']}, {h['pattern']}]: {h['notes'][:170]}" for h in hits]
     )

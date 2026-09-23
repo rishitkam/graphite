@@ -29,7 +29,7 @@ def main():
 
     held = cc["case_id"].isin(alerts.holdout_ids()).to_numpy()
     mean, std = raw[~held].mean(0), raw[~held].std(0) + 1e-6
-    np.savez(OUT, case_ids=cc["case_id"].to_numpy(), vectors=((raw - mean) / std).astype(np.float32),
+    np.savez(OUT, case_ids=cc["case_id"].to_numpy(), vectors=(situation.WEIGHTS * (raw - mean) / std).astype(np.float32),
              mean=mean, std=std, features=np.array(situation.FEATURES))
     (ROOT / "eval" / "situation_scaling.json").write_text(json.dumps(
         {"features": situation.FEATURES, "mean": mean.tolist(), "std": std.tolist()}, indent=1))

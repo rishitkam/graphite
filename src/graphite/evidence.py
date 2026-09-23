@@ -130,22 +130,67 @@ def _scaling():
     return {"mean": z["mean"], "std": z["std"]}
 
 
+def memory_share(hits):
+    w = [1 / (0.5 + (h["distance"] or 0)) for h in hits]
+    return sum(wi for wi, h in zip(w, hits) if h["outcome"] == "confirmed_fraud") / sum(w)
+
+
+def adjusted(share, pool_share, prior=0.5):
+    """Correct memory for what the bank chose to investigate.
+
+    A neighbourhood's fraud share is compared with the fraud share of memory as
+    a whole: the ratio of their odds is the evidence, applied at an even prior
+    (the README says about half of alerts are legitimate). 100 percent fraud
+    among neighbours, in a memory that is 85 percent fraud anyway, is modest
+    evidence; 76 percent is evidence for legitimate.
+    """
+    s = min(max(share, 0.02), 0.98)
+    lr = (s / (1 - s)) / (pool_share / (1 - pool_share))
+    odds = lr * prior / (1 - prior)
+    return odds / (1 + odds)
+
+
 def situation_memory(txn_id, t_end, exclude, k=15):
-    """How did past alerts in the most similar graph situation end?"""
+    """How did past alerts in the most similar graph situation end, corrected
+    for the fact that memory only contains what the bank chose to investigate?"""
     qv = situation.vector(txn_id, t_end, _scaling())
     hits = g.similar_situations(qv, t_end, exclude, k)
     if not hits:
         return hits, ["SITUATION MEMORY: no closed cases before this time"]
-    w = [1 / (0.5 + (h["distance"] or 0)) for h in hits]
-    share = sum(wi for wi, h in zip(w, hits) if h["outcome"] == "confirmed_fraud") / sum(w)
+    share = memory_share(hits)
+    pool = data.memory_fraud_share(t_end, exclude)
+    base = adjusted(share, pool)
     n_fraud = sum(h["outcome"] == "confirmed_fraud" for h in hits)
     patterns = Counter(h["pattern"] for h in hits if h["outcome"] == "confirmed_fraud").most_common(2)
     lines = [
         f"SITUATION MEMORY: this alert's graph context is {situation.describe(txn_id, t_end)}",
         f"  of the {len(hits)} past alerts in the most similar situation, {n_fraud} were confirmed fraud and "
-        f"{len(hits) - n_fraud} were cleared (similarity-weighted fraud share {share:.2f})"
+        f"{len(hits) - n_fraud} cleared (weighted fraud share {share:.2f})"
         + (f"; fraud ones were mostly {', '.join(p for p, _ in patterns)}" if patterns else ""),
+        f"  memory as a whole is {100 * pool:.0f}% fraud, because legitimate transactions were only investigated when the "
+        f"bank's model flagged them. Corrected for that, the base rate for an alert like this is {base:.2f}.",
     ]
     for h in hits[:3]:
         lines.append(f"  nearest {h['case_id']} [{h['outcome']}, {h['pattern']}]: {h['notes'][:150]}")
     return hits, lines
+
+
+def recurring(txn_id, t_end):
+    """Is this charge the cardholder's own repeating pattern? (Policy R7.)
+
+    Counts earlier transactions on the same card with the same product code
+    and an amount within 1 percent, strictly before the flagged one.
+    """
+    tx = situation._frames()[0]
+    f = tx.loc[txn_id]
+    card = situation._frames()[1][f.card_id]
+    prior = card[(card.ts < f.ts) & (card.product_cd == f.product_cd)
+                 & ((card.amount - f.amount).abs() <= 0.01 * f.amount + 0.01)]
+    if prior.empty:
+        return 0, [f"RECURRING CHECK: no earlier ${f.amount:.2f} {f.product_cd} charges on this card"]
+    gaps = prior.ts.diff().dt.days.dropna()
+    return len(prior), [
+        f"RECURRING CHECK: {len(prior)} earlier charges on this card of ${f.amount:.2f}, product {f.product_cd}, "
+        f"from {str(prior.ts.min())[:10]} to {str(prior.ts.max())[:10]}"
+        + (f", median gap {gaps.median():.0f} days" if len(gaps) else "")
+        + ". A disputed charge that matches the cardholder's own repeating pattern falls under R7."]

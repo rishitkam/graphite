@@ -74,9 +74,16 @@ def features(txn_id, t_end):
     }
 
 
+# The risk score is kept out of the distance. In the bank's history, a
+# legitimate transaction only got investigated when the model scored it high,
+# so "low score means fraud" holds in memory purely because of how cases were
+# opened. Left in, every low-scoring alert looks like past fraud.
+WEIGHTS = np.array([0.0 if k == "risk_score" else 1.0 for k in FEATURES])
+
+
 def vector(txn_id, t_end, stats):
     v = np.array([features(txn_id, t_end)[k] for k in FEATURES], dtype=np.float64)
-    return ((v - stats["mean"]) / stats["std"]).astype(np.float32)
+    return (WEIGHTS * (v - stats["mean"]) / stats["std"]).astype(np.float32)
 
 
 def describe(txn_id, t_end):
