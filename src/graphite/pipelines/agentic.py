@@ -17,8 +17,11 @@ from graphite.pipelines import rag
 
 MAX_ROUNDS = 4
 
-AGENT = assess.SYSTEM.split("Return exactly this JSON:")[0] + """How you work:
+AGENT = assess.SYSTEM.split("Return exactly this JSON:")[0] + assess.MEMORY_GUIDE + """
+
+How you work:
 - You start with the alert, the flagged transaction and the card's baseline. Call tools to get more. Several tools can be called in one turn.
+- situation_memory is usually the first thing worth checking: it gives the base rate you should anchor on.
 - Each tool costs time and tokens. Call what would change your assessment, not everything. Stop as soon as the answer is clear.
 - Before concluding, name the most likely innocent explanation and check it (for example: were past alerts like this cleared, is this device or region just common, is this the cardholder's own pattern).
 - When you are done, reply with the single word DONE and no tool calls. You will then be asked for the final JSON."""

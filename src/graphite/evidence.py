@@ -41,7 +41,9 @@ def flagged(txn_id):
 
 
 def baseline(t, t_end):
-    p = g.card_profile(t["card_id"], t_end)
+    # Strictly before the flagged transaction: activity after it belongs in
+    # the recent window, not in what's normal for the card.
+    p = g.card_profile(t["card_id"], t["ts"])
     n = p["n_txns_before"]
     if n == 0:
         return p, [f"CARD {t['card_id']}: no history before this transaction"]

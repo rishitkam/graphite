@@ -11,6 +11,9 @@ dependencies = [
     "python-dotenv>=1.0",
     "pandas>=2.2",
     "pyarrow>=17",
+    "fastembed>=0.4",
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
 ]
 
 [project.optional-dependencies]

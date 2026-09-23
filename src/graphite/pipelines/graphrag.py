@@ -31,7 +31,7 @@ def run(alert, t_end, exclude):
         + ["", "SIMILAR PAST CASES BY TEXT:"]
         + [f"  {h['case_id']} [{h['outcome']}, {h['pattern']}]: {h['notes'][:170]}" for h in hits]
     )
-    msg = llm.chat([{"role": "system", "content": assess.SYSTEM}, {"role": "user", "content": user}],
+    msg = llm.chat([{"role": "system", "content": assess.SYSTEM + "\n\n" + assess.MEMORY_GUIDE}, {"role": "user", "content": user}],
                    usage, json_mode=True)
 
     known = {alert.flagged_txn_id, alert.card_id, alert.customer_id}

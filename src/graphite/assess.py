@@ -54,6 +54,15 @@ Return exactly this JSON:
 }""" % PATTERNS
 
 
+# For tiers that have case memory. Ordinary base-rate reasoning, not anything
+# learned from this data: memory says how alerts like this one actually
+# ended, and specific evidence should move you off that, not replace it.
+MEMORY_GUIDE = """How to weigh the evidence:
+- SITUATION MEMORY is the base rate: how past alerts in the most similar graph situation actually ended. Anchor fraud_probability on its fraud share.
+- Move away from it only for specific evidence the memory cannot see: a device or region shared across other customers' fraud, card testing, a customer's own recurring pattern, or a conflicting precedent that shares the exact device.
+- Looking ordinary is not, by itself, evidence of legitimacy, and looking unusual is not, by itself, evidence of fraud: let the base rate speak unless specific evidence says otherwise. Say which evidence moved you, and by how much."""
+
+
 def clean(raw, known_ids):
     """Normalise the model's JSON and drop any ID it wasn't shown."""
     known = set(known_ids)
