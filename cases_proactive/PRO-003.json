@@ -1,0 +1,258 @@
+{
+  "case_id": "PRO-003",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.867,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3419439"
+    ],
+    "first_suspicious_txn_id": "3419439",
+    "connected_card_ids": [
+      "C00450-K1",
+      "C01909-K1",
+      "C02780-K2",
+      "C03266-K1",
+      "C06224-K1",
+      "C06224-K2",
+      "C08557-K1",
+      "C10835-K2"
+    ],
+    "connected_device_profiles": [
+      "MacOS | Mac OS X 10_13_4 | chrome 66.0 | 3440x1440",
+      "MacOS | Mac OS X 10_13_4 | safari 11.0 | 1440x900",
+      "Trident/7.0 |  | ie 11.0 for desktop | ",
+      "Trident/7.0 | Windows 10 | ie 11.0 for tablet | 1600x900",
+      "Trident/7.0 | Windows 10 | ie 11.0 for tablet | 2560x1440",
+      "Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1024x768",
+      "Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1280x1024",
+      "Windows | Windows 10 | chrome generic | 2560x1440",
+      "Windows | Windows 7 | chrome 63.0 | 1920x1080",
+      "Windows | Windows 7 | chrome generic | 1920x1200",
+      "Windows | Windows 7 | ie 11.0 for desktop | 1920x1080",
+      "iOS Device | iOS 11.2.0 | mobile safari 11.0 | 1136x640",
+      "iOS Device | iOS 11.2.1 | mobile safari 11.0 | 1334x750",
+      "iOS Device | iOS 11.2.1 | mobile safari 11.0 | 2208x1242",
+      "iOS Device | iOS 11.2.1 | mobile safari 11.0 | 2436x1125",
+      "iOS Device | iOS 11.2.6 | chrome 66.0 for ios | 2208x1242",
+      "iOS Device | iOS 11.2.6 | mobile safari 11.0 | 2208x1242",
+      "iOS Device | iOS 11.2.6 | mobile safari generic | 1334x750",
+      "iOS Device | iOS 11.3.0 | mobile safari 11.0 | 2208x1242",
+      "iOS Device | iOS 11.3.0 | mobile safari generic | 1334x750",
+      "iOS Device | iOS 11.3.0 | mobile safari generic | 2208x1242",
+      "iOS Device | iOS 11.3.1 | chrome 66.0 for ios | 1334x750",
+      "iOS Device | iOS 11.3.1 | google | 2208x1242"
+    ],
+    "exposure_usd": 99.98,
+    "evidence": [
+      {
+        "claim": "Alert context shows new device, proxy use, and low base rate corrected to 0.15",
+        "source": "graph",
+        "ref": "situation_memory",
+        "entity_ids": [
+          "3419439"
+        ]
+      },
+      {
+        "claim": "Device profile used by 226 customers, 12 confirmed fraud cases, high fraud incidence per bank-wide stats",
+        "source": "graph",
+        "ref": "device_profile",
+        "entity_ids": []
+      },
+      {
+        "claim": "Transaction amount is typical for the card (0.7x average) and region is common, so amount/region not protective",
+        "source": "graph",
+        "ref": "transaction",
+        "entity_ids": [
+          "3419439"
+        ]
+      },
+      {
+        "claim": "Similar past alerts had 47% fraud after correction; many were card_not_present_new_device",
+        "source": "graph",
+        "ref": "situation_memory",
+        "entity_ids": []
+      },
+      {
+        "claim": "Proactive sweep links 7 customers via 23 new-to-account device profiles, indicating coordinated activity",
+        "source": "document",
+        "ref": "alert_description",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-2774",
+      "CC-2548"
+    ],
+    "summary": "The flagged online purchase uses a device profile that is new to the account and heavily associated with proxy use and prior fraud. Situation memory and device profile data raise the fraud likelihood well above the corrected base rate. Coordinated use across multiple customers further supports a card-not-present fraud with a new device.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-PRO-003"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 7,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6: every card sharing iOS Device | iOS 11.2.6 | mobile safari generic | 1334x750"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6: every card sharing iOS Device | iOS 11.2.6 | mobile safari generic | 1334x750"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "coordinated or undocumented pattern, R9 and 3a"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.62 to 0.87; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER', 'MONITOR_CONNECTED_CARDS'] to ['BLOCK_CARD', 'CREATE_CASE', 'MONITOR_CONNECTED_CARDS', 'FILE_REPORT']."
+  },
+  "sar": {
+    "file": true,
+    "reason": "coordinated or undocumented pattern, R9 and 3a",
+    "narrative": "Customer C01909 used card C01909\u2011K2 to make an online purchase of $99.98 on 2016\u201111\u201101 at 18:12:08, billed to region 299.0. The transaction was initiated from a new iOS device (iOS\u202f11.2.6, mobile Safari generic, 1334\u00d7750) that was flagged as a transparent proxy and had no prior history with this account. The device profile is listed among 226 customer profiles that have been associated with 12 confirmed fraud cases and a high fraud incidence rate across the bank. The alert identified a coordinated pattern of card\u2011not\u2011present activity involving the same device type and proxy use across multiple customers, linking C01909 to cards C00450\u2011K1, C01909\u2011K1, C02780\u2011K2, C03266\u2011K1, C06224\u2011K1, C06224\u2011K2, C08557\u2011K1 and C10835\u2011K2. Prior cases CC\u20112774 and CC\u20112548 showed a 47\u202f% fraud rate after correction for similar new\u2011device, proxy\u2011based alerts, reinforcing the risk assessment. The corrected fraud likelihood for this alert was 0.15, well above the baseline, and the customer has denied authorizing the purchase. These facts collectively indicate that the transaction is suspicious and likely part of a coordinated card\u2011not\u2011present fraud scheme.",
+    "subjects": [
+      "C00450-K1",
+      "C01909",
+      "C01909-K1",
+      "C01909-K2",
+      "C02780-K2",
+      "C03266-K1",
+      "C06224-K1",
+      "C06224-K2",
+      "C08557-K1",
+      "C10835-K2",
+      "MacOS | Mac OS X 10_13_4 | chrome 66.0 | 3440x1440",
+      "MacOS | Mac OS X 10_13_4 | safari 11.0 | 1440x900",
+      "Trident/7.0 |  | ie 11.0 for desktop | ",
+      "Trident/7.0 | Windows 10 | ie 11.0 for tablet | 1600x900",
+      "Trident/7.0 | Windows 10 | ie 11.0 for tablet | 2560x1440",
+      "Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1024x768",
+      "Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1280x1024",
+      "Windows | Windows 10 | chrome generic | 2560x1440",
+      "Windows | Windows 7 | chrome 63.0 | 1920x1080",
+      "Windows | Windows 7 | chrome generic | 1920x1200",
+      "Windows | Windows 7 | ie 11.0 for desktop | 1920x1080",
+      "iOS Device | iOS 11.2.0 | mobile safari 11.0 | 1136x640",
+      "iOS Device | iOS 11.2.1 | mobile safari 11.0 | 1334x750",
+      "iOS Device | iOS 11.2.1 | mobile safari 11.0 | 2208x1242",
+      "iOS Device | iOS 11.2.1 | mobile safari 11.0 | 2436x1125",
+      "iOS Device | iOS 11.2.6 | chrome 66.0 for ios | 2208x1242",
+      "iOS Device | iOS 11.2.6 | mobile safari 11.0 | 2208x1242",
+      "iOS Device | iOS 11.2.6 | mobile safari generic | 1334x750",
+      "iOS Device | iOS 11.3.0 | mobile safari 11.0 | 2208x1242",
+      "iOS Device | iOS 11.3.0 | mobile safari generic | 1334x750",
+      "iOS Device | iOS 11.3.0 | mobile safari generic | 2208x1242",
+      "iOS Device | iOS 11.3.1 | chrome 66.0 for ios | 1334x750",
+      "iOS Device | iOS 11.3.1 | google | 2208x1242"
+    ],
+    "total_amount_usd": 99.98,
+    "activity_dates": [
+      "2016-11-01",
+      "2016-11-01"
+    ]
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 4,
+  "tokens": 7915,
+  "latency_s": 31.7,
+  "_initial_probability": 0.62,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-12-31 20:18:59",
+    "calls": 3,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3419439"
+          }
+        },
+        {
+          "tool": "device_profile",
+          "args": {
+            "device": "iOS Device | iOS 11.2.6 | mobile safari generic | 1334x750"
+          }
+        }
+      ]
+    },
+    "card_id": "C01909-K2",
+    "customer_id": "C01909",
+    "trigger_text": "Proactive sweep, no alert raised: 7 customers are linked by 23 device profile(s) that were New to each account and mostly used via proxy between 2016-11-01 and 2016-12-31. Review transaction 3419439 on card C01909-K2 and the group behind it.",
+    "ring": {
+      "customers": [
+        "C00450",
+        "C01909",
+        "C02780",
+        "C03266",
+        "C06224",
+        "C08557",
+        "C10835"
+      ],
+      "devices": [
+        "MacOS | Mac OS X 10_13_4 | chrome 66.0 | 3440x1440",
+        "MacOS | Mac OS X 10_13_4 | safari 11.0 | 1440x900",
+        "Trident/7.0 |  | ie 11.0 for desktop | ",
+        "Trident/7.0 | Windows 10 | ie 11.0 for tablet | 1600x900",
+        "Trident/7.0 | Windows 10 | ie 11.0 for tablet | 2560x1440",
+        "Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1024x768",
+        "Trident/7.0 | Windows 7 | ie 11.0 for desktop | 1280x1024",
+        "Windows | Windows 10 | chrome generic | 2560x1440",
+        "Windows | Windows 7 | chrome 63.0 | 1920x1080",
+        "Windows | Windows 7 | chrome generic | 1920x1200",
+        "Windows | Windows 7 | ie 11.0 for desktop | 1920x1080",
+        "iOS Device | iOS 11.2.0 | mobile safari 11.0 | 1136x640",
+        "iOS Device | iOS 11.2.1 | mobile safari 11.0 | 1334x750",
+        "iOS Device | iOS 11.2.1 | mobile safari 11.0 | 2208x1242",
+        "iOS Device | iOS 11.2.1 | mobile safari 11.0 | 2436x1125",
+        "iOS Device | iOS 11.2.6 | chrome 66.0 for ios | 2208x1242",
+        "iOS Device | iOS 11.2.6 | mobile safari 11.0 | 2208x1242",
+        "iOS Device | iOS 11.2.6 | mobile safari generic | 1334x750",
+        "iOS Device | iOS 11.3.0 | mobile safari 11.0 | 2208x1242",
+        "iOS Device | iOS 11.3.0 | mobile safari generic | 1334x750",
+        "iOS Device | iOS 11.3.0 | mobile safari generic | 2208x1242",
+        "iOS Device | iOS 11.3.1 | chrome 66.0 for ios | 1334x750",
+        "iOS Device | iOS 11.3.1 | google | 2208x1242"
+      ]
+    }
+  }
+}

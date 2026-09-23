@@ -1,0 +1,97 @@
+{
+  "case_id": "HHG-011",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.066,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "The $131.30 purchase matches 14 prior charges on the same card with the same amount and product.",
+        "source": "graph",
+        "ref": "RECURRING CHECK",
+        "entity_ids": [
+          "3583368"
+        ]
+      },
+      {
+        "claim": "The device used is new for this account, but new devices are common and not alone indicative of fraud.",
+        "source": "graph",
+        "ref": "",
+        "entity_ids": [
+          "3583368"
+        ]
+      },
+      {
+        "claim": "Situation memory shows a corrected base fraud rate of 0.38 for similar alerts, but recurring pattern strongly suggests legitimacy.",
+        "source": "document",
+        "ref": "situation_memory",
+        "entity_ids": [
+          "3583368"
+        ]
+      },
+      {
+        "claim": "Customer, shown the merchant and date, recognizes the transaction and withdraws the dispute",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [],
+    "summary": "The flagged purchase repeats a known pattern of $131.30 product C purchases the cardholder has made regularly, reducing fraud likelihood despite a new device. Situation memory suggests moderate fraud risk for similar alerts, but the recurring match outweighs it.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-HHG-011"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 6,
+      "assumed_response": "Customer, shown the merchant and date, recognizes the transaction and withdraws the dispute"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R7: disputed charge"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: matches the customer's own recurring pattern"
+      },
+      {
+        "action": "WARN_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: remind customer of the recurring charge, do not block"
+      }
+    ],
+    "final": [
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: customer confirmed the transaction"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.22 to 0.07; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER', 'WARN_CUSTOMER'] to ['CLOSE_NO_FRAUD']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "fraud not confirmed or strongly suspected, 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 4,
+  "tokens": 3867,
+  "latency_s": 14.4
+}

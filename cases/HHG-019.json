@@ -1,0 +1,106 @@
+{
+  "case_id": "HHG-019",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.105,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Device is new for the account",
+        "source": "graph",
+        "ref": "3503878",
+        "entity_ids": [
+          "C07987-K2"
+        ]
+      },
+      {
+        "claim": "Region 264.0 has never been used on this card",
+        "source": "graph",
+        "ref": "3503878",
+        "entity_ids": [
+          "C07987-K2"
+        ]
+      },
+      {
+        "claim": "Online channel with new device is typical of card_not_present_new_device fraud",
+        "source": "document",
+        "ref": "R1",
+        "entity_ids": []
+      },
+      {
+        "claim": "Base fraud rate for similar alerts is 0.11 (corrected)",
+        "source": "graph",
+        "ref": "situation_memory",
+        "entity_ids": []
+      },
+      {
+        "claim": "No prior small test transactions observed",
+        "source": "graph",
+        "ref": "3503878",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer confirms they made this transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-2100",
+      "CC-2197",
+      "CC-3515"
+    ],
+    "summary": "The transaction is online, uses a device and region never seen on the card, matching the card_not_present_new_device pattern. Base rate is low but the novelty raises fraud probability above baseline.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-HHG-019"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 5,
+      "assumed_response": "Customer confirms they made this transaction"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: customer confirmed the transaction"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.32 to 0.10; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['CLOSE_NO_FRAUD']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "fraud not confirmed or strongly suspected, 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 3,
+  "tokens": 3750,
+  "latency_s": 12.0
+}

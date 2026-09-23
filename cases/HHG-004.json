@@ -1,0 +1,93 @@
+{
+  "case_id": "HHG-004",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.85,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3583227"
+    ],
+    "first_suspicious_txn_id": "3583227",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 128.33,
+    "evidence": [
+      {
+        "claim": "No prior $128.33 charge on this card",
+        "source": "graph",
+        "ref": "RECURRING CHECK",
+        "entity_ids": [
+          "3583227"
+        ]
+      },
+      {
+        "claim": "Alert context matches prior cases that were all confirmed fraud",
+        "source": "document",
+        "ref": "situation_memory",
+        "entity_ids": [
+          "CC-3586",
+          "CC-2109",
+          "CC-5209"
+        ]
+      },
+      {
+        "claim": "Amount is 3.6x the card's average spending",
+        "source": "graph",
+        "ref": "",
+        "entity_ids": [
+          "3583227"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-3586",
+      "CC-2109",
+      "CC-5209"
+    ],
+    "summary": "The flagged online purchase is unusually large for the card and has no recurring pattern. Situation memory shows similar alerts were all fraud, leading to a high fraud probability.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-HHG-004"
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 3 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 3 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.85 backed by 3 independent pieces of evidence",
+  "tool_calls": 4,
+  "tokens": 3661,
+  "latency_s": 2.6
+}

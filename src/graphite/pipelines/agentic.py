@@ -128,6 +128,12 @@ def run(alert, t_end, exclude):
     usage.tool_calls += 2
     if t["device"]:
         s.known.add(t["device"])
+    if alert.trigger_type == "customer_report":
+        # R7 is policy, so its check is not left to the model's judgement: on
+        # the first exam run the agent skipped it on a dispute that matched 53
+        # earlier charges of the same amount.
+        base = base + evidence.recurring(alert.flagged_txn_id, t_end)[1]
+        usage.tool_calls += 1
 
     messages = [
         {"role": "system", "content": AGENT},
