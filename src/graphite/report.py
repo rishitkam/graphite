@@ -15,7 +15,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 TIERS = ["rag", "graphrag", "agentic"]
-NAMES = {"rag": "RAG", "graphrag": "GraphRAG", "agentic": "Agentic GraphRAG"}
+NAMES = {"rag": "RAG", "graphrag": "GraphRAG", "agentic": "Agentic GraphRAG",
+         "memory": "Graph memory only (no LLM)"}
 
 
 def auc(pos, neg):
@@ -53,22 +54,47 @@ def summarise(rows, slice_name=None):
     return out
 
 
+def memory_only(which, case_ids):
+    """Reference row with no language model: predict the similarity-weighted
+    fraud share of the 15 most similar past situations, from TigerGraph's
+    vector index, under the same time and exclusion rules as the tiers."""
+    from graphite import alerts, evidence, run
+    wanted = {"dev": ("dev",), "eval": ("matched", "rare_patterns")}[which]
+    rows = []
+    for a in alerts.eval_alerts(wanted):
+        if case_ids and a.case_id not in case_ids:
+            continue
+        t_end = run.investigation_time(a, which)
+        hits, _ = evidence.situation_memory(a.flagged_txn_id, t_end, alerts.holdout_ids())
+        w = [1 / (0.5 + (h["distance"] or 0)) for h in hits]
+        share = sum(wi for wi, h in zip(w, hits) if h["outcome"] == "confirmed_fraud") / sum(w)
+        rows.append({"_initial_probability": share, "_meta": {"label": a.label, "label_pattern": a.label_pattern,
+                     "eval_slice": a.eval_slice, "calls": 0}, "case": {"pattern": "none"}, "tokens": 0,
+                     "tool_calls": 1, "latency_s": 0})
+    return rows
+
+
 def fmt(v, pct=False):
     if v is None:
         return "n/a"
     return f"{100 * v:.1f}%" if pct else (f"{v:.3f}" if isinstance(v, float) and v < 10 else f"{v:,.0f}" if isinstance(v, float) else str(v))
 
 
-def table(which, slice_name=None):
+def table(which, slice_name=None, with_memory=True):
     stats = {t: summarise(load(t, which), slice_name) for t in TIERS}
+    cols = list(TIERS)
+    if with_memory and which in ("dev", "eval"):
+        ids = {json.loads(p.read_text())["case_id"] for t in TIERS for p in (ROOT / "results" / t / which).glob("*.json")}
+        stats["memory"] = summarise(memory_only(which, ids), slice_name)
+        cols = ["memory"] + cols
     rows = [("cases", "n", False), ("accuracy", "accuracy", True), ("AUC", "auc", False),
             ("Brier (lower is better)", "brier", False), ("fraud recall", "fraud_recall", True),
             ("legit specificity", "legit_specificity", True), ("pattern accuracy (fraud)", "pattern_accuracy", True),
             ("tokens / case", "tokens", False), ("LLM calls / case", "llm_calls", False),
             ("graph+retrieval calls / case", "tool_calls", False), ("seconds / case", "latency_s", False)]
-    lines = ["| metric | " + " | ".join(NAMES[t] for t in TIERS) + " |", "|---|" + "---|" * len(TIERS)]
+    lines = ["| metric | " + " | ".join(NAMES[t] for t in cols) + " |", "|---|" + "---|" * len(cols)]
     for label, key, pct in rows:
-        lines.append(f"| {label} | " + " | ".join(fmt(stats[t].get(key), pct) for t in TIERS) + " |")
+        lines.append(f"| {label} | " + " | ".join(fmt(stats[t].get(key), pct) for t in cols) + " |")
     return "\n".join(lines), stats
 
 
