@@ -72,10 +72,19 @@ const $ = s => document.querySelector(s);
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let current = null;
+// Live API on localhost; frozen JSON (scripts/build_site.py) anywhere else.
+const LIVE = ["localhost", "127.0.0.1"].includes(location.hostname);
+const api = {
+  cases: (t, w) => LIVE ? `/api/cases?tier=${t}&which=${w}` : `data/cases/${t}/${w}.json`,
+  case: (t, w, id) => LIVE ? `/api/case/${t}/${w}/${id}` : `data/case/${t}/${w}/${id}.json`,
+  preview: id => LIVE ? `/api/preview/${id}` : `data/preview/${id}.json`,
+  graph: (t, w, id) => LIVE ? `/api/graph/${t}/${w}/${id}` : `data/graph/${t}/${w}/${id}.json`,
+  compare: w => LIVE ? `/api/compare?which=${w}` : `data/compare/${w}.json`,
+};
 
 async function loadList() {
   const tier = $("#tier").value, which = $("#which").value;
-  const rows = await (await fetch(`/api/cases?tier=${tier}&which=${which}`)).json();
+  const rows = await (await fetch(api.cases(tier, which))).json();
   $("#list").innerHTML = rows.map(r => `
     <div class="row" data-id="${r.case_id}">
       <span class="id">${r.case_id}</span>
@@ -95,11 +104,11 @@ async function show(id) {
   current = id;
   document.querySelectorAll(".row").forEach(el => el.classList.toggle("on", el.dataset.id === id));
   const tier = $("#tier").value, which = $("#which").value;
-  const res = await fetch(`/api/case/${tier}/${which}/${id}`);
+  const res = await fetch(api.case(tier, which, id));
   if (!res.ok) {
     if (which !== "exam") { $("#detail").innerHTML = `<div class="empty">Not run yet for this tier.</div>`; return; }
     $("#detail").innerHTML = `<div class="empty">Reading the graph…</div>`;
-    const p = await (await fetch(`/api/preview/${id}`)).json();
+    const p = await (await fetch(api.preview(id))).json();
     $("#detail").innerHTML = `
       <p class="eyebrow">${id} · ${p.trigger} · graph evidence, no model yet</p>
       <h2>What the investigator starts from</h2>
@@ -142,7 +151,7 @@ async function show(id) {
 }
 
 async function drawGraph(tier, which, id) {
-  const gr = await (await fetch(`/api/graph/${tier}/${which}/${id}`)).json();
+  const gr = await (await fetch(api.graph(tier, which, id))).json();
   const ink = css("--ink"), accent = css("--accent"), faint = css("--faint"), low = css("--low");
   const color = n => n.flagged ? accent : n.kind === "closed" ? (n.outcome === "cleared" ? low : accent) : ink;
   cytoscape({
@@ -166,7 +175,7 @@ async function drawGraph(tier, which, id) {
 
 async function loadScore() {
   const which = $("#which").value === "exam" ? "dev" : $("#which").value;
-  const s = await (await fetch(`/api/compare?which=${which}`)).json();
+  const s = await (await fetch(api.compare(which))).json();
   const names = {rag: "RAG", graphrag: "GraphRAG", agentic: "Agentic GraphRAG"};
   const pct = v => v == null ? "n/a" : (100 * v).toFixed(1) + "%", num = (v, d = 3) => v == null ? "n/a" : v.toFixed(d);
   const tiers = Object.keys(names);
