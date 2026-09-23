@@ -1,7 +1,7 @@
 """Demo interface: the case board, one investigation drawn as a graph, and the
 three-tier scoreboard.
 
-  .venv/bin/uvicorn graphite.ui.app:app --port 8000
+  .venv/bin/uvicorn graphite.ui.app:app --port 8765
 
 Reads answer files from results/ and asks TigerGraph for each case's
 neighbourhood live, so what's on screen is what's in the graph.
@@ -20,8 +20,14 @@ ROOT = Path(__file__).resolve().parents[3]
 app = FastAPI(title="Graphite")
 
 
+def _path(tier, which, case_id):
+    if which == "proactive":
+        return ROOT / "cases_proactive" / f"{case_id}.json"
+    return ROOT / "results" / tier / which / f"{case_id}.json"
+
+
 def _load(tier, which, case_id):
-    path = ROOT / "results" / tier / which / f"{case_id}.json"
+    path = _path(tier, which, case_id)
     if not path.exists():
         raise HTTPException(404, f"no {tier} result for {case_id}")
     return json.loads(path.read_text())
@@ -34,10 +40,20 @@ def index():
 
 @app.get("/api/cases")
 def cases(tier: str = "agentic", which: str = "exam"):
+    if which == "proactive":
+        out = []
+        for p in sorted((ROOT / "cases_proactive").glob("PRO-*.json")):
+            r = json.loads(p.read_text())
+            c = r["case"]
+            out.append({"case_id": p.stem, "trigger": "proactive sweep", "trigger_text": r["_meta"]["trigger_text"],
+                        "risk_score": None, "label": None, "done": True, "verdict": c["verdict"], "status": c["status"],
+                        "pattern": c["pattern"], "p0": r["_initial_probability"], "p": c["fraud_probability"],
+                        "exposure": c["exposure_usd"], "sar": r["sar"]["file"], "tokens": r["tokens"]})
+        return out
     source = alerts.exam_alerts() if which == "exam" else alerts.eval_alerts(("dev",) if which == "dev" else ("matched", "rare_patterns"))
     out = []
     for a in sorted(source, key=lambda x: x.case_id):
-        path = ROOT / "results" / tier / which / f"{a.case_id}.json"
+        path = _path(tier, which, a.case_id)
         row = {"case_id": a.case_id, "trigger": a.trigger_type, "trigger_text": a.trigger_text,
                "risk_score": a.risk_score, "label": a.label, "done": path.exists()}
         if path.exists():
@@ -87,7 +103,22 @@ def graph(tier: str, which: str, case_id: str):
         edge(card, tid, "made", 0.8)
 
     ring = c["connected_card_ids"]
-    if t["device"]:
+    ring_devices = meta.get("ring", {}).get("devices", [])
+    if ring_devices:
+        # A proactive ring: every member card, linked through each suspect device.
+        for d in ring_devices:
+            node(d, "device", d.split(" | ")[0], 1.0, detail=d)
+        edge(flagged, ring_devices[0], "from device", 1.0)
+        member_devices = data._tx()[data._tx()["card_id"].isin(ring + [card])]
+        for other in ring[:24]:
+            node(other, "card", other, 0.75, ring=True)
+            used = member_devices[(member_devices.card_id == other) & member_devices.device_key.isin(ring_devices)].device_key.unique()
+            for d in (used if len(used) else ring_devices[:1]):
+                edge(other, d, "suspect device", 0.75)
+        if len(ring) > 24:
+            node("more-ring", "more", f"+{len(ring) - 24} more cards", 0.5)
+            edge("more-ring", ring_devices[0], "", 0.5)
+    elif t["device"]:
         dev_weight = 1.0 if (c["connected_device_profiles"] or ring) else 0.4
         label = t["device"].split(" | ")[0]
         node(t["device"], "device", label, dev_weight, detail=t["device"], seen=t["device_seen"], proxy=t["proxy"])

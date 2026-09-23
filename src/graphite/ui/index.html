@@ -53,6 +53,7 @@
   .bar{display:grid;grid-template-columns:160px 1fr 60px;gap:12px;align-items:center;font:.82rem 'IBM Plex Mono',monospace}
   .bar .fill{height:22px;background:var(--accent);border-radius:4px} .bar .fill.base{background:var(--faint)}
   .empty{color:var(--faint);padding:60px 0;text-align:center}
+  #scoreView{display:block} [hidden]{display:none !important}
 </style>
 </head>
 <body>
@@ -61,10 +62,10 @@
   <nav><button id="t-cases" class="on">Cases</button> <button id="t-score">Scoreboard</button></nav>
   <div class="grow"></div>
   <select id="tier"><option value="agentic">Agentic GraphRAG</option><option value="graphrag">GraphRAG</option><option value="rag">RAG</option></select>
-  <select id="which"><option value="exam">20 exam cases</option><option value="dev">dev split</option><option value="eval">held-out eval</option></select>
+  <select id="which"><option value="exam">20 exam cases</option><option value="dev">dev split</option><option value="eval">held-out eval</option><option value="proactive">proactive rings</option></select>
 </header>
 <main id="casesView"><aside id="list"></aside><section id="detail"><div class="empty">Pick a case.</div></section></main>
-<main id="scoreView" hidden style="display:block"><section id="score"></section></main>
+<main id="scoreView" hidden><section id="score"></section></main>
 
 <script>
 const $ = s => document.querySelector(s);
