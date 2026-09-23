@@ -18,7 +18,11 @@ from openai import APIStatusError, OpenAI, RateLimitError
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 MODEL = os.environ.get("LLM_MODEL") or "openai/gpt-oss-120b"
-_client = OpenAI(api_key=os.environ["GROQ_API_KEY"], base_url="https://api.groq.com/openai/v1")
+# Several free-tier keys can be listed (GROQ_API_KEY, GROQ_API_KEY_2, ...).
+# When one hits its daily cap the run moves to the next rather than waiting.
+_KEYS = [os.environ[k] for k in sorted(os.environ) if re.fullmatch(r"GROQ_API_KEY(_\d+)?", k) and os.environ[k]]
+_clients = [OpenAI(api_key=k, base_url="https://api.groq.com/openai/v1") for k in _KEYS]
+_current = 0
 
 
 @dataclass
@@ -53,12 +57,16 @@ def chat(messages, usage, tools=None, json_mode=False, max_tokens=1500):
     if json_mode:
         kwargs["response_format"] = {"type": "json_object"}
 
-    for attempt in range(12):
+    global _current
+    for attempt in range(12 + 2 * len(_clients)):
         start = time.time()
         try:
-            r = _client.chat.completions.create(**kwargs)
+            r = _clients[_current].chat.completions.create(**kwargs)
         except RateLimitError as e:
             wait = _wait_from(e)
+            if ("per day" in str(e).lower() or "TPD" in str(e)) and len(_clients) > 1 and wait > 60:
+                _current = (_current + 1) % len(_clients)
+                continue
             # The daily token cap is a rolling window and the error says when
             # enough frees up. Wait out gaps under half an hour so long runs
             # keep moving unattended; give up only on longer waits.
