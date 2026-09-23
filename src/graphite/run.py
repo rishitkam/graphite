@@ -52,7 +52,7 @@ def run_case(tier, alert, which):
         out["tokens"], out["latency_s"] = usage.tokens, round(usage.seconds, 1)
     out["_meta"] = {"tier": tier, "t_end": t_end, "label": alert.label, "label_pattern": alert.label_pattern,
                     "eval_slice": alert.eval_slice, "calls": usage.calls, "trace": trace,
-                    "card_id": alert.card_id, "customer_id": alert.customer_id}
+                    "card_id": alert.card_id, "customer_id": alert.customer_id, "usage_log": usage.log}
     # Only the real submission writes case memory; dev and eval runs must not
     # leave cases behind for later runs to retrieve.
     if which == "exam" and tier == "agentic":

@@ -15,52 +15,27 @@ PATTERNS = [
     "out_of_region_use", "account_takeover", "undocumented", "none",
 ]
 
-SYSTEM = """You are a bank fraud investigator. You assess one alert using only the evidence you are given, and you answer in JSON.
+SYSTEM = """You are a bank fraud investigator. Assess one alert from the evidence given. Answer in JSON.
 
-Known fraud patterns (the bank's analysts recognize these five; others exist in the data):
-1. card_testing: three or more tiny online authorizations, often under $5, then a larger purchase.
-2. card_not_present_fraud: number used online without the card. Amounts or products that don't fit the cardholder's history, often 2 to 4 within 48 hours. One unusual online purchase alone is ambiguous.
-3. card_not_present_new_device: as above, with the device marked New for this account, sometimes behind a proxy. Stronger than 2, still not proof: people buy new phones.
-4. out_of_region_use: card-present purchases in a billing region the cardholder has no history in, while normal activity continues at home. Several days in one new region is a trip, not a clone.
-5. account_takeover: mixed-channel activity inconsistent with the cardholder, often with device and match anomalies.
-Use "undocumented" when evidence shows coordinated or repeated abuse that fits none of these (describe it). Use "none" if legitimate.
-Abuse coordinated across several different customers (the same device profile, region or recipient used for fraud on many cards) is not one of the five single-cardholder patterns: call it undocumented, set coordinated and shared_origin, and list the linked cards and device profiles.
+Known patterns (others exist in the data):
+card_testing: 3+ tiny online authorizations (often under $5), then a larger purchase.
+card_not_present_fraud: used online without the card; amounts or products unlike the cardholder's history, often 2-4 in 48h. One unusual online purchase alone is ambiguous.
+card_not_present_new_device: as above from a device New to the account, maybe via proxy. Stronger, not proof: people buy new phones.
+out_of_region_use: card-present purchases in a billing region the cardholder never used, while home activity continues. Several days in one new region is a trip.
+account_takeover: mixed-channel activity inconsistent with the cardholder, often with device anomalies.
+undocumented: abuse fitting none of these; describe it. Fraud coordinated across several customers (one device, region or recipient on many cards) is undocumented: set coordinated and shared_origin, list the linked cards and devices.
+none: legitimate.
 
-Rules of evidence:
-- The model risk score is an input, often wrong in both directions. Never treat it as the answer.
-- About half of alerts are legitimate. Blocking everything is wrong.
-- fraud_probability must be calibrated: say 0.5 when the evidence is genuinely balanced.
-- Only cite IDs that appear in the evidence you were given. Never invent an ID.
-- Count only independent evidence: two facts from the same observation are one.
+Rules: the risk score is an input, often wrong both ways. About half of alerts are legitimate. Calibrate fraud_probability (0.5 when balanced). Cite only IDs in the evidence. Count independent evidence only.
 
-Return exactly this JSON:
-{
-  "fraud_probability": number 0-1,
-  "pattern": one of %s,
-  "pattern_description": "2-3 sentences if undocumented, else empty",
-  "evidence": [{"claim": str, "source": "graph"|"document", "ref": str, "entity_ids": [str]}],
-  "affected_txn_ids": [str],
-  "first_suspicious_txn_id": str,
-  "connected_card_ids": [str],
-  "connected_device_profiles": [str],
-  "shared_origin": "the shared device/region/email if several cards show fraud from it, else empty",
-  "card_testing": bool,
-  "large_purchase_cleared": bool,
-  "recurring_match": bool,
-  "coordinated": bool,
-  "evidence_conflicts": bool,
-  "similar_prior_cases": [closed case ids you actually used],
-  "summary": "2-4 sentences"
-}""" % PATTERNS
+Return this JSON (at most 5 evidence items, summary at most 3 sentences):
+{"fraud_probability": 0-1, "pattern": one of %s, "pattern_description": "", "evidence": [{"claim": "", "source": "graph|document", "ref": "", "entity_ids": []}], "affected_txn_ids": [], "first_suspicious_txn_id": "", "connected_card_ids": [], "connected_device_profiles": [], "shared_origin": "", "card_testing": false, "large_purchase_cleared": false, "recurring_match": false, "coordinated": false, "evidence_conflicts": false, "similar_prior_cases": [], "summary": ""}""" % PATTERNS
 
 
 # For tiers that have case memory. Ordinary base-rate reasoning, not anything
 # learned from this data: memory says how alerts like this one actually
 # ended, and specific evidence should move you off that, not replace it.
-MEMORY_GUIDE = """How to weigh the evidence:
-- SITUATION MEMORY is the base rate: how past alerts in the most similar graph situation actually ended. Anchor fraud_probability on its fraud share.
-- Move away from it only for specific evidence the memory cannot see: a device or region shared across other customers' fraud, card testing, a customer's own recurring pattern, or a conflicting precedent that shares the exact device.
-- Looking ordinary is not, by itself, evidence of legitimacy, and looking unusual is not, by itself, evidence of fraud: let the base rate speak unless specific evidence says otherwise. Say which evidence moved you, and by how much."""
+MEMORY_GUIDE = """Weighing evidence: SITUATION MEMORY is the base rate (how the most similar past alerts actually ended). Anchor fraud_probability on its fraud share; move away only for specific evidence it cannot see (a device or region shared with other customers' fraud, card testing, the customer's own recurring pattern). Looking ordinary is not evidence of legitimacy, and looking unusual is not evidence of fraud. Say what moved you."""
 
 
 def clean(raw, known_ids):
