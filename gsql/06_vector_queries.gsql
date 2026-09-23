@@ -1,0 +1,23 @@
+// Vector retrieval over case memory. Candidates are restricted before the
+// search to cases closed before t_end and not in the exclude set, so neither
+// the future nor a held-out eval case can come back.
+
+USE GRAPH Graphite
+
+CREATE QUERY similar_notes(LIST<FLOAT> qv, DATETIME t_end, SET<STRING> exclude, INT k) FOR GRAPH Graphite {
+  MapAccum<VERTEX, FLOAT> @@dist;
+  All = {ClosedCase.*};
+  Cand = SELECT c FROM All:c WHERE c.closed_at < t_end AND NOT exclude.contains(c.case_id);
+  R = vectorSearch({ClosedCase.note_emb}, qv, k, {candidate_set: Cand, distance_map: @@dist});
+  PRINT R[R.case_id, R.outcome, R.pattern, R.analyst_notes] AS hits, @@dist AS dist;
+}
+
+CREATE QUERY similar_situations(LIST<FLOAT> qv, DATETIME t_end, SET<STRING> exclude, INT k) FOR GRAPH Graphite {
+  MapAccum<VERTEX, FLOAT> @@dist;
+  All = {ClosedCase.*};
+  Cand = SELECT c FROM All:c WHERE c.closed_at < t_end AND NOT exclude.contains(c.case_id);
+  R = vectorSearch({ClosedCase.situation}, qv, k, {candidate_set: Cand, distance_map: @@dist});
+  PRINT R[R.case_id, R.outcome, R.pattern, R.analyst_notes] AS hits, @@dist AS dist;
+}
+
+INSTALL QUERY similar_notes, similar_situations

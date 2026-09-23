@@ -54,9 +54,9 @@ def holdout_ids():
     return set(holdout())
 
 
-def eval_alerts():
+def eval_alerts(slices_wanted=("matched", "rare_patterns")):
     cc = pd.read_csv(DATA / "closed_cases_history.csv", dtype=str)
-    slices = holdout()
+    slices = {k: v for k, v in holdout().items() if v in slices_wanted}
     cc = cc[cc["case_id"].isin(slices)]
     tx = pd.read_parquet(DATA / "tx_slim.parquet", columns=["TransactionID", "TransactionAmt", "risk_score"])
     tx = tx.set_index("TransactionID")

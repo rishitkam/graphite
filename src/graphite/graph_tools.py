@@ -85,6 +85,7 @@ def device_neighbors(device_key, t_end, days=30, exclude=()):
         "new_device_uses_in_window": r["new_uses_window"],
         "proxy_uses_in_window": r["proxy_uses_window"],
         "cards_in_window": len(r["card_uses_window"]),
+        "card_ids_in_window": sorted(r["card_uses_window"]),
         "customers_in_window": sorted(r["customers_window"]),
         "customers_ever": r["customers_ever"],
         "confirmed_fraud_cases_on_device": sorted(r["fraud_cases_on_device"]),
@@ -114,3 +115,26 @@ def structural_precedent(txn_id, t_end, exclude=(), k=5):
          "weight": round(h["weight"], 3), "notes": h["notes"]}
         for h in out[0]["precedent"]
     ]
+
+
+def _vector_query(name, qv, t_end, exclude, k):
+    out = conn().runInstalledQuery(
+        name, {"qv": [float(x) for x in qv], "t_end": t_end, "exclude": _excl(exclude), "k": k}, usePost=True)
+    dist = {}
+    for part in out:
+        if "dist" in part:
+            dist = part["dist"]
+    hits = []
+    for v in out[0]["hits"]:
+        a = {key.split(".", 1)[1]: val for key, val in v["attributes"].items()}
+        hits.append({"case_id": a["case_id"], "outcome": a["outcome"], "pattern": a["pattern"],
+                     "notes": a["analyst_notes"], "distance": dist.get(v["v_id"])})
+    return sorted(hits, key=lambda h: (h["distance"] is None, h["distance"]))
+
+
+def similar_notes(qv, t_end, exclude=(), k=5):
+    return _vector_query("similar_notes", qv, t_end, exclude, k)
+
+
+def similar_situations(qv, t_end, exclude=(), k=15):
+    return _vector_query("similar_situations", qv, t_end, exclude, k)

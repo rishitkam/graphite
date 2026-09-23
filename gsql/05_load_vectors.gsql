@@ -1,0 +1,11 @@
+// Vectors arrive as "case_id|v1:v2:...:vn" lines from scripts/load_vectors.py.
+USE GRAPH Graphite
+
+CREATE LOADING JOB load_vectors FOR GRAPH Graphite {
+  DEFINE FILENAME f_note;
+  DEFINE FILENAME f_situation;
+  LOAD f_note TO VECTOR ATTRIBUTE note_emb ON VERTEX ClosedCase VALUES ($0, SPLIT($1, ":"))
+    USING SEPARATOR="|", HEADER="false";
+  LOAD f_situation TO VECTOR ATTRIBUTE situation ON VERTEX ClosedCase VALUES ($0, SPLIT($1, ":"))
+    USING SEPARATOR="|", HEADER="false";
+}

@@ -23,6 +23,7 @@ DATA = ROOT / "data"
 OUT = ROOT / "eval" / "holdout_case_ids.json"
 
 N_MATCHED = 80
+N_DEV = 20
 SCORE_TOLERANCE = 0.01
 RARE = {"card_testing": 5, "undocumented": 3}
 SEED = 42
@@ -74,15 +75,24 @@ def main():
     matched = matched_slice(cases)
     rare = rare_slice(cases)
 
+    # A separate score-matched dev split, disjoint from the eval, for all
+    # iteration on the pipelines. The eval is run once at the end; looking at
+    # eval failures to improve the system would be tuning on the test set.
+    rest = cases.drop(matched.index.union(rare.index))
+    global N_MATCHED
+    n_eval, N_MATCHED = N_MATCHED, N_DEV
+    dev = matched_slice(rest)
+    N_MATCHED = n_eval
+
     OUT.parent.mkdir(exist_ok=True)
     OUT.write_text(json.dumps({
         "seed": SEED,
         "score_tolerance": SCORE_TOLERANCE,
         "source": "data/closed_cases_history.csv",
-        "cases": rows(matched, "matched") + rows(rare, "rare_patterns"),
+        "cases": rows(matched, "matched") + rows(rare, "rare_patterns") + rows(dev, "dev"),
     }, indent=2) + "\n")
 
-    print(f"matched: {len(matched)}  rare_patterns: {len(rare)}")
+    print(f"matched: {len(matched)}  rare_patterns: {len(rare)}  dev: {len(dev)}")
     print(matched.groupby("outcome")["score"].describe()[["mean", "min", "max"]].round(3).to_string())
     print(matched.groupby(["outcome", "pattern"]).size().to_string())
 

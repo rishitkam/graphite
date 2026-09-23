@@ -1,0 +1,14 @@
+// Two kinds of case memory on every ClosedCase, in TigerGraph's vector index:
+//   note_emb   the analyst narrative, embedded (BGE-small, 384 dims), for
+//              retrieving cases that read like this one
+//   situation  the alert's graph context as of its alert time (15 features,
+//              see src/graphite/situation.py), for retrieving cases that
+//              looked like this one in the graph, whatever the notes say
+// Vertices are global, so this has to be a global schema change job.
+
+CREATE GLOBAL SCHEMA_CHANGE JOB add_case_vectors {
+  ALTER VERTEX ClosedCase ADD VECTOR ATTRIBUTE note_emb(DIMENSION=384, METRIC="COSINE");
+  ALTER VERTEX ClosedCase ADD VECTOR ATTRIBUTE situation(DIMENSION=15, METRIC="L2");
+}
+RUN GLOBAL SCHEMA_CHANGE JOB add_case_vectors
+DROP JOB add_case_vectors

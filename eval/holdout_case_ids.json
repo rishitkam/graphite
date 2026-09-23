@@ -1178,6 +1178,286 @@
       "outcome": "confirmed_fraud",
       "pattern": "card_testing",
       "flagged_score": 0.37
+    },
+    {
+      "case_id": "CC-0130",
+      "slice": "dev",
+      "outcome": "cleared",
+      "pattern": "none",
+      "flagged_score": 0.83
+    },
+    {
+      "case_id": "CC-0177",
+      "slice": "dev",
+      "outcome": "confirmed_fraud",
+      "pattern": "account_takeover",
+      "flagged_score": 0.91
+    },
+    {
+      "case_id": "CC-0198",
+      "slice": "dev",
+      "outcome": "cleared",
+      "pattern": "none",
+      "flagged_score": 0.84
+    },
+    {
+      "case_id": "CC-0235",
+      "slice": "dev",
+      "outcome": "confirmed_fraud",
+      "pattern": "account_takeover",
+      "flagged_score": 0.88
+    },
+    {
+      "case_id": "CC-0348",
+      "slice": "dev",
+      "outcome": "cleared",
+      "pattern": "none",
+      "flagged_score": 0.9
+    },
+    {
+      "case_id": "CC-0395",
+      "slice": "dev",
+      "outcome": "confirmed_fraud",
+      "pattern": "card_not_present_fraud",
+      "flagged_score": 0.85
+    },
+    {
+      "case_id": "CC-0428",
+      "slice": "dev",
+      "outcome": "cleared",
+      "pattern": "none",
+      "flagged_score": 0.85
+    },
+    {
+      "case_id": "CC-0795",
+      "slice": "dev",
+      "outcome": "confirmed_fraud",
+      "pattern": "card_not_present_new_device",
+      "flagged_score": 0.9
+    },
+    {
+      "case_id": "CC-0847",
+      "slice": "dev",
+      "outcome": "cleared",
+      "pattern": "none",
+      "flagged_score": 0.84
+    },
+    {
+      "case_id": "CC-0852",
+      "slice": "dev",
+      "outcome": "cleared",
+      "pattern": "none",
+      "flagged_score": 0.88
+    },
+    {
+      "case_id": "CC-1024",
+      "slice": "dev",
+      "outcome": "cleared",
+      "pattern": "none",
+      "flagged_score": 0.84
+    },
+    {
+      "case_id": "CC-1117",
+      "slice": "dev",
+      "outcome": "cleared",
+      "pattern": "none",
+      "flagged_score": 0.82
+    },
+    {
+      "case_id": "CC-1176",
+      "slice": "dev",
+      "outcome": "cleared",
+      "pattern": "none",
+      "flagged_score": 0.92
+    },
+    {
+      "case_id": "CC-1272",
+      "slice": "dev",
+      "outcome": "cleared",
+      "pattern": "none",
+      "flagged_score": 0.84
+    },
+    {
+      "case_id": "CC-1382",
+      "slice": "dev",
+      "outcome": "cleared",
+      "pattern": "none",
+      "flagged_score": 0.9
+    },
+    {
+      "case_id": "CC-1383",
+      "slice": "dev",
+      "outcome": "cleared",
+      "pattern": "none",
+      "flagged_score": 0.91
+    },
+    {
+      "case_id": "CC-1408",
+      "slice": "dev",
+      "outcome": "confirmed_fraud",
+      "pattern": "card_not_present_new_device",
+      "flagged_score": 0.91
+    },
+    {
+      "case_id": "CC-1498",
+      "slice": "dev",
+      "outcome": "confirmed_fraud",
+      "pattern": "card_not_present_new_device",
+      "flagged_score": 0.83
+    },
+    {
+      "case_id": "CC-1518",
+      "slice": "dev",
+      "outcome": "confirmed_fraud",
+      "pattern": "card_not_present_fraud",
+      "flagged_score": 0.84
+    },
+    {
+      "case_id": "CC-2089",
+      "slice": "dev",
+      "outcome": "cleared",
+      "pattern": "none",
+      "flagged_score": 0.91
+    },
+    {
+      "case_id": "CC-2311",
+      "slice": "dev",
+      "outcome": "cleared",
+      "pattern": "none",
+      "flagged_score": 0.85
+    },
+    {
+      "case_id": "CC-2726",
+      "slice": "dev",
+      "outcome": "confirmed_fraud",
+      "pattern": "card_not_present_fraud",
+      "flagged_score": 0.82
+    },
+    {
+      "case_id": "CC-2934",
+      "slice": "dev",
+      "outcome": "confirmed_fraud",
+      "pattern": "card_not_present_fraud",
+      "flagged_score": 0.92
+    },
+    {
+      "case_id": "CC-3014",
+      "slice": "dev",
+      "outcome": "confirmed_fraud",
+      "pattern": "out_of_region_use",
+      "flagged_score": 0.91
+    },
+    {
+      "case_id": "CC-3218",
+      "slice": "dev",
+      "outcome": "confirmed_fraud",
+      "pattern": "card_not_present_fraud",
+      "flagged_score": 0.82
+    },
+    {
+      "case_id": "CC-3265",
+      "slice": "dev",
+      "outcome": "confirmed_fraud",
+      "pattern": "account_takeover",
+      "flagged_score": 0.84
+    },
+    {
+      "case_id": "CC-3569",
+      "slice": "dev",
+      "outcome": "confirmed_fraud",
+      "pattern": "out_of_region_use",
+      "flagged_score": 0.97
+    },
+    {
+      "case_id": "CC-3602",
+      "slice": "dev",
+      "outcome": "cleared",
+      "pattern": "none",
+      "flagged_score": 0.84
+    },
+    {
+      "case_id": "CC-3881",
+      "slice": "dev",
+      "outcome": "confirmed_fraud",
+      "pattern": "account_takeover",
+      "flagged_score": 0.84
+    },
+    {
+      "case_id": "CC-4180",
+      "slice": "dev",
+      "outcome": "cleared",
+      "pattern": "none",
+      "flagged_score": 0.91
+    },
+    {
+      "case_id": "CC-4338",
+      "slice": "dev",
+      "outcome": "confirmed_fraud",
+      "pattern": "card_not_present_fraud",
+      "flagged_score": 0.84
+    },
+    {
+      "case_id": "CC-4439",
+      "slice": "dev",
+      "outcome": "cleared",
+      "pattern": "none",
+      "flagged_score": 0.97
+    },
+    {
+      "case_id": "CC-4913",
+      "slice": "dev",
+      "outcome": "confirmed_fraud",
+      "pattern": "card_not_present_fraud",
+      "flagged_score": 0.84
+    },
+    {
+      "case_id": "CC-5078",
+      "slice": "dev",
+      "outcome": "cleared",
+      "pattern": "none",
+      "flagged_score": 0.91
+    },
+    {
+      "case_id": "CC-5132",
+      "slice": "dev",
+      "outcome": "cleared",
+      "pattern": "none",
+      "flagged_score": 0.82
+    },
+    {
+      "case_id": "CC-5143",
+      "slice": "dev",
+      "outcome": "confirmed_fraud",
+      "pattern": "card_not_present_fraud",
+      "flagged_score": 0.91
+    },
+    {
+      "case_id": "CC-5246",
+      "slice": "dev",
+      "outcome": "confirmed_fraud",
+      "pattern": "out_of_region_use",
+      "flagged_score": 0.85
+    },
+    {
+      "case_id": "CC-5376",
+      "slice": "dev",
+      "outcome": "cleared",
+      "pattern": "none",
+      "flagged_score": 0.82
+    },
+    {
+      "case_id": "CC-5392",
+      "slice": "dev",
+      "outcome": "confirmed_fraud",
+      "pattern": "account_takeover",
+      "flagged_score": 0.82
+    },
+    {
+      "case_id": "CC-5428",
+      "slice": "dev",
+      "outcome": "confirmed_fraud",
+      "pattern": "card_not_present_new_device",
+      "flagged_score": 0.9
     }
   ]
 }

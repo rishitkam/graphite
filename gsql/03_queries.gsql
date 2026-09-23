@@ -34,7 +34,7 @@ CREATE QUERY card_profile(VERTEX<Card> c, DATETIME t_end) FOR GRAPH Graphite {
   MapAccum<STRING, SumAccum<INT>> @@region, @@product, @@channel, @@email, @@device;
   SumAccum<INT> @@n;
   AvgAccum @@avg_amount;
-  MaxAccum<DOUBLE> @@max_amount;
+  MaxAccum<DOUBLE> @@max_amount = 0;
   MinAccum<DATETIME> @@first_seen;
   S = {c};
   T = SELECT t FROM S:s -(MADE:e)-> Transaction:t WHERE t.ts < t_end
@@ -86,22 +86,31 @@ CREATE QUERY customer_overview(VERTEX<Customer> u, DATETIME t_end, SET<STRING> e
 }
 
 // Closed cases that share structure with this transaction: the same device
-// profile or the same billing region. Rarer shared elements count for more,
-// so a device used by three people outweighs a region used by thousands.
-// Each shared element counts once per case, at its weight, so a case with
-// 24 transactions in a common region doesn't outrank a case sharing the
-// exact device just by having more rows.
+// profile or the same billing region. A shared element is worth
+// 1/sqrt(customers who used it, as of t_end): a device four people used is a
+// real link, a profile 125 people used is roughly "also owns an iPhone", and a
+// region shared by thousands is close to nothing. Each shared element counts
+// once per case, so a case with 24 transactions in a common region doesn't
+// outrank a case sharing the exact device just by having more rows.
 CREATE QUERY structural_precedent(VERTEX<Transaction> t, DATETIME t_end, SET<STRING> exclude, INT k) FOR GRAPH Graphite {
   TYPEDEF TUPLE<STRING case_id, STRING outcome, STRING pattern, STRING via, DOUBLE weight, STRING notes> Hit;
   MaxAccum<DOUBLE> @dev_w = 0, @reg_w = 0;
   HeapAccum<Hit>(20, weight DESC) @@hits;
+  DOUBLE dw = 0;
+  DOUBLE rw = 0;
   S = {t};
   D = SELECT d FROM S:s -(FROM_DEVICE:e)-> DeviceProfile:d;
   R = SELECT r FROM S:s -(BILLED_IN:e)-> BillingRegion:r;
-  DT = SELECT x FROM D:d -(DEVICE_USED_IN:e)-> Transaction:x WHERE x != t AND x.ts <= t_end
-       ACCUM x.@dev_w += 3.0 / log(2.0 + d.outdegree("DEVICE_USED_IN"));
-  RT = SELECT x FROM R:r -(REGION_OF:e)-> Transaction:x WHERE x != t AND x.ts <= t_end
-       ACCUM x.@reg_w += 1.0 / log(2.0 + r.outdegree("REGION_OF"));
+  DT = SELECT x FROM D:d -(DEVICE_USED_IN:e)-> Transaction:x WHERE x != t AND x.ts <= t_end;
+  RT = SELECT x FROM R:r -(REGION_OF:e)-> Transaction:x WHERE x != t AND x.ts <= t_end;
+  DC = SELECT c FROM DT:x -(MADE_BY:e)-> Card:c;
+  DU = SELECT u FROM DC:c -(OWNED_BY:e)-> Customer:u;
+  RC = SELECT c FROM RT:x -(MADE_BY:e)-> Card:c;
+  RU = SELECT u FROM RC:c -(OWNED_BY:e)-> Customer:u;
+  IF DU.size() > 0 THEN dw = 3.0 / sqrt(DU.size()); END;
+  IF RU.size() > 0 THEN rw = 1.0 / sqrt(RU.size()); END;
+  DT = SELECT x FROM DT:x POST-ACCUM x.@dev_w += dw;
+  RT = SELECT x FROM RT:x POST-ACCUM x.@reg_w += rw;
   ALL_T = DT UNION RT;
   K = SELECT c FROM ALL_T:x -(INVOLVED_IN:e)-> ClosedCase:c
       WHERE c.closed_at < t_end AND NOT exclude.contains(c.case_id)
