@@ -24,7 +24,7 @@ How you work:
 - situation_memory is usually the first thing worth checking: it gives the base rate you should anchor on.
 - Each tool costs time and tokens. Call what would change your assessment, not everything. Stop as soon as the answer is clear.
 - Before concluding, name the most likely innocent explanation and check it (for example: were past alerts like this cleared, is this device or region just common, is this the cardholder's own pattern).
-- When you are done, reply with the single word DONE and no tool calls. You will then be asked for the final JSON."""
+- When you are done, make no tool calls and reply with only the final JSON:""" + assess.SYSTEM.split("Return exactly this JSON:")[1]
 
 
 def _tool(name, desc, **props):
@@ -127,10 +127,15 @@ def run(alert, t_end, exclude):
                                                f"Investigation time: {t_end}", flag_line] + base)},
     ]
     steps = []
+    raw = None
     for _ in range(MAX_ROUNDS):
-        msg = llm.chat(messages, usage, tools=TOOLS, max_tokens=800)
+        msg = llm.chat(messages, usage, tools=TOOLS, max_tokens=1500)
         calls = msg.tool_calls or []
         if not calls:
+            try:
+                raw = llm.parse_json(msg.content or "")
+            except ValueError:
+                raw = None
             break
         messages.append({"role": "assistant", "content": msg.content or "",
                          "tool_calls": [{"id": c.id, "type": "function",
@@ -146,8 +151,10 @@ def run(alert, t_end, exclude):
             steps.append({"tool": c.function.name, "args": args})
             messages.append({"role": "tool", "tool_call_id": c.id, "content": result[:2500]})
 
-    messages.append({"role": "user", "content": "Give your final assessment now as JSON in exactly this format:\n"
-                     + assess.SYSTEM.split("Return exactly this JSON:")[1]})
-    final = llm.chat(messages, usage, json_mode=True)
-    a = assess.link_ring_cards(assess.clean(llm.parse_json(final.content), s.known), alert, s.device_result)
+    if raw is None:
+        # Out of rounds, or the answer wasn't valid JSON: ask once more, plainly.
+        messages.append({"role": "user", "content": "Give your final assessment now as JSON in exactly this format:\n"
+                         + assess.SYSTEM.split("Return exactly this JSON:")[1]})
+        raw = llm.parse_json(llm.chat(messages, usage, json_mode=True).content)
+    a = assess.link_ring_cards(assess.clean(raw, s.known), alert, s.device_result)
     return a, usage, {"steps": steps}

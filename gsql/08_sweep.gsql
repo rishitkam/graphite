@@ -1,0 +1,36 @@
+// Proactive monitoring: find device profiles that behave like a ring, with no
+// alert to start from and no model involved. A ring device shows up on many
+// different customers' cards in a short window, nearly always New to the
+// account, often behind a proxy. A popular phone model also reaches many
+// customers, but it's Found as often as New and almost never proxied, which
+// is what the share thresholds separate.
+
+USE GRAPH Graphite
+
+CREATE QUERY ring_sweep(DATETIME t_start, DATETIME t_end, INT min_customers, DOUBLE min_new_share, DOUBLE min_proxy_share) FOR GRAPH Graphite {
+  TYPEDEF TUPLE<STRING device, INT customers, INT uses, DOUBLE new_share, DOUBLE proxy_share, DATETIME first_use, DATETIME last_use> Ring;
+  SetAccum<VERTEX<Customer>> @customers;
+  SumAccum<INT> @uses, @new_uses, @proxy_uses;
+  MinAccum<DATETIME> @first;
+  MaxAccum<DATETIME> @last;
+  HeapAccum<Ring>(200, customers DESC) @@rings;
+
+  T = {Transaction.*};
+  T = SELECT t FROM T:t WHERE t.ts >= t_start AND t.ts <= t_end AND t.channel == "online";
+  C = SELECT c FROM T:t -(MADE_BY:e)-> Card:c;
+  U = SELECT u FROM C:c -(OWNED_BY:e)-> Customer:u ACCUM c.@customers += u;
+  T = SELECT t FROM T:t -(MADE_BY:e)-> Card:c ACCUM t.@customers += c.@customers;
+  D = SELECT d FROM T:t -(FROM_DEVICE:e)-> DeviceProfile:d
+      ACCUM d.@uses += 1, d.@first += t.ts, d.@last += t.ts, d.@customers += t.@customers,
+            IF e.device_seen == "New" THEN d.@new_uses += 1 END,
+            IF e.proxy_type != "" THEN d.@proxy_uses += 1 END;
+  D = SELECT d FROM D:d
+      WHERE d.@customers.size() >= min_customers
+        AND d.@new_uses * 1.0 / d.@uses >= min_new_share
+        AND d.@proxy_uses * 1.0 / d.@uses >= min_proxy_share
+      POST-ACCUM @@rings += Ring(d.device_key, d.@customers.size(), d.@uses,
+                                 d.@new_uses * 1.0 / d.@uses, d.@proxy_uses * 1.0 / d.@uses, d.@first, d.@last);
+  PRINT @@rings AS rings;
+}
+
+INSTALL QUERY ring_sweep
