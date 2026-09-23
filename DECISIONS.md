@@ -269,3 +269,25 @@ Recreated the instance (it only held the schema) and now post each CSV to
 the same loading job over REST from Python, in 50,000 line chunks, with
 valid and rejected counts reported per file. Slower to start, but it
 can't silently hang and it says exactly what went in.
+
+## Switched the model to gpt-oss-120b on Groq, replacing Haiku
+The repo owner has a Groq key, not an Anthropic one, so the one model for
+all three pipelines is now openai/gpt-oss-120b served by Groq. Tested the
+three chat models on the account (gpt-oss-120b, gpt-oss-20b, qwen3.8-27b)
+on the thing the agentic tier depends on, making a correct tool call from
+a plain language request. All three got it right first try, so that
+didn't decide it. gpt-oss-120b won on compact output (237 tokens against
+380 for Qwen on the same request) and on being open weight, which means
+anyone can rerun the eval on exactly the same model. The 20b is cheaper
+per token, but on the free tier the limits are identical, so price
+doesn't enter into it.
+
+The model sits behind one thin client so the provider is a setting, not
+something hardcoded through three pipelines. The rule that matters is
+unchanged: same model for every tier and for the final 20 answer files.
+
+Free tier limits are 1,000 requests a day and 8,000 tokens a minute. A
+full eval run is roughly 3.8 million tokens and the agentic tier alone
+needs more requests than the daily cap, so on free tier one clean run
+takes about two days. Everything calling the model retries on rate limits
+and can resume where it stopped.
