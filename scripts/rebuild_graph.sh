@@ -45,3 +45,9 @@ echo "== case memory vectors"
 echo "== policy documents"
 ./scripts/gsql.sh /home/tigergraph/gsql/07_documents.gsql | grep -iE "succe|error" || true
 .venv/bin/python scripts/load_documents.py 2>&1 | grep -v -i warn
+
+echo "== ring detection (library tg_wcc)"
+./scripts/gsql.sh /home/tigergraph/gsql/09_rings.gsql | grep -iE "succe|error" || true
+docker exec graphite-tg bash -c "{ echo 'USE GRAPH Graphite'; cat /home/tigergraph/gsql-graph-algorithms/algorithms/Community/connected_components/weakly_connected_components/standard/tg_wcc.gsql; echo; echo 'INSTALL QUERY tg_wcc'; } > /tmp/wcc.gsql"
+./scripts/gsql.sh /tmp/wcc.gsql | grep -iE "error|installation" || true
+./scripts/gsql.sh /home/tigergraph/gsql/08_sweep.gsql | grep -iE "error|installation" || true

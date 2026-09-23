@@ -1,0 +1,51 @@
+// Ring detection with TigerGraph's own weakly connected components.
+//
+// 1. Project a customer-to-customer graph for a time window: two customers
+//    are linked when the same device profile was New to both of their
+//    accounts in the window, most of that device's new-account uses went
+//    through a proxy, and it isn't a mass-market profile (few enough
+//    customers). Owning the same phone model doesn't link people; a device
+//    that keeps turning up new, behind a proxy, on other people's cards does.
+// 2. Run the library's tg_wcc over customers and those links. A ring that
+//    rotates across several devices comes out as one component even when no
+//    single device looks alarming on its own.
+
+USE GRAPH Graphite
+
+CREATE SCHEMA_CHANGE JOB add_ring_links FOR GRAPH Graphite {
+  ADD UNDIRECTED EDGE SHARES_SUSPECT_DEVICE (FROM Customer, TO Customer, device STRING);
+}
+RUN SCHEMA_CHANGE JOB add_ring_links
+DROP JOB add_ring_links
+
+CREATE QUERY build_ring_links(DATETIME t_start, DATETIME t_end, INT max_customers, DOUBLE min_proxy_share) FOR GRAPH Graphite {
+  SetAccum<VERTEX<Customer>> @new_customers;
+  SumAccum<INT> @new_uses, @proxy_uses;
+  SetAccum<VERTEX<Customer>> @owner;
+  SumAccum<INT> @@links;
+
+  T = {Transaction.*};
+  T = SELECT t FROM T:t WHERE t.ts >= t_start AND t.ts <= t_end AND t.channel == "online";
+  C = SELECT c FROM T:t -(MADE_BY:e)-> Card:c;
+  U = SELECT u FROM C:c -(OWNED_BY:e)-> Customer:u ACCUM c.@owner += u;
+  T = SELECT t FROM T:t -(MADE_BY:e)-> Card:c ACCUM t.@owner += c.@owner;
+  D = SELECT d FROM T:t -(FROM_DEVICE:e)-> DeviceProfile:d
+      WHERE e.device_seen == "New"
+      ACCUM d.@new_customers += t.@owner, d.@new_uses += 1,
+            IF e.proxy_type != "" THEN d.@proxy_uses += 1 END;
+  D = SELECT d FROM D:d
+      WHERE d.@new_customers.size() >= 2 AND d.@new_customers.size() <= max_customers
+        AND d.@proxy_uses * 1.0 / d.@new_uses >= min_proxy_share
+      POST-ACCUM
+        FOREACH a IN d.@new_customers DO
+          FOREACH b IN d.@new_customers DO
+            IF getvid(a) < getvid(b) THEN
+              INSERT INTO SHARES_SUSPECT_DEVICE VALUES (a, b, d.device_key),
+              @@links += 1
+            END
+          END
+        END;
+  PRINT @@links AS links_created, D.size() AS devices_used;
+}
+
+INSTALL QUERY build_ring_links
