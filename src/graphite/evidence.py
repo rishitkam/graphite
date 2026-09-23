@@ -31,6 +31,7 @@ def _short_device(d):
 
 def flagged(txn_id):
     t = g.txn_detail(txn_id)
+    t["addr1"] = t["addr1"] or "(none)"
     line = (f"FLAGGED {txn_id}: ${t['amount']:.2f} {t['channel']} product {t['product_cd']} at {t['ts']}, "
             f"region {t['addr1']}, risk score {t['risk_score']:.2f}")
     if t["device"]:

@@ -140,6 +140,26 @@ def graph(tier: str, which: str, case_id: str):
     return {"nodes": list(nodes.values()), "edges": edges, "flagged": flagged}
 
 
+@app.get("/api/preview/{case_id}")
+def preview(case_id: str):
+    """Graph evidence for an exam case before any model has looked at it.
+
+    Pure graph and vector queries, no model tokens: what the investigator
+    would start from.
+    """
+    from graphite import evidence
+    a = next((x for x in alerts.exam_alerts() if x.case_id == case_id), None)
+    if a is None:
+        raise HTTPException(404, case_id)
+    t, flag_line = evidence.flagged(a.flagged_txn_id)
+    lines = [flag_line] + evidence.baseline(t, a.opened_at)[1]
+    if a.trigger_type == "customer_report":
+        lines += evidence.recurring(a.flagged_txn_id, a.opened_at)[1]
+    lines += evidence.situation_memory(a.flagged_txn_id, a.opened_at, set())[1][:3]
+    lines += evidence.device(t, a.opened_at, set())[1]
+    return {"case_id": case_id, "trigger": a.trigger_type, "trigger_text": a.trigger_text, "lines": lines}
+
+
 @app.get("/api/compare")
 def compare(which: str = "dev"):
     return {t: report.summarise(report.load(t, which)) for t in report.TIERS}

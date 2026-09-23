@@ -96,7 +96,19 @@ async function show(id) {
   document.querySelectorAll(".row").forEach(el => el.classList.toggle("on", el.dataset.id === id));
   const tier = $("#tier").value, which = $("#which").value;
   const res = await fetch(`/api/case/${tier}/${which}/${id}`);
-  if (!res.ok) { $("#detail").innerHTML = `<div class="empty">Not run yet for this tier.</div>`; return; }
+  if (!res.ok) {
+    if (which !== "exam") { $("#detail").innerHTML = `<div class="empty">Not run yet for this tier.</div>`; return; }
+    $("#detail").innerHTML = `<div class="empty">Reading the graph…</div>`;
+    const p = await (await fetch(`/api/preview/${id}`)).json();
+    $("#detail").innerHTML = `
+      <p class="eyebrow">${id} · ${p.trigger} · graph evidence, no model yet</p>
+      <h2>What the investigator starts from</h2>
+      <p class="trigger">${esc(p.trigger_text)}</p>
+      <h3>From TigerGraph</h3>
+      <ul class="ev">${p.lines.map(l => `<li class="mono" style="font-size:.8rem">${esc(l)}</li>`).join("")}</ul>
+      <p style="color:var(--faint);margin-top:18px">The ${esc($("#tier").selectedOptions[0].text)} verdict for this case appears here once it has run.</p>`;
+    return;
+  }
   const r = await res.json(), c = r.case, nba = r.next_best_actions;
   const alertRow = [...document.querySelectorAll(".row")].find(e => e.dataset.id === id);
   $("#detail").innerHTML = `
