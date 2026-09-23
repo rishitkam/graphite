@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Rebuild the Graphite graph from scratch: schema, loading job, data, queries.
+# Rebuild the Graphite graph from scratch: schema, data, investigation
+# queries, case memory vectors, and policy documents.
 # Safe to rerun. Needs the graphite-tg container from docker-compose.yml.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -33,3 +34,14 @@ done
 echo "== queries"
 $GSQL /home/tigergraph/gsql/03_queries.gsql | grep -iE "error|draft|created" || true
 $GSQL -g Graphite 'INSTALL QUERY ALL' | tail -3
+
+echo "== case memory vectors"
+./scripts/gsql.sh /home/tigergraph/gsql/04_vectors.gsql | grep -iE "succe|error" || true
+./scripts/gsql.sh /home/tigergraph/gsql/05_load_vectors.gsql | tail -1
+[ -f data/situations.npz ] || .venv/bin/python scripts/build_situations.py
+.venv/bin/python scripts/load_vectors.py 2>&1 | grep -v -i warn
+./scripts/gsql.sh /home/tigergraph/gsql/06_vector_queries.gsql | grep -iE "error|installation" || true
+
+echo "== policy documents"
+./scripts/gsql.sh /home/tigergraph/gsql/07_documents.gsql | grep -iE "succe|error" || true
+.venv/bin/python scripts/load_documents.py 2>&1 | grep -v -i warn

@@ -1,0 +1,31 @@
+// Policy and typology text from the dataset README, as embedded documents in
+// TigerGraph's vector index, so the agent can retrieve and cite the exact
+// rule or pattern text behind a recommendation. PolicyDoc is local to the
+// graph, which lets its vector attribute be added with a plain schema change.
+
+USE GRAPH Graphite
+CREATE SCHEMA_CHANGE JOB add_policy_docs FOR GRAPH Graphite {
+  ADD VERTEX PolicyDoc (PRIMARY_ID doc_id STRING, section STRING, title STRING, body STRING) WITH primary_id_as_attribute="TRUE";
+}
+RUN SCHEMA_CHANGE JOB add_policy_docs
+DROP JOB add_policy_docs
+
+CREATE SCHEMA_CHANGE JOB add_policy_vectors FOR GRAPH Graphite {
+  ALTER VERTEX PolicyDoc ADD VECTOR ATTRIBUTE emb(DIMENSION=384, METRIC="COSINE");
+}
+RUN SCHEMA_CHANGE JOB add_policy_vectors
+DROP JOB add_policy_vectors
+
+CREATE LOADING JOB load_documents FOR GRAPH Graphite {
+  DEFINE FILENAME f_doc;
+  DEFINE FILENAME f_doc_emb;
+  LOAD f_doc TO VERTEX PolicyDoc VALUES ($0, $1, $2, $3) USING SEPARATOR="|", HEADER="false";
+  LOAD f_doc_emb TO VECTOR ATTRIBUTE emb ON VERTEX PolicyDoc VALUES ($0, SPLIT($1, ":")) USING SEPARATOR="|", HEADER="false";
+}
+
+CREATE QUERY search_policy(LIST<FLOAT> qv, INT k) FOR GRAPH Graphite {
+  All = {PolicyDoc.*};
+  R = vectorSearch({PolicyDoc.emb}, qv, k, {candidate_set: All});
+  PRINT R[R.doc_id, R.section, R.title, R.body] AS hits;
+}
+INSTALL QUERY search_policy

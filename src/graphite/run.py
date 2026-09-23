@@ -21,7 +21,7 @@ import traceback
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from graphite import alerts, assess, case_store, data
+from graphite import alerts, assess, case_store, data, sar
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -47,6 +47,9 @@ def run_case(tier, alert, which):
     exclude = alerts.holdout_ids() if which in ("dev", "eval") else set()
     a, usage, trace = module.run(alert, t_end, exclude)
     out = assess.answer_file(alert, a, data.amounts(), usage, steps=usage.calls + usage.tool_calls)
+    if which == "exam" and out["sar"]["file"]:
+        sar.write(out, alert, usage)
+        out["tokens"], out["latency_s"] = usage.tokens, round(usage.seconds, 1)
     out["_meta"] = {"tier": tier, "t_end": t_end, "label": alert.label, "label_pattern": alert.label_pattern,
                     "eval_slice": alert.eval_slice, "calls": usage.calls, "trace": trace,
                     "card_id": alert.card_id, "customer_id": alert.customer_id}

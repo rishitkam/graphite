@@ -138,3 +138,8 @@ def similar_notes(qv, t_end, exclude=(), k=5):
 
 def similar_situations(qv, t_end, exclude=(), k=15):
     return _vector_query("similar_situations", qv, t_end, exclude, k)
+
+
+def search_policy(qv, k=3):
+    out = conn().runInstalledQuery("search_policy", {"qv": [float(x) for x in qv], "k": k}, usePost=True)
+    return [{key.split(".", 1)[1]: val for key, val in v["attributes"].items()} for v in out[0]["hits"]]

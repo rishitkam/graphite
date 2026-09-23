@@ -31,11 +31,17 @@ class Usage:
 
 
 def _wait_from(err):
-    m = re.search(r"try again in ([\d.]+)(ms|s|m)", str(err))
-    if not m:
+    """Seconds to wait from Groq's 'try again in 12m56.7s' / '4.2s' / '350ms'."""
+    m = re.search(r"try again in ([\d.]+ms|(?:\d+h)?(?:\d+m)?(?:[\d.]+s)?)", str(err))
+    if not m or not m.group(1):
         return 10.0
-    n, unit = float(m.group(1)), m.group(2)
-    return n / 1000 if unit == "ms" else n * 60 if unit == "m" else n
+    text = m.group(1)
+    if text.endswith("ms"):
+        return float(text[:-2]) / 1000
+    total = 0.0
+    for n, unit in re.findall(r"([\d.]+)([hms])", text):
+        total += float(n) * {"h": 3600, "m": 60, "s": 1}[unit]
+    return total or 10.0
 
 
 def chat(messages, usage, tools=None, json_mode=False, max_tokens=1500):
@@ -52,9 +58,13 @@ def chat(messages, usage, tools=None, json_mode=False, max_tokens=1500):
         try:
             r = _client.chat.completions.create(**kwargs)
         except RateLimitError as e:
-            if "per day" in str(e).lower() or "TPD" in str(e) or "RPD" in str(e):
+            wait = _wait_from(e)
+            # The daily token cap is a rolling window and the error says when
+            # enough frees up. Wait out gaps under half an hour so long runs
+            # keep moving unattended; give up only on longer waits.
+            if ("per day" in str(e).lower() or "TPD" in str(e)) and wait > 1800:
                 raise
-            time.sleep(_wait_from(e) + 0.5)
+            time.sleep(wait + 1)
             continue
         except APIStatusError as e:
             if e.status_code >= 500 and attempt < 11:

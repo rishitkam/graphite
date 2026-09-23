@@ -43,6 +43,8 @@ TOOLS = [
           txn_id="string"),
     _tool("search_cases", "Search closed case narratives by text, for precedent on a specific hypothesis.", query="string"),
     _tool("transaction", "Full detail of one transaction.", txn_id="string"),
+    _tool("search_policy", "Search the bank's fraud policy and pattern definitions (rules R1 to R10, case vs report, stopping) for the text that applies. Cite what you find as a document source.",
+          query="string"),
 ]
 
 
@@ -91,6 +93,9 @@ class Session:
                 hits = rag.retrieve(str(args["query"]), self.t_end, self.exclude)
                 self.known |= {h["case_id"] for h in hits}
                 return "\n".join(f"{h['case_id']} [{h['outcome']}, {h['pattern']}]: {h['notes'][:170]}" for h in hits)
+            if name == "search_policy":
+                hits = g.search_policy(rag.embed(str(args["query"])), 3)
+                return "\n".join(f"[{h['doc_id']}] {h['title']}: {h['body'][:400]}" for h in hits)
             if name == "transaction":
                 if args["txn_id"] not in self.known:
                     return "unknown transaction id: only inspect transactions you have seen in evidence"

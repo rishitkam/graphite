@@ -291,3 +291,59 @@ full eval run is roughly 3.8 million tokens and the agentic tier alone
 needs more requests than the daily cap, so on free tier one clean run
 takes about two days. Everything calling the model retries on rate limits
 and can resume where it stopped.
+
+## The eval runs six hours after the flagged transaction, for both classes
+The first timing rule investigated each eval case as of its flagged
+transaction's own timestamp. For fraud cases that's the first fraudulent
+transaction, so there was nothing to see yet, and the eval turned into
+"detect fraud from its very first purchase," harder than the real exam.
+Checked the exam: every one of the 20 cases is opened 1 to 6 hours after
+its flagged transaction. In the closed history, false alarms were opened
+within about 5 hours and fraud a median of 22 hours later, which is why
+each case's real opened_at can't be used. So every dev and eval case is
+investigated exactly 6 hours after its flagged transaction: the same for
+both classes, and the same window the exam cases have.
+
+## A separate dev split for iteration
+While fixing the device evidence I realised I was diagnosing failures on
+eval cases, which is tuning on the test set. Added a disjoint score matched
+dev split of 40 cases from the memory pool. All iteration happens on dev,
+and the held out eval gets run once, at the end, on frozen code. Eight
+eval cases were run in early smoke tests before the dev split existed and
+one of them (CC-1168) was inspected in detail; the final report says so and
+also gives numbers with those eight removed.
+
+## Device evidence as rates against a base rate
+A popular iPhone profile, shared by 125 customers, showed up as "5
+confirmed fraud cases on this device" and the model read that as a risky
+device. It's one fraud case per 25 of its customers, against a bank wide
+rate of one per 12, so if anything it's below normal. The real ring on
+HHG-014 looks completely different: 100 percent of recent uses were New to
+the account and behind an anonymous proxy, across 20 customers in 30 days.
+Device evidence now says exactly that, as rates, with the base rate beside
+it, and precedent links through a shared entity are weighted one over the
+square root of the customers who share it.
+
+## Situation memory, in TigerGraph's vector index
+The data turned out to be counterintuitive. Once risk score is neutral,
+real fraud often looks mundane (in person, familiar card) while false
+alarms look alarming (new device, online, because people buy new phones).
+General fraud intuition gets that backwards, and plain RAG on dev scored
+42.5 percent with an AUC of 0.30, below chance. What corrects it is memory
+of how similar situations actually ended. Every closed case now carries a
+15 feature vector describing its graph context at alert time (channel,
+device novelty and proxy, customers sharing the device, region, product
+and email familiarity, amount against history, velocity), stored as a
+vector attribute in TigerGraph next to the embedded analyst narrative. On
+dev, "how did the 15 most similar past situations end" alone got 80
+percent with an AUC of 0.82, no model involved. GraphRAG gets it in its
+fixed evidence pack; the agent can call it as a tool. The same code
+computes stored vectors and live queries, as of the investigation time
+only, scaled with statistics from the memory pool only.
+
+## Groq free tier caps tokens per day, not just per minute
+The free tier allows 200,000 tokens a day on gpt-oss-120b, on a rolling
+window. The full comparison needs roughly 1.7 million, which is about
+eight days on free tier. Asked for an upgrade to the pay as you go
+developer tier; everything that doesn't need the model keeps moving in the
+meantime.
