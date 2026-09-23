@@ -379,3 +379,28 @@ can't recognise a legitimate dispute. The policy expects some (R7), and the
 data has them: HHG-003 disputes a $49.00 charge that matches 53 earlier
 $49.00 charges on the card, HHG-018 matches 143. The graph tiers get an
 explicit check for earlier same-amount, same-product charges on the card.
+
+## Rotate across API keys instead of waiting out the daily cap
+Groq's free tier gives each key 200k tokens a day on a rolling window, and a
+full held-out run of three tiers needs well over a million. Rather than
+change model or shrink the eval, the client now takes any number of keys
+and moves to the next one when a key reports its daily cap. The model,
+prompt and settings are identical on every key, so the rule about one model
+across all three pipelines still holds. Keys live only in the ignored .env.
+
+## Policy checks are not left to the agent
+On the first exam run the agent was told to always run the recurring check
+on disputes, and on HHG-003 it didn't. It called a $49.00 charge fraud when
+the card had 53 earlier $49.00 charges. An instruction in a prompt is a
+suggestion to the model; R7 is policy. So for customer reports the harness
+now runs the check before the agent's first turn and puts the result in its
+opening context. The agent still decides what else to look at. After the
+change HHG-003 closed as legitimate in one call and 1.8k tokens instead of
+three calls and 6k, and HHG-018 followed it. Only the eight disputes were
+rerun; the other twelve never reach this code path.
+
+## Freeze before the held-out run
+The dev split exists so that changes like the one above are checked
+somewhere other than the numbers we report. Once the dev comparison
+finished, the code was frozen and the held-out set run once per tier.
+Nothing is tuned after seeing those results.
