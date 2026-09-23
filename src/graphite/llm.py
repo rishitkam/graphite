@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from dotenv import load_dotenv
-from openai import APIStatusError, OpenAI, RateLimitError
+from openai import APIConnectionError, APIStatusError, OpenAI, RateLimitError
 
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
@@ -73,6 +73,10 @@ def chat(messages, usage, tools=None, json_mode=False, max_tokens=1500):
             if ("per day" in str(e).lower() or "TPD" in str(e)) and wait > 1800:
                 raise
             time.sleep(wait + 1)
+            continue
+        except APIConnectionError:
+            # Timeouts and dropped connections: nothing wrong with the request.
+            time.sleep(2 ** min(attempt, 5))
             continue
         except APIStatusError as e:
             # Strict JSON mode rejects small slips (the model once wrote "0. nine"

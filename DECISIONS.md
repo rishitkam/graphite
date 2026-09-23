@@ -404,3 +404,10 @@ The dev split exists so that changes like the one above are checked
 somewhere other than the numbers we report. Once the dev comparison
 finished, the code was frozen and the held-out set run once per tier.
 Nothing is tuned after seeing those results.
+
+## Retry dropped connections
+The first dev run of the agent lost 16 of 40 cases to timeouts and dropped
+connections, not to anything the pipeline did. The client retried rate
+limits and server errors but not those. It now retries them too, with
+backoff. This changes no prompt, tool or rule, so it doesn't break the
+freeze; the failed cases are simply rerun.
