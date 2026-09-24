@@ -9,6 +9,7 @@ import json
 import os
 import re
 import time
+from types import SimpleNamespace
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -58,14 +59,18 @@ def chat(messages, usage, tools=None, json_mode=False, max_tokens=1500):
         kwargs["response_format"] = {"type": "json_object"}
 
     global _current
-    for attempt in range(12 + 2 * len(_clients)):
+    rotations = 0
+    for attempt in range(20 + len(_clients)):
         start = time.time()
         try:
             r = _clients[_current].chat.completions.create(**kwargs)
         except RateLimitError as e:
             wait = _wait_from(e)
-            if ("per day" in str(e).lower() or "TPD" in str(e)) and len(_clients) > 1 and wait > 60:
+            if ("per day" in str(e).lower() or "TPD" in str(e)) and wait > 60 and rotations < len(_clients) - 1:
+                # Try the next key; once every key has said no, fall through
+                # and wait for the soonest one instead of spinning.
                 _current = (_current + 1) % len(_clients)
+                rotations += 1
                 continue
             # The daily token cap is a rolling window and the error says when
             # enough frees up. Wait out gaps under half an hour so long runs
@@ -83,6 +88,21 @@ def chat(messages, usage, tools=None, json_mode=False, max_tokens=1500):
             # for a probability). Retry without it; parse_json copes with the text.
             if e.status_code == 400 and "json_validate_failed" in str(e) and "response_format" in kwargs:
                 kwargs.pop("response_format")
+                kwargs["temperature"] = 0.3
+                continue
+            # Sometimes the model wraps its final answer in a tool call to a
+            # made-up tool ("json"). Groq rejects that, but the answer is in the
+            # error. Take it as the plain reply it was meant to be.
+            if e.status_code == 400 and "tool_use_failed" in str(e):
+                body = e.body if isinstance(e.body, dict) else {}
+                gen = body.get("failed_generation") or (body.get("error") or {}).get("failed_generation") or ""
+                try:
+                    args = json.loads(gen).get("arguments")
+                except (ValueError, AttributeError):
+                    args = None
+                if isinstance(args, dict) and "fraud_probability" in args:
+                    usage.calls += 1
+                    return SimpleNamespace(content=json.dumps(args), tool_calls=None)
                 kwargs["temperature"] = 0.3
                 continue
             if e.status_code >= 500 and attempt < 11:

@@ -411,3 +411,12 @@ connections, not to anything the pipeline did. The client retried rate
 limits and server errors but not those. It now retries them too, with
 backoff. This changes no prompt, tool or rule, so it doesn't break the
 freeze; the failed cases are simply rerun.
+
+## Keep answers the model put in the wrong wrapper
+On the held-out run the agent sometimes returned its finished assessment as
+a call to a tool called "json", which doesn't exist, and Groq rejected the
+whole reply. The assessment inside was complete, so the client now takes it
+as the plain answer. A call to a misspelt real tool is retried instead. When
+every key is out of daily tokens the client now waits for the soonest one
+rather than cycling through the keys until it gives up. None of this touches
+prompts, tools or rules; the cases that failed are rerun, not rescored.
