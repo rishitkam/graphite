@@ -133,6 +133,8 @@ def _scaling():
 
 def memory_share(hits):
     w = [1 / (0.5 + (h["distance"] or 0)) for h in hits]
+    if not w:
+        return None
     return sum(wi for wi, h in zip(w, hits) if h["outcome"] == "confirmed_fraud") / sum(w)
 
 
@@ -145,6 +147,8 @@ def adjusted(share, pool_share, prior=0.5):
     among neighbours, in a memory that is 85 percent fraud anyway, is modest
     evidence; 76 percent is evidence for legitimate.
     """
+    if share is None:  # no neighbours at all: memory has nothing to say
+        return prior
     s = min(max(share, 0.02), 0.98)
     lr = (s / (1 - s)) / (pool_share / (1 - pool_share))
     odds = lr * prior / (1 - prior)

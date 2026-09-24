@@ -420,3 +420,14 @@ as the plain answer. A call to a misspelt real tool is retried instead. When
 every key is out of daily tokens the client now waits for the soonest one
 rather than cycling through the keys until it gives up. None of this touches
 prompts, tools or rules; the cases that failed are rerun, not rescored.
+
+## Held-out results, reported as they came out
+The frozen code ran once on the 168 held-out cases per tier, same model
+(gpt-oss-120b) throughout. Accuracy: RAG 44.0, GraphRAG 73.8, agentic 75.6.
+AUC: 0.43, 0.81, 0.85. The agent also names the fraud pattern correctly
+most often (51 percent against 44 for GraphRAG and 8 for RAG), which is
+where the extra tokens go. The memory-only reference, no model at all, scores
+85.7 and stays in the table: it shows how much of the answer lives in the
+graph, and that the model's job is explaining and acting on it. The report
+crashed on a case with no memory neighbours, which now counts as no
+evidence either way; this only affects the reference row.
