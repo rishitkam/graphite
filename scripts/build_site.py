@@ -9,6 +9,8 @@ import json
 import shutil
 from pathlib import Path
 
+from fastapi import HTTPException
+
 from graphite import alerts
 from graphite.ui import app
 
@@ -37,7 +39,10 @@ def main():
             for r in rows:
                 if r.get("done"):
                     dump(f"case/{tier}/{which}/{r['case_id']}.json", app.case(tier, which, r["case_id"]))
-                    dump(f"graph/{tier}/{which}/{r['case_id']}.json", app.graph(tier, which, r["case_id"]))
+                    try:
+                        dump(f"graph/{tier}/{which}/{r['case_id']}.json", app.graph(tier, which, r["case_id"]))
+                    except HTTPException:
+                        pass  # a cleared ring with nothing to draw
                     written += 1
     for a in alerts.exam_alerts():
         dump(f"preview/{a.case_id}.json", app.preview(a.case_id))

@@ -77,10 +77,21 @@ def graph(tier: str, which: str, case_id: str):
     r = _load(tier, which, case_id)
     c = r["case"]
     meta = r["_meta"]
-    flagged = r["case"]["first_suspicious_txn_id"] or next(
-        (a.flagged_txn_id for a in (alerts.exam_alerts() + alerts.eval_alerts(("matched", "rare_patterns", "dev")))
-         if a.case_id == case_id), None)
-    t = g.txn_detail(flagged)
+    alert_txn = next((a.flagged_txn_id for a in (alerts.exam_alerts() + alerts.eval_alerts(("matched", "rare_patterns", "dev")))
+                      if a.case_id == case_id), None)
+    # The model can name a transaction that isn't in the graph; fall back to
+    # the ones it listed as affected, then to the alert's own.
+    t = None
+    for flagged in [c["first_suspicious_txn_id"], *c["affected_txn_ids"], alert_txn]:
+        if not flagged:
+            continue
+        try:
+            t = g.txn_detail(flagged)
+            break
+        except RuntimeError:
+            continue
+    if t is None:
+        raise HTTPException(404, f"no drawable transaction for {case_id}")
     nodes, edges = {}, []
 
     def node(nid, kind, label, weight=0.3, **extra):
@@ -98,7 +109,10 @@ def graph(tier: str, which: str, case_id: str):
     node(flagged, "txn", f"${t['amount']:.0f}", 1.0, flagged=True, detail=f"{t['channel']} {t['product_cd']} {t['ts']}")
     edge(card, flagged, "made", 1.0)
     for tid in list(affected - {flagged})[:10]:
-        rec = data.alert_record(tid)
+        try:
+            rec = data.alert_record(tid)
+        except (KeyError, IndexError):
+            continue
         node(tid, "txn", f"${rec['amount']:.0f}", 0.8, detail=f"{rec['channel']} {rec['ts']}")
         edge(card, tid, "made", 0.8)
 

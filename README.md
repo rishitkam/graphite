@@ -111,10 +111,36 @@ be attributed to them.
 
 ## Results
 
-The three-tier comparison is in [eval/RESULTS.md](eval/RESULTS.md), generated
-by `python -m graphite.report --set eval`. Same model
-(`openai/gpt-oss-120b` on Groq) for every tier, held-out, score-matched eval
-set, run once on frozen code.
+| | Graph memory only (no LLM) | RAG | GraphRAG | Agentic GraphRAG |
+|---|---|---|---|---|
+| accuracy | 85.7% | 44.0% | 73.8% | **75.6%** |
+| AUC | 0.919 | 0.433 | 0.805 | **0.852** |
+| Brier (lower is better) | 0.109 | 0.341 | 0.179 | **0.158** |
+| fraud recall | 81.8% | 15.9% | 77.3% | 76.1% |
+| legit specificity | 90.0% | 75.0% | 70.0% | 75.0% |
+| fraud pattern named correctly | n/a | 8.0% | 44.3% | **51.1%** |
+| tokens / case | 0 | 1,296 | 2,679 | 4,818 |
+| LLM calls / case | 0 | 1.0 | 1.0 | 2.6 |
+
+168 held-out cases (160 score-matched, 80 fraud and 80 cleared, plus 8 rare
+patterns), `openai/gpt-oss-120b` on Groq for every tier, run once on frozen
+code. GraphRAG beats RAG by 29.8 points (68 percent relative); the agent beats
+RAG by 31.5 points (72 percent relative) and beats GraphRAG on ranking,
+calibration and naming the pattern.
+
+RAG lands below chance on purpose: once risk scores are matched, notes that
+read alike are not situations that are alike. The memory-only row, graph
+retrieval with no model at all, is the strongest single number. We keep it
+in the table because it is the point: the signal lives in the graph, and the
+model's job is to explain it, name the pattern and propose the action.
+
+Exam: 20 cases answered by the agent, 10 fraud, 9 legitimate, 1 uncertain,
+every file validated against the answer schema. Proactive: 5 ring cases
+found by the graph with no alert, 3 judged fraud with SARs.
+
+Full tables: [eval/RESULTS.md](eval/RESULTS.md) (held-out) and
+[eval/RESULTS_dev.md](eval/RESULTS_dev.md) (dev). Regenerate with
+`python -m graphite.report --set eval`.
 
 ## Running it
 

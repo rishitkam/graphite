@@ -35,19 +35,29 @@ developer tier would finish it in hours instead of days.
 - **Docs.** README, blog post draft and demo script in `docs/`, every decision
   in DECISIONS.md.
 
-## Measured so far (dev split, small samples, direction only)
-- Plain RAG: 33 to 42 percent accuracy, AUC 0.30 to 0.39. Below chance: it
-  reads new-phone purchases as fraud.
-- Graph case memory alone, no model: 77.5 percent, AUC 0.85 on all 40 dev
-  cases, after correcting for what the bank chose to investigate.
-- GraphRAG and the agent: being rerun on dev after the memory correction.
+## Done
+- Exam: 20 answers in `cases/`, all validated, written to the graph with SARs.
+- Proactive: 5 ring cases in `cases_proactive/`, 3 fraud with SARs.
+- Dev comparison (40 cases) and held-out eval (168 cases), same model.
+
+## Held-out results
+| | Graph memory only (no LLM) | RAG | GraphRAG | Agentic GraphRAG |
+|---|---|---|---|---|
+| accuracy | 85.7% | 44.0% | 73.8% | **75.6%** |
+| AUC | 0.919 | 0.433 | 0.805 | **0.852** |
+| Brier (lower is better) | 0.109 | 0.341 | 0.179 | **0.158** |
+| fraud recall | 81.8% | 15.9% | 77.3% | 76.1% |
+| legit specificity | 90.0% | 75.0% | 70.0% | 75.0% |
+| fraud pattern named correctly | n/a | 8.0% | 44.3% | **51.1%** |
+| tokens / case | 0 | 1,296 | 2,679 | 4,818 |
+| LLM calls / case | 0 | 1.0 | 1.0 | 2.6 |
+
+Full tables in `eval/RESULTS.md`.
 
 ## Next
-1. Finish the 16-case dev comparison for GraphRAG and the agent.
-2. Run the agent on the 20 exam cases, export `cases/`, validate every file.
-3. Run the proactive monitor for `cases_proactive/`.
-4. Freeze the code and run the held-out eval once for all three tiers.
-5. Fill the final numbers into the README, blog post and scoreboard.
+1. Demo video, blog post and social post.
+2. Publish the static demo site (needs a yes first).
+3. Rotate the Groq keys after judging.
 
 ## Watch for
 - Case memory reflects what the bank chose to investigate. Always read it
