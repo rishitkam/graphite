@@ -1,0 +1,275 @@
+1
+00:00:03,178 --> 00:00:06,202
+Fraud teams get more alerts than they can investigate
+
+2
+00:00:06,202 --> 00:00:08,142
+and many of them are false alarms.
+
+3
+00:00:08,142 --> 00:00:12,649
+Graphite investigates each alert through a TigerGraph graph of five hundred and
+
+4
+00:00:12,649 --> 00:00:14,589
+ninety thousand card transactions.
+
+5
+00:00:14,589 --> 00:00:16,187
+The model proposes a verdict
+
+6
+00:00:16,187 --> 00:00:19,724
+and a fixed policy engine decides what the bank actually does.
+
+7
+00:00:19,727 --> 00:00:24,044
+On the twenty exam cases, the agent called ten fraud, nine legitimate
+
+8
+00:00:24,044 --> 00:00:25,483
+and left one uncertain.
+
+9
+00:00:25,483 --> 00:00:29,737
+Each row shows what triggered the alert, the final fraud probability
+
+10
+00:00:29,737 --> 00:00:30,738
+and the pattern.
+
+11
+00:00:30,738 --> 00:00:34,304
+Rows marked S A R had a suspicious activity report filed.
+
+12
+00:00:34,307 --> 00:00:38,554
+We compare three pipelines on one model, G P T O S S one twenty B.
+
+13
+00:00:38,554 --> 00:00:42,994
+Plain RAG, GraphRAG, and an agent that chooses its own graph queries.
+
+14
+00:00:42,994 --> 00:00:47,820
+They share the same prompt, the same output, and the same ten policy rules.
+
+15
+00:00:47,820 --> 00:00:49,300
+Only retrieval changes.
+
+16
+00:00:49,300 --> 00:00:53,547
+Every graph query goes through TigerGraph's official M C P server.
+
+17
+00:00:53,639 --> 00:00:55,805
+First we made the test hard to game.
+
+18
+00:00:55,805 --> 00:00:59,837
+In the bank's history, the risk score alone gets ninety one percent
+
+19
+00:00:59,837 --> 00:01:02,243
+so our held out cases are matched on it.
+
+20
+00:01:02,243 --> 00:01:04,951
+Fraud and cleared cases carry the same score.
+
+21
+00:01:04,951 --> 00:01:09,343
+On a hundred and sixty eight held out cases, RAG gets forty four percent.
+
+22
+00:01:09,343 --> 00:01:11,750
+GraphRAG gets seventy three point eight.
+
+23
+00:01:11,750 --> 00:01:16,383
+The agent gets seventy five point six, with the best ranking and calibration.
+
+24
+00:01:16,383 --> 00:01:17,045
+Same model.
+
+25
+00:01:17,045 --> 00:01:18,730
+The graph is the difference.
+
+26
+00:01:18,734 --> 00:01:20,576
+Token efficiency is scored too.
+
+27
+00:01:20,576 --> 00:01:23,251
+RAG uses about thirteen hundred tokens a case
+
+28
+00:01:23,251 --> 00:01:27,768
+GraphRAG about twenty seven hundred, and the agent about forty eight hundred
+
+29
+00:01:27,768 --> 00:01:29,670
+over two and a half model calls.
+
+30
+00:01:29,670 --> 00:01:31,274
+The graph does the counting
+
+31
+00:01:31,274 --> 00:01:35,197
+so the model reads a handful of facts instead of hundreds of rows.
+
+32
+00:01:35,199 --> 00:01:36,972
+Here is a dispute done right.
+
+33
+00:01:36,972 --> 00:01:40,824
+The customer says they never made a forty nine dollar purchase.
+
+34
+00:01:40,824 --> 00:01:44,921
+Before the agent starts, the pipeline checks the card's own history
+
+35
+00:01:44,921 --> 00:01:48,344
+and finds fifty three earlier forty nine dollar charges.
+
+36
+00:01:48,344 --> 00:01:49,812
+It's their subscription.
+
+37
+00:01:49,812 --> 00:01:51,035
+Verdict: legitimate.
+
+38
+00:01:51,035 --> 00:01:54,642
+Nothing blocked, one model call, under two thousand tokens.
+
+39
+00:01:54,644 --> 00:01:55,749
+Look at the bottom.
+
+40
+00:01:55,749 --> 00:01:59,412
+Step one is the pencil draft, the actions the model would like.
+
+41
+00:01:59,412 --> 00:02:03,947
+Step two is the inked verdict: ten written policy rules decide the actions and
+
+42
+00:02:03,947 --> 00:02:05,342
+who has to approve them.
+
+43
+00:02:05,342 --> 00:02:09,586
+Here rule R7 closes the case and reminds the customer about the recurring
+
+44
+00:02:09,586 --> 00:02:09,993
+charge.
+
+45
+00:02:09,993 --> 00:02:12,377
+The model never blocks a card on its own.
+
+46
+00:02:12,378 --> 00:02:13,512
+Now a real fraud.
+
+47
+00:02:13,512 --> 00:02:19,247
+HHG-010 is a one thousand dollar online purchase from a device never seen on this card
+
+48
+00:02:19,247 --> 00:02:21,115
+seven times its usual spend.
+
+49
+00:02:21,115 --> 00:02:23,316
+The customer says it wasn't them.
+
+50
+00:02:23,316 --> 00:02:26,383
+Rule R2 blocks the card, routed to a team lead
+
+51
+00:02:26,383 --> 00:02:29,785
+and because the exposure is over a thousand dollars
+
+52
+00:02:29,785 --> 00:02:32,319
+a suspicious activity report is filed.
+
+53
+00:02:32,321 --> 00:02:34,005
+Here is why the graph matters.
+
+54
+00:02:34,005 --> 00:02:36,867
+This held out case was a real, legitimate purchase.
+
+55
+00:02:36,867 --> 00:02:40,122
+Plain RAG read similar sounding notes and called it fraud.
+
+56
+00:02:40,122 --> 00:02:42,479
+GraphRAG and the agent looked at the graph
+
+57
+00:02:42,479 --> 00:02:46,632
+saw that alerts in this situation were mostly cleared, and let it through.
+
+58
+00:02:59,968 --> 00:03:02,390
+Graphite also finds fraud nobody reported.
+
+59
+00:03:02,390 --> 00:03:03,544
+With no alert at all
+
+60
+00:03:03,544 --> 00:03:07,639
+a sweep links customers who share devices that were new to each of them
+
+61
+00:03:07,639 --> 00:03:11,157
+and TigerGraph's connected components groups them into rings.
+
+62
+00:03:11,157 --> 00:03:15,079
+This one links seven customers through twenty three device profiles.
+
+63
+00:03:15,079 --> 00:03:19,058
+The agent flagged eight cards and filed a suspicious activity report.
+
+64
+00:03:19,058 --> 00:03:20,731
+Two other rings were cleared.
+
+65
+00:03:20,731 --> 00:03:22,634
+It doesn't call every ring fraud.
+
+66
+00:03:22,637 --> 00:03:25,638
+Every finished case is written back into the graph
+
+67
+00:03:25,638 --> 00:03:27,738
+so the next investigation finds it.
+
+68
+00:03:27,738 --> 00:03:32,179
+The numbers, every raw answer, and every decision we made are in the repo.
+
+69
+00:03:32,179 --> 00:03:33,199
+This is Graphite.

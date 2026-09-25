@@ -1,0 +1,283 @@
+titleCard:
+  title: "Graphite"
+  subtitle: "An agentic fraud investigator on TigerGraph"
+  duration: 3000
+app:
+  url: "http://localhost:8765/"
+  viewport:
+    width: 1600
+    height: 900
+  scale: 2
+  zoom: 1
+  colorScheme: "light"
+tts:
+  provider: "say"
+  voice: "Samantha"
+  speed: 1
+recording:
+  outputDir: "."
+  fps: 30
+segments:
+  - id: "intro"
+    narration: "Fraud teams get more alerts than they can investigate, and many of them are false alarms. Graphite investigates each alert through a TigerGraph graph of five hundred and ninety thousand card transactions. The model proposes a verdict, and a fixed policy engine decides what the bank actually does."
+    intent: "show the case board with the 20 exam cases"
+    actions:
+      - type: "wait"
+        duration: 3000
+    timing: "parallel"
+    audioDuration: 16546
+    videoDuration: 16549
+  - id: "board"
+    narration: "On the twenty exam cases, the agent called ten fraud, nine legitimate, and left one uncertain. Each row shows what triggered the alert, the final fraud probability, and the pattern. Rows marked S A R had a suspicious activity report filed."
+    intent: "board"
+    actions:
+      - type: "scroll"
+        target:
+          selector: ".row[data-id=\"HHG-020\"]"
+      - type: "wait"
+        duration: 5000
+      - type: "scroll"
+        target:
+          selector: ".row[data-id=\"HHG-001\"]"
+      - type: "wait"
+        duration: 3000
+    timing: "parallel"
+    audioDuration: 14577
+    videoDuration: 14580
+  - id: "design"
+    narration: "We compare three pipelines on one model, G P T O S S one twenty B. Plain RAG, GraphRAG, and an agent that chooses its own graph queries. They share the same prompt, the same output, and the same ten policy rules. Only retrieval changes. Every graph query goes through TigerGraph's official M C P server."
+    intent: "flip the tier selector through the three pipelines"
+    actions:
+      - type: "select"
+        target:
+          selector: "#tier"
+        option: "graphrag"
+        done:
+          stable: 800
+          timeout: 60000
+      - type: "wait"
+        duration: 2500
+      - type: "select"
+        target:
+          selector: "#tier"
+        option: "rag"
+        done:
+          stable: 800
+          timeout: 60000
+      - type: "wait"
+        duration: 2500
+      - type: "select"
+        target:
+          selector: "#tier"
+        option: "agentic"
+        done:
+          stable: 800
+          timeout: 60000
+      - type: "wait"
+        duration: 3000
+    timing: "parallel"
+    audioDuration: 19240
+    videoDuration: 19332
+  - id: "scoreboard"
+    narration: "First we made the test hard to game. In the bank's history, the risk score alone gets ninety one percent, so our held out cases are matched on it. Fraud and cleared cases carry the same score. On a hundred and sixty eight held out cases, RAG gets forty four percent. GraphRAG gets seventy three point eight. The agent gets seventy five point six, with the best ranking and calibration. Same model. The graph is the difference."
+    intent: "select held-out eval and open the scoreboard"
+    actions:
+      - type: "select"
+        target:
+          selector: "#which"
+        option: "eval"
+        done:
+          stable: 800
+          timeout: 60000
+      - type: "click"
+        target:
+          selector: "#t-score"
+        done:
+          stable: 800
+          timeout: 60000
+      - type: "wait"
+        duration: 9000
+      - type: "hover"
+        target:
+          selector: "#score table"
+      - type: "wait"
+        duration: 8000
+    timing: "parallel"
+    audioDuration: 25091
+    videoDuration: 25095
+  - id: "tokens"
+    narration: "Token efficiency is scored too. RAG uses about thirteen hundred tokens a case, GraphRAG about twenty seven hundred, and the agent about forty eight hundred, over two and a half model calls. The graph does the counting, so the model reads a handful of facts instead of hundreds of rows."
+    intent: "tokens"
+    actions:
+      - type: "wait"
+        duration: 3000
+      - type: "scroll"
+        target:
+          selector: "#score table tr:last-child"
+      - type: "wait"
+        duration: 9000
+    timing: "parallel"
+    audioDuration: 16463
+    videoDuration: 16465
+  - id: "dispute"
+    narration: "Here is a dispute done right. The customer says they never made a forty nine dollar purchase. Before the agent starts, the pipeline checks the card's own history, and finds fifty three earlier forty nine dollar charges. It's their subscription. Verdict: legitimate. Nothing blocked, one model call, under two thousand tokens."
+    intent: "back to cases, exam set, agentic, open HHG-003"
+    actions:
+      - type: "click"
+        target:
+          selector: "#t-cases"
+        done:
+          stable: 800
+          timeout: 60000
+      - type: "select"
+        target:
+          selector: "#which"
+        option: "exam"
+        done:
+          stable: 800
+          timeout: 60000
+      - type: "click"
+        target:
+          selector: ".row[data-id=\"HHG-003\"]"
+        done:
+          stable: 800
+          timeout: 60000
+      - type: "wait"
+        duration: 6000
+      - type: "scroll"
+        target:
+          selector: "#detail"
+      - type: "wait"
+        duration: 8000
+    timing: "parallel"
+    audioDuration: 19443
+    videoDuration: 19445
+  - id: "policy"
+    narration: "Look at the bottom. Step one is the pencil draft, the actions the model would like. Step two is the inked verdict: ten written policy rules decide the actions and who has to approve them. Here rule R7 closes the case and reminds the customer about the recurring charge. The model never blocks a card on its own."
+    intent: "policy"
+    actions:
+      - type: "scroll"
+        target:
+          selector: "#detail > :last-child"
+      - type: "wait"
+        duration: 14000
+    timing: "parallel"
+    audioDuration: 17733
+    videoDuration: 17734
+  - id: "fraud"
+    narration: "Now a real fraud. HHG-010 is a one thousand dollar online purchase from a device never seen on this card, seven times its usual spend. The customer says it wasn't them. Rule R2 blocks the card, routed to a team lead, and because the exposure is over a thousand dollars, a suspicious activity report is filed."
+    intent: "fraud"
+    actions:
+      - type: "click"
+        target:
+          selector: ".row[data-id=\"HHG-010\"]"
+        done:
+          stable: 800
+          timeout: 60000
+      - type: "wait"
+        duration: 7000
+      - type: "scroll"
+        target:
+          selector: "#detail > :last-child"
+      - type: "wait"
+        duration: 9000
+    timing: "parallel"
+    audioDuration: 19941
+    videoDuration: 19943
+  - id: "false-alarm"
+    narration: "Here is why the graph matters. This held out case was a real, legitimate purchase. Plain RAG read similar sounding notes and called it fraud. GraphRAG and the agent looked at the graph, saw that alerts in this situation were mostly cleared, and let it through."
+    intent: "false-alarm"
+    actions:
+      - type: "select"
+        target:
+          selector: "#which"
+        option: "eval"
+        done:
+          stable: 800
+          timeout: 60000
+      - type: "select"
+        target:
+          selector: "#tier"
+        option: "rag"
+        done:
+          stable: 800
+          timeout: 60000
+      - type: "click"
+        target:
+          selector: ".row[data-id=\"CC-0574\"]"
+        done:
+          stable: 800
+          timeout: 60000
+      - type: "wait"
+        duration: 6000
+      - type: "select"
+        target:
+          selector: "#tier"
+        option: "graphrag"
+        done:
+          stable: 800
+          timeout: 60000
+      - type: "click"
+        target:
+          selector: ".row[data-id=\"CC-0574\"]"
+        done:
+          stable: 800
+          timeout: 60000
+      - type: "wait"
+        duration: 5000
+      - type: "select"
+        target:
+          selector: "#tier"
+        option: "agentic"
+        done:
+          stable: 800
+          timeout: 60000
+      - type: "click"
+        target:
+          selector: ".row[data-id=\"CC-0574\"]"
+        done:
+          stable: 800
+          timeout: 60000
+      - type: "wait"
+        duration: 5000
+    timing: "parallel"
+    audioDuration: 14311
+    videoDuration: 27647
+  - id: "ring"
+    narration: "Graphite also finds fraud nobody reported. With no alert at all, a sweep links customers who share devices that were new to each of them, and TigerGraph's connected components groups them into rings. This one links seven customers through twenty three device profiles. The agent flagged eight cards and filed a suspicious activity report. Two other rings were cleared. It doesn't call every ring fraud."
+    intent: "switch to proactive rings, open PRO-003"
+    actions:
+      - type: "select"
+        target:
+          selector: "#tier"
+        option: "agentic"
+        done:
+          stable: 800
+          timeout: 60000
+      - type: "select"
+        target:
+          selector: "#which"
+        option: "proactive"
+        done:
+          stable: 800
+          timeout: 60000
+      - type: "click"
+        target:
+          selector: ".row[data-id=\"PRO-003\"]"
+        done:
+          stable: 800
+          timeout: 60000
+      - type: "wait"
+        duration: 12000
+    timing: "parallel"
+    audioDuration: 22666
+    videoDuration: 22669
+  - id: "close"
+    narration: "Every finished case is written back into the graph, so the next investigation finds it. The numbers, every raw answer, and every decision we made are in the repo. This is Graphite."
+    intent: "hold on the ring graph"
+    actions:
+      - type: "wait"
+        duration: 2000
+    timing: "parallel"
+    audioDuration: 10562
+    videoDuration: 10564
