@@ -1,0 +1,131 @@
+{
+  "case_id": "HHG-004",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.92,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3583227"
+    ],
+    "first_suspicious_txn_id": "3583227",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 128.33,
+    "evidence": [
+      {
+        "claim": "Unrecognized online purchase $128.33, 3.6\u00d7 average amount",
+        "source": "graph",
+        "ref": "3583227",
+        "entity_ids": [
+          "C08106-K1"
+        ]
+      },
+      {
+        "claim": "No recent small authorisations typical of card testing",
+        "source": "graph",
+        "ref": "3580804",
+        "entity_ids": [
+          "C08106-K1"
+        ]
+      },
+      {
+        "claim": "Customer has four prior confirmed card\u2011not\u2011present fraud cases on same card",
+        "source": "document",
+        "ref": "CC-1736,CC-2121,CC-3778",
+        "entity_ids": [
+          "C08106-K1"
+        ]
+      },
+      {
+        "claim": "Situation memory shows 100% fraud in similar alerts (15/15)",
+        "source": "document",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": []
+      },
+      {
+        "claim": "Risk score 0.34 but base rate for this alert type is 0.90 after correction",
+        "source": "document",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-1736",
+      "CC-2121",
+      "CC-3778"
+    ],
+    "summary": "The flagged online purchase is unusually large for this card and the cardholder has a history of confirmed card\u2011not\u2011present fraud. No evidence of card testing or new device is present, and similar past alerts were all fraud, leading to a high fraud probability.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.92 with 4 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.92 with 4 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.92 backed by 4 independent pieces of evidence",
+  "tool_calls": 9,
+  "tokens": 2180,
+  "latency_s": 17.9,
+  "_initial_probability": 0.92,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-12-29 07:53:54",
+    "label": null,
+    "label_pattern": null,
+    "eval_slice": null,
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-0893",
+        "CC-3931",
+        "CC-1399",
+        "CC-4437",
+        "CC-4538"
+      ],
+      "precedent": [],
+      "prompt_chars": 3577
+    },
+    "card_id": "C08106-K1",
+    "customer_id": "C08106",
+    "usage_log": [
+      {
+        "prompt": 1725,
+        "completion": 455
+      }
+    ]
+  }
+}

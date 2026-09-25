@@ -1,0 +1,128 @@
+{
+  "case_id": "HHG-016",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.934,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3534820"
+    ],
+    "first_suspicious_txn_id": "3534820",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 59.67,
+    "evidence": [
+      {
+        "claim": "Transaction is online and device is new for this card",
+        "source": "graph",
+        "ref": "3534820",
+        "entity_ids": [
+          "C09988-K1"
+        ]
+      },
+      {
+        "claim": "Customer reports the purchase as unauthorized",
+        "source": "document",
+        "ref": "customer_report",
+        "entity_ids": [
+          "C09988"
+        ]
+      },
+      {
+        "claim": "Similar confirmed fraud cases involved new devices and online CNP fraud",
+        "source": "document",
+        "ref": "CC-2578,CC-2955,CC-2732,CC-4654",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer, shown the transaction details, maintains they did not make it and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-2578",
+      "CC-2955",
+      "CC-2732",
+      "CC-4654"
+    ],
+    "summary": "The $59.67 online purchase was made from a new Windows/Edge device, matching a known pattern of card\u2011not\u2011present fraud on new devices. The cardholder reports it as unauthorized, and several prior confirmed cases show the same device\u2011new behavior. This strongly suggests fraudulent activity.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 2,
+      "assumed_response": "Customer, shown the transaction details, maintains they did not make it and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: customer dispute"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.78 to 0.93; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 1,
+  "tokens": 1615,
+  "latency_s": 9.1,
+  "_initial_probability": 0.78,
+  "_meta": {
+    "tier": "rag",
+    "t_end": "2016-12-12 01:39:08",
+    "label": null,
+    "label_pattern": null,
+    "eval_slice": null,
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-2578",
+        "CC-2955",
+        "CC-2732",
+        "CC-4654",
+        "CC-2625"
+      ]
+    },
+    "card_id": "C09988-K1",
+    "customer_id": "C09988",
+    "usage_log": [
+      {
+        "prompt": 1254,
+        "completion": 361
+      }
+    ]
+  }
+}

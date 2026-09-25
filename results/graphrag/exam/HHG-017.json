@@ -1,0 +1,144 @@
+{
+  "case_id": "HHG-017",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.907,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3450629"
+    ],
+    "first_suspicious_txn_id": "3450436",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 100.09,
+    "evidence": [
+      {
+        "claim": "Three consecutive $100\u2011range online purchases in the same region using the same proxy device",
+        "source": "graph",
+        "ref": "FLAGGED 3450629",
+        "entity_ids": [
+          "3450436",
+          "3450503",
+          "3450629"
+        ]
+      },
+      {
+        "claim": "Device profile has 7 confirmed fraud cases and is used on many cards, with 30% new\u2011to\u2011account uses",
+        "source": "document",
+        "ref": "DEVICE PROFILE",
+        "entity_ids": []
+      },
+      {
+        "claim": "Similar alerts (12/15) were confirmed fraud, mostly card_not_present_fraud",
+        "source": "document",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": []
+      },
+      {
+        "claim": "Recent confirmed fraud cases (CC-5181, CC-5217, CC-5345) involved the same device profile and proxy use",
+        "source": "document",
+        "ref": "CLOSED CASES SHARING STRUCTURE",
+        "entity_ids": [
+          "CC-5181",
+          "CC-5217",
+          "CC-5345"
+        ]
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-4358",
+      "CC-1896"
+    ],
+    "summary": "The transaction is part of a pattern of three similar online purchases using a proxy device, matching the device\u2019s fraud history and the high fraud rate in comparable alerts. No tiny test authorizations are present, but the proxy and repeat amounts suggest card\u2011not\u2011present fraud. Probability of fraud is elevated to about 71%.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 10,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.71 to 0.91; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 9,
+  "tokens": 2773,
+  "latency_s": 22.6,
+  "_initial_probability": 0.71,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-11-12 00:46:24",
+    "label": null,
+    "label_pattern": null,
+    "eval_slice": null,
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-1404",
+        "CC-0994",
+        "CC-5227",
+        "CC-0909",
+        "CC-0910"
+      ],
+      "precedent": [
+        "CC-5172",
+        "CC-5181",
+        "CC-5217",
+        "CC-5292",
+        "CC-5345"
+      ],
+      "prompt_chars": 4997
+    },
+    "card_id": "C04570-K1",
+    "customer_id": "C04570",
+    "usage_log": [
+      {
+        "prompt": 2217,
+        "completion": 556
+      }
+    ]
+  }
+}

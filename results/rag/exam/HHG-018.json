@@ -1,0 +1,108 @@
+{
+  "case_id": "HHG-018",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.143,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Customer reports transaction 3491361 was not made by them",
+        "source": "document",
+        "ref": "ALERT (customer_report)",
+        "entity_ids": [
+          "C02354"
+        ]
+      },
+      {
+        "claim": "Customer, shown the merchant and date, recognizes the transaction and withdraws the dispute",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-5463",
+      "CC-3927",
+      "CC-3316",
+      "CC-5413",
+      "CC-2866"
+    ],
+    "summary": "The cardholder disputes a single $39.08 in\u2011person purchase. No pattern of testing, CNP fraud, or out\u2011of\u2011region use is evident, and similar past cases were cleared after travel confirmation. Fraud probability is modestly below 0.5.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 2,
+      "assumed_response": "Customer, shown the merchant and date, recognizes the transaction and withdraws the dispute"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: customer dispute"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: single signal below 0.70, verify before blocking"
+      }
+    ],
+    "final": [
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: customer confirmed the transaction"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.40 to 0.14; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['CLOSE_NO_FRAUD']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "fraud not confirmed or strongly suspected, 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 1,
+  "tokens": 1236,
+  "latency_s": 5.2,
+  "_initial_probability": 0.4,
+  "_meta": {
+    "tier": "rag",
+    "t_end": "2016-11-27 14:41:26",
+    "label": null,
+    "label_pattern": null,
+    "eval_slice": null,
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-5463",
+        "CC-3927",
+        "CC-3316",
+        "CC-5413",
+        "CC-2866"
+      ]
+    },
+    "card_id": "C02354-K2",
+    "customer_id": "C02354",
+    "usage_log": [
+      {
+        "prompt": 905,
+        "completion": 331
+      }
+    ]
+  }
+}

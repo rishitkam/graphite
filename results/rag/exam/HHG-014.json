@@ -1,0 +1,166 @@
+{
+  "case_id": "HHG-014",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.92,
+    "pattern": "undocumented",
+    "pattern_description": "Multiple cards this month show online purchases from the same previously unseen Samsung SM-G935F device behind an anonymous proxy, matching several confirmed fraud cases; indicates coordinated fraud across accounts.",
+    "affected_txn_ids": [
+      "3478561"
+    ],
+    "first_suspicious_txn_id": "3478561",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 74.96,
+    "evidence": [
+      {
+        "claim": "Transaction 3478561 used a new, never\u2011seen device SM\u2011G935F behind an anonymous proxy",
+        "source": "graph",
+        "ref": "3478561",
+        "entity_ids": [
+          "C13487-K1"
+        ]
+      },
+      {
+        "claim": "Case CC-2971 confirmed fraud using the same device profile on a different card",
+        "source": "document",
+        "ref": "CC-2971",
+        "entity_ids": []
+      },
+      {
+        "claim": "Case CC-3035 confirmed fraud using the same device profile on a different card",
+        "source": "document",
+        "ref": "CC-3035",
+        "entity_ids": []
+      },
+      {
+        "claim": "Case CC-2985 confirmed fraud using the same device profile on a different card",
+        "source": "document",
+        "ref": "CC-2985",
+        "entity_ids": []
+      },
+      {
+        "claim": "Case CC-2649 confirmed fraud using the same device profile on a different card",
+        "source": "document",
+        "ref": "CC-2649",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-2971",
+      "CC-3035",
+      "CC-2985",
+      "CC-2649"
+    ],
+    "summary": "The flagged online purchase originates from a new Samsung device seen on multiple cards this month, matching several documented fraud cases. This cross\u2011card device usage points to coordinated undocumented fraud. Probability of fraud is high.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.92 with 5 independent pieces of evidence"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6: every card sharing SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R9: undocumented coordinated abuse"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "coordinated or undocumented pattern, R9 and 3a"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.92 with 5 independent pieces of evidence"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6: every card sharing SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R9: undocumented coordinated abuse"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "coordinated or undocumented pattern, R9 and 3a"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": true,
+    "reason": "coordinated or undocumented pattern, R9 and 3a",
+    "narrative": "The bank\u2019s monitoring system identified customer C13487 using card C13487\u2011K1 for a single online purchase of $74.96 (transaction 3478561) on 22\u202fNovember\u202f2016 at 16:11:00. The transaction was processed through the bank\u2019s online channel and billed to region\u202f191.0. The purchase was made from a Samsung SM\u2011G935F device (Build/NRD90M, Android\u202f7.0, Chrome\u202f62.0) that had never been seen on any of the bank\u2019s accounts and was routed through an anonymous proxy IP address. The same device profile has been linked to confirmed fraudulent activity in prior cases CC\u20112971, CC\u20113035, CC\u20112985 and CC\u20112649, each involving different cards but the identical SM\u2011G935F fingerprint and proxy usage. No other cards or device profiles are currently connected to this transaction. The convergence of a previously unseen device, the use of an anonymous proxy, and the repeat appearance of this exact fingerprint in multiple confirmed fraud cases constitute the specific evidence that makes this activity suspicious. The total amount in question is $74.96.",
+    "subjects": [
+      "C13487",
+      "C13487-K1"
+    ],
+    "total_amount_usd": 74.96,
+    "activity_dates": [
+      "2016-11-22",
+      "2016-11-22"
+    ]
+  },
+  "stop_reason": "probability 0.92 backed by 5 independent pieces of evidence",
+  "tool_calls": 1,
+  "tokens": 2674,
+  "latency_s": 22.5,
+  "_initial_probability": 0.92,
+  "_meta": {
+    "tier": "rag",
+    "t_end": "2016-11-22 20:11:00",
+    "label": null,
+    "label_pattern": null,
+    "eval_slice": null,
+    "calls": 2,
+    "trace": {
+      "retrieved": [
+        "CC-2971",
+        "CC-3035",
+        "CC-2985",
+        "CC-2649",
+        "CC-4749"
+      ]
+    },
+    "card_id": "C13487-K1",
+    "customer_id": "C13487",
+    "usage_log": [
+      {
+        "prompt": 1218,
+        "completion": 629
+      },
+      {
+        "prompt": 548,
+        "completion": 279
+      }
+    ]
+  }
+}

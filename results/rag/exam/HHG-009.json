@@ -1,0 +1,114 @@
+{
+  "case_id": "HHG-009",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.097,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Customer reports unauthorized $30.02 online purchase",
+        "source": "document",
+        "ref": "3581141",
+        "entity_ids": [
+          "C08299-K1"
+        ]
+      },
+      {
+        "claim": "Similar past cases with same amount and region were cleared after cardholder confirmed travel",
+        "source": "document",
+        "ref": "CC-3362,CC-0624,CC-3050,CC-1702,CC-5463",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer, shown the merchant and date, recognizes the transaction and withdraws the dispute",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-3362",
+      "CC-0624",
+      "CC-3050",
+      "CC-1702",
+      "CC-5463"
+    ],
+    "summary": "The $30.02 online purchase aligns with cleared historical cases where travel to the billing region was confirmed, suggesting the alert is a false positive.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 2,
+      "assumed_response": "Customer, shown the merchant and date, recognizes the transaction and withdraws the dispute"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: customer dispute"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: customer confirmed the transaction"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.30 to 0.10; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['CLOSE_NO_FRAUD']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "fraud not confirmed or strongly suspected, 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 1,
+  "tokens": 1233,
+  "latency_s": 5.3,
+  "_initial_probability": 0.3,
+  "_meta": {
+    "tier": "rag",
+    "t_end": "2016-12-28 17:10:53",
+    "label": null,
+    "label_pattern": null,
+    "eval_slice": null,
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-3362",
+        "CC-0624",
+        "CC-3050",
+        "CC-1702",
+        "CC-5463"
+      ]
+    },
+    "card_id": "C08299-K1",
+    "customer_id": "C08299",
+    "usage_log": [
+      {
+        "prompt": 904,
+        "completion": 329
+      }
+    ]
+  }
+}

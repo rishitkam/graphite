@@ -1,0 +1,133 @@
+{
+  "case_id": "HHG-011",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.066,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Recurring $131.30 purchases of product C observed 14 times prior (median gap 7 days)",
+        "source": "graph",
+        "ref": "RECURRING CHECK",
+        "entity_ids": []
+      },
+      {
+        "claim": "Amount is 3.3x average but within known recurring pattern",
+        "source": "graph",
+        "ref": "FLAGGED 3583368",
+        "entity_ids": [
+          "3583368"
+        ]
+      },
+      {
+        "claim": "No prior use of this device on the card, but device is used by multiple customers without fraud history",
+        "source": "graph",
+        "ref": "DEVICE PROFILE",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer has prior confirmed fraud cases but also a cleared case; however this transaction matches recurring behavior",
+        "source": "graph",
+        "ref": "CUSTOMER C11923",
+        "entity_ids": []
+      },
+      {
+        "claim": "Base rate for similar alerts is 0.38 but recurring pattern lowers risk",
+        "source": "graph",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer, shown the merchant and date, recognizes the transaction and withdraws the dispute",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [],
+    "summary": "The flagged transaction matches a well\u2011established weekly $131.30 purchase of product C, seen 14 times before, indicating a legitimate recurring pattern. Although the device is new to this card, it has no fraud history. Consequently the fraud probability is low.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 10,
+      "assumed_response": "Customer, shown the merchant and date, recognizes the transaction and withdraws the dispute"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R7: disputed charge"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: matches the customer's own recurring pattern"
+      },
+      {
+        "action": "WARN_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: remind customer of the recurring charge, do not block"
+      }
+    ],
+    "final": [
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: customer confirmed the transaction"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.22 to 0.07; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER', 'WARN_CUSTOMER'] to ['CLOSE_NO_FRAUD']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "fraud not confirmed or strongly suspected, 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 9,
+  "tokens": 2725,
+  "latency_s": 20.4,
+  "_initial_probability": 0.22,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-12-29 06:27:44",
+    "label": null,
+    "label_pattern": null,
+    "eval_slice": null,
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-2746",
+        "CC-2985",
+        "CC-3035",
+        "CC-5044",
+        "CC-2333"
+      ],
+      "precedent": [],
+      "prompt_chars": 5040
+    },
+    "card_id": "C11923-K2",
+    "customer_id": "C11923",
+    "usage_log": [
+      {
+        "prompt": 2279,
+        "completion": 446
+      }
+    ]
+  }
+}

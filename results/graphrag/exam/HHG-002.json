@@ -1,0 +1,117 @@
+{
+  "case_id": "HHG-002",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.85,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3478782"
+    ],
+    "first_suspicious_txn_id": "3478782",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 292.36,
+    "evidence": [
+      {
+        "claim": "Amount $292.36 is 6.5\u00d7 the card's average $44.66",
+        "source": "graph",
+        "ref": "3478782",
+        "entity_ids": [
+          "C11891-K1"
+        ]
+      },
+      {
+        "claim": "All 35 prior transactions were online product C, but none at this high amount",
+        "source": "graph",
+        "ref": "3478782",
+        "entity_ids": [
+          "C11891-K1"
+        ]
+      },
+      {
+        "claim": "Previous confirmed fraud case CC-4160 on same card (card_not_present_fraud)",
+        "source": "document",
+        "ref": "CC-4160",
+        "entity_ids": [
+          "C11891-K1"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-4160"
+    ],
+    "summary": "The transaction is unusually large for this card and mirrors a prior confirmed card\u2011not\u2011present fraud on the same card. No small test authorizations are present, and the card\u2019s history is exclusively online product C, making this outlier suspicious. Probability of fraud is high.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 2 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 2 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.85 backed by 2 independent pieces of evidence",
+  "tool_calls": 9,
+  "tokens": 2002,
+  "latency_s": 17.1,
+  "_initial_probability": 0.85,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-11-22 23:27:07",
+    "label": null,
+    "label_pattern": null,
+    "eval_slice": null,
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-2537",
+        "CC-3639",
+        "CC-4591",
+        "CC-0034",
+        "CC-4158"
+      ],
+      "precedent": [],
+      "prompt_chars": 3195
+    },
+    "card_id": "C11891-K1",
+    "customer_id": "C11891",
+    "usage_log": [
+      {
+        "prompt": 1582,
+        "completion": 420
+      }
+    ]
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "case_id": "HHG-007",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.105,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Transaction amount and region match the card's long\u2011term pattern",
+        "source": "graph",
+        "ref": "3514948",
+        "entity_ids": [
+          "C09933-K2"
+        ]
+      },
+      {
+        "claim": "No online activity, new device, or proxy indicators present",
+        "source": "graph",
+        "ref": "3514948",
+        "entity_ids": [
+          "C09933-K2"
+        ]
+      },
+      {
+        "claim": "Recent transaction stream shows typical in\u2011person purchases of similar size",
+        "source": "graph",
+        "ref": "3514948",
+        "entity_ids": [
+          "C09933-K2"
+        ]
+      },
+      {
+        "claim": "Customer confirms they made this transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [],
+    "summary": "The flagged purchase aligns with the cardholder\u2019s usual in\u2011person spending in region 264.0, with no device or regional anomalies and a normal amount relative to the card\u2019s average. Despite a high model risk score and a history of prior fraud alerts, the specific evidence points to a legitimate transaction.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 10,
+      "assumed_response": "Customer confirms they made this transaction"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: single signal below 0.70, verify before blocking"
+      }
+    ],
+    "final": [
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: customer confirmed the transaction"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.32 to 0.10; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['CLOSE_NO_FRAUD']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "fraud not confirmed or strongly suspected, 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 9,
+  "tokens": 2743,
+  "latency_s": 19.0,
+  "_initial_probability": 0.32,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-12-05 03:46:14",
+    "label": null,
+    "label_pattern": null,
+    "eval_slice": null,
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-0954",
+        "CC-4329",
+        "CC-0994",
+        "CC-5448",
+        "CC-4197"
+      ],
+      "precedent": [
+        "CC-0017",
+        "CC-0022",
+        "CC-0059",
+        "CC-0063",
+        "CC-0087"
+      ],
+      "prompt_chars": 5229
+    },
+    "card_id": "C09933-K2",
+    "customer_id": "C09933",
+    "usage_log": [
+      {
+        "prompt": 2390,
+        "completion": 353
+      }
+    ]
+  }
+}

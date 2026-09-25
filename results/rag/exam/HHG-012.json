@@ -1,0 +1,127 @@
+{
+  "case_id": "HHG-012",
+  "case": {
+    "status": "open",
+    "verdict": "uncertain",
+    "fraud_probability": 0.8,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3553342"
+    ],
+    "first_suspicious_txn_id": "3553342",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 30.91,
+    "evidence": [
+      {
+        "claim": "Single $30.91 in\u2011person transaction with risk_score 0.55",
+        "source": "document",
+        "ref": "FLAGGED TRANSACTION RECORD",
+        "entity_ids": [
+          "3553342"
+        ]
+      },
+      {
+        "claim": "Similar past cases with higher scores were cleared after cardholder confirmed travel",
+        "source": "document",
+        "ref": "SIMILAR PAST CASES",
+        "entity_ids": [
+          "CC-0994",
+          "CC-4197",
+          "CC-0623",
+          "CC-0969",
+          "CC-4329"
+        ]
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0994",
+      "CC-4197",
+      "CC-0623",
+      "CC-0969",
+      "CC-4329"
+    ],
+    "summary": "The transaction is low\u2011value, in\u2011person, and mirrors several prior alerts that were cleared after confirming legitimate travel. No pattern of testing, CNP, or out\u2011of\u2011region misuse is evident. Recommend marking as legitimate.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 2,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.50 to 0.80; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 1,
+  "tokens": 1281,
+  "latency_s": 9.2,
+  "_initial_probability": 0.5,
+  "_meta": {
+    "tier": "rag",
+    "t_end": "2016-12-18 05:00:31",
+    "label": null,
+    "label_pattern": null,
+    "eval_slice": null,
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-0994",
+        "CC-4197",
+        "CC-0623",
+        "CC-0969",
+        "CC-4329"
+      ]
+    },
+    "card_id": "C05876-K2",
+    "customer_id": "C05876",
+    "usage_log": [
+      {
+        "prompt": 917,
+        "completion": 364
+      }
+    ]
+  }
+}

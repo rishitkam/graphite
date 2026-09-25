@@ -1,0 +1,125 @@
+{
+  "case_id": "HHG-008",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.105,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Recurring charge of $55.68 product C appears 7 times previously on this card",
+        "source": "graph",
+        "ref": "RECURRING CHECK",
+        "entity_ids": [
+          "C13171-K2"
+        ]
+      },
+      {
+        "claim": "Amount is 1.0x the card\u2019s average and product C accounts for 898 of 899 prior transactions",
+        "source": "graph",
+        "ref": "CARD C13171-K2 history",
+        "entity_ids": [
+          "C13171-K2"
+        ]
+      },
+      {
+        "claim": "Customer has multiple prior confirmed fraud cases but also a cleared case, indicating mixed history; however this transaction aligns with normal pattern",
+        "source": "document",
+        "ref": "CUSTOMER C13171",
+        "entity_ids": [
+          "C13171"
+        ]
+      },
+      {
+        "claim": "Customer, shown the merchant and date, recognizes the transaction and withdraws the dispute",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [],
+    "summary": "The flagged transaction mirrors a well\u2011established $55.68 recurring purchase pattern on card C13171\u2011K2, and its amount and product are typical for this card. Despite a high base fraud rate for similar alerts, the strong recurring evidence lowers the fraud likelihood. Accordingly, the alert is treated as legitimate.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 10,
+      "assumed_response": "Customer, shown the merchant and date, recognizes the transaction and withdraws the dispute"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R7: disputed charge"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: matches the customer's own recurring pattern"
+      },
+      {
+        "action": "WARN_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: remind customer of the recurring charge, do not block"
+      }
+    ],
+    "final": [
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: customer confirmed the transaction"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.32 to 0.10; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER', 'WARN_CUSTOMER'] to ['CLOSE_NO_FRAUD']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "fraud not confirmed or strongly suspected, 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 9,
+  "tokens": 2513,
+  "latency_s": 17.6,
+  "_initial_probability": 0.32,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-12-20 03:08:56",
+    "label": null,
+    "label_pattern": null,
+    "eval_slice": null,
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-2537",
+        "CC-4027",
+        "CC-0657",
+        "CC-3640",
+        "CC-3931"
+      ],
+      "precedent": [],
+      "prompt_chars": 4577
+    },
+    "card_id": "C13171-K2",
+    "customer_id": "C13171",
+    "usage_log": [
+      {
+        "prompt": 2118,
+        "completion": 395
+      }
+    ]
+  }
+}
