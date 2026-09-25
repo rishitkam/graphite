@@ -1,0 +1,143 @@
+{
+  "case_id": "CC-4940",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.92,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3366168"
+    ],
+    "first_suspicious_txn_id": "3360573",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 100.01,
+    "evidence": [
+      {
+        "claim": "Base fraud rate for alerts like this is 90%",
+        "source": "graph",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": [
+          "3366168"
+        ]
+      },
+      {
+        "claim": "A new device (Windows NEW-DEVICE) was used for an online transaction 38.9h before the flagged purchase",
+        "source": "graph",
+        "ref": "CARD ACTIVITY",
+        "entity_ids": [
+          "3360573",
+          "3366168"
+        ]
+      },
+      {
+        "claim": "Recent online activity on the same product (S) and region, but on the established device",
+        "source": "graph",
+        "ref": "CARD ACTIVITY",
+        "entity_ids": [
+          "3365208",
+          "3366168"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-4628"
+    ],
+    "summary": "The flagged $100.01 online purchase matches a pattern of card\u2011not\u2011present fraud on a newly seen device, with a very high contextual fraud base rate (0.90). Recent activity shows the new device was already used for an online charge, supporting the suspicion. Probability of fraud is high.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.92 with 2 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.92 with 2 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.92 backed by 2 independent pieces of evidence",
+  "tool_calls": 5,
+  "tokens": 8594,
+  "latency_s": 47.8,
+  "_initial_probability": 0.92,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-10-15 10:55:33",
+    "label": "fraud",
+    "label_pattern": "card_testing",
+    "eval_slice": "rare_patterns",
+    "calls": 4,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3366168"
+          }
+        },
+        {
+          "tool": "card_activity",
+          "args": {
+            "card_id": "C03738-K2",
+            "hours_before": 48
+          }
+        },
+        {
+          "tool": "device_profile",
+          "args": {
+            "device": "Windows NEW-DEVICE"
+          }
+        }
+      ]
+    },
+    "card_id": "C03738-K2",
+    "customer_id": "C03738",
+    "usage_log": [
+      {
+        "prompt": 1406,
+        "completion": 33
+      },
+      {
+        "prompt": 1784,
+        "completion": 76
+      },
+      {
+        "prompt": 2294,
+        "completion": 122
+      },
+      {
+        "prompt": 2341,
+        "completion": 538
+      }
+    ]
+  }
+}

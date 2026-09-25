@@ -1,0 +1,160 @@
+{
+  "case_id": "CC-1382",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.867,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3117402"
+    ],
+    "first_suspicious_txn_id": "3112929",
+    "connected_card_ids": [],
+    "connected_device_profiles": [
+      "MacOS | Mac OS X 10_9_5 | safari generic | 1440x900"
+    ],
+    "exposure_usd": 99.93,
+    "evidence": [
+      {
+        "claim": "Transaction used a device (MacOS) marked New-to-account for this card",
+        "source": "graph",
+        "ref": "FLAGGED 3117402",
+        "entity_ids": [
+          "3117402"
+        ]
+      },
+      {
+        "claim": "Card C03278\u2011K2 has multiple prior confirmed fraud cases of type card_not_present_new_device",
+        "source": "document",
+        "ref": "CUSTOMER C03278",
+        "entity_ids": [
+          "CC-0519",
+          "CC-0698"
+        ]
+      },
+      {
+        "claim": "Recent 72\u2011hour window shows several other new\u2011device online transactions, indicating a pattern",
+        "source": "graph",
+        "ref": "LAST 72H ON CARD",
+        "entity_ids": [
+          "3112929",
+          "3115041",
+          "3115047",
+          "3117071",
+          "3117402"
+        ]
+      },
+      {
+        "claim": "Device profile is new for 47% of uses and has no confirmed fraud cases bank\u2011wide, but high new\u2011device rate raises risk",
+        "source": "document",
+        "ref": "DEVICE PROFILE",
+        "entity_ids": [
+          "MacOS | Mac OS X 10_9_5 | safari generic | 1440x900"
+        ]
+      },
+      {
+        "claim": "Base rate for similar alerts is 0.19, but similar past cases (5/15) were fraud, mostly card_not_present_new_device",
+        "source": "document",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0519",
+      "CC-0698",
+      "CC-1103",
+      "CC-0629",
+      "CC-0857"
+    ],
+    "summary": "The flagged $99.93 online purchase was made from a device new to the account, mirroring several recent new\u2011device transactions and the card\u2019s history of confirmed card\u2011not\u2011present fraud on new devices. Although the amount is modest, the pattern and prior fraud on this card raise the fraud probability above the baseline.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 10,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.62 to 0.87; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 9,
+  "tokens": 3288,
+  "latency_s": 25.1,
+  "_initial_probability": 0.62,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-07-29 01:21:55",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "dev",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-1103",
+        "CC-0629",
+        "CC-0857",
+        "CC-0609",
+        "CC-0279"
+      ],
+      "precedent": [
+        "CC-0021",
+        "CC-0582",
+        "CC-0007",
+        "CC-0065",
+        "CC-0092"
+      ],
+      "prompt_chars": 5984
+    },
+    "card_id": "C03278-K2",
+    "customer_id": "C03278",
+    "usage_log": [
+      {
+        "prompt": 2614,
+        "completion": 674
+      }
+    ]
+  }
+}

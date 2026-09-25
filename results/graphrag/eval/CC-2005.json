@@ -1,0 +1,147 @@
+{
+  "case_id": "CC-2005",
+  "case": {
+    "status": "open",
+    "verdict": "uncertain",
+    "fraud_probability": 0.83,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3162998"
+    ],
+    "first_suspicious_txn_id": "3162998",
+    "connected_card_ids": [],
+    "connected_device_profiles": [
+      "Windows | Windows 10 | chrome 63.0 | 1366x768"
+    ],
+    "exposure_usd": 100.06,
+    "evidence": [
+      {
+        "claim": "device not previously used on this card",
+        "source": "graph",
+        "ref": "FLAGGED 3162998",
+        "entity_ids": [
+          "C08489-K2"
+        ]
+      },
+      {
+        "claim": "transaction made via transparent proxy",
+        "source": "graph",
+        "ref": "FLAGGED 3162998",
+        "entity_ids": []
+      },
+      {
+        "claim": "new\u2011device usage on card in last 72h (iOS NEW-DEVICE, MacOS NEW-DEVICE)",
+        "source": "graph",
+        "ref": "LAST 72H ON CARD",
+        "entity_ids": []
+      },
+      {
+        "claim": "card has multiple prior out_of_region_use fraud cases",
+        "source": "graph",
+        "ref": "CUSTOMER C08489",
+        "entity_ids": [
+          "C08489-K2"
+        ]
+      },
+      {
+        "claim": "device profile has 9 confirmed fraud cases bank\u2011wide",
+        "source": "graph",
+        "ref": "DEVICE PROFILE",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0949"
+    ],
+    "summary": "The flagged $100.06 online purchase uses a never\u2011seen Windows device and a transparent proxy, matching patterns of card\u2011not\u2011present fraud on new devices. The cardholder\u2019s history includes several out\u2011of\u2011region fraud alerts, raising concern. Adjusted fraud probability to 0.55.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 10,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.55 to 0.83; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 9,
+  "tokens": 3012,
+  "latency_s": 19.7,
+  "_initial_probability": 0.55,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-08-11 03:44:13",
+    "label": "fraud",
+    "label_pattern": "card_not_present_fraud",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-0582",
+        "CC-0082",
+        "CC-1402",
+        "CC-0925",
+        "CC-0987"
+      ],
+      "precedent": [
+        "CC-0222",
+        "CC-1462",
+        "CC-0630",
+        "CC-0940",
+        "CC-0949"
+      ],
+      "prompt_chars": 5664
+    },
+    "card_id": "C08489-K2",
+    "customer_id": "C08489",
+    "usage_log": [
+      {
+        "prompt": 2493,
+        "completion": 519
+      }
+    ]
+  }
+}

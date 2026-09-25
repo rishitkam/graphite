@@ -1,0 +1,128 @@
+{
+  "case_id": "CC-1090",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.066,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Device is new for this account",
+        "source": "graph",
+        "ref": "3095024",
+        "entity_ids": [
+          "C06996-K1"
+        ]
+      },
+      {
+        "claim": "Online channel with no prior proxy flag",
+        "source": "graph",
+        "ref": "3095024",
+        "entity_ids": []
+      },
+      {
+        "claim": "Base fraud rate for similar alerts is 0.08",
+        "source": "document",
+        "ref": "situation_memory",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer confirms they made this transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0846",
+      "CC-0252",
+      "CC-0907"
+    ],
+    "summary": "The transaction is online and uses a device never seen on this card, matching the typical profile of card\u2011not\u2011present fraud on a new device. Base rate for such alerts is low (0.08), raising the probability modestly to about 0.22.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 7,
+      "assumed_response": "Customer confirms they made this transaction"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: customer confirmed the transaction"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.22 to 0.07; actions changed from ['VERIFY_WITH_CUSTOMER'] to ['CLOSE_NO_FRAUD']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "fraud not confirmed or strongly suspected, 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 4,
+  "tokens": 5517,
+  "latency_s": 25.8,
+  "_initial_probability": 0.22,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-07-24 22:03:37",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 3,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3095024"
+          }
+        },
+        {
+          "tool": "recurring_check",
+          "args": {
+            "txn_id": "3095024"
+          }
+        }
+      ]
+    },
+    "card_id": "C06996-K1",
+    "customer_id": "C06996",
+    "usage_log": [
+      {
+        "prompt": 1442,
+        "completion": 33
+      },
+      {
+        "prompt": 1752,
+        "completion": 53
+      },
+      {
+        "prompt": 1813,
+        "completion": 424
+      }
+    ]
+  }
+}

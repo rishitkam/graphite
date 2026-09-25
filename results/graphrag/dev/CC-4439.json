@@ -1,0 +1,141 @@
+{
+  "case_id": "CC-4439",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.95,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3337751"
+    ],
+    "first_suspicious_txn_id": "3337751",
+    "connected_card_ids": [],
+    "connected_device_profiles": [
+      "iOS Device | iOS 10.2.1 | mobile safari generic | 2048x1536"
+    ],
+    "exposure_usd": 150.08,
+    "evidence": [
+      {
+        "claim": "Transaction amount 2.5\u00d7 card average and in a region rarely used",
+        "source": "graph",
+        "ref": "FLAGGED 3337751",
+        "entity_ids": [
+          "3337751"
+        ]
+      },
+      {
+        "claim": "Device never used before on this card (new-to-account)",
+        "source": "graph",
+        "ref": "FLAGGED 3337751",
+        "entity_ids": [
+          "3337751"
+        ]
+      },
+      {
+        "claim": "Similar alerts (15) all confirmed fraud, mostly card_not_present_fraud",
+        "source": "document",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": []
+      },
+      {
+        "claim": "Device profile has prior confirmed fraud cases (card_not_present_new_device) on other cards",
+        "source": "graph",
+        "ref": "DEVICE PROFILE",
+        "entity_ids": [
+          "C07910-K1"
+        ]
+      },
+      {
+        "claim": "No recent low\u2011value authorisations that would indicate card testing",
+        "source": "graph",
+        "ref": "LAST 72H ON CARD",
+        "entity_ids": [
+          "3332947"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-2647",
+      "CC-3230",
+      "CC-3763"
+    ],
+    "summary": "The $150.08 online purchase is unusually large for this card and occurs on a device never seen before on the account. Historical alerts with the same context were all fraud, and the device has been linked to other confirmed card\u2011not\u2011present fraud cases. These factors strongly suggest card_not_present_fraud.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.95 with 4 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.95 with 4 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.95 backed by 4 independent pieces of evidence",
+  "tool_calls": 9,
+  "tokens": 2698,
+  "latency_s": 21.2,
+  "_initial_probability": 0.95,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-10-06 09:24:59",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "dev",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-1103",
+        "CC-3894",
+        "CC-3090",
+        "CC-3289",
+        "CC-3762"
+      ],
+      "precedent": [
+        "CC-0264",
+        "CC-0350",
+        "CC-0747",
+        "CC-0809",
+        "CC-0996"
+      ],
+      "prompt_chars": 4925
+    },
+    "card_id": "C06279-K1",
+    "customer_id": "C06279",
+    "usage_log": [
+      {
+        "prompt": 2180,
+        "completion": 518
+      }
+    ]
+  }
+}

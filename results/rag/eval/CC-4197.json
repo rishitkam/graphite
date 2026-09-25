@@ -1,0 +1,106 @@
+{
+  "case_id": "CC-4197",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.059,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Cardholder travel to billing region confirmed in similar past cases",
+        "source": "document",
+        "ref": "CC-0582,CC-0709,CC-1132,CC-1162,CC-3184",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer confirms they made this transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0582",
+      "CC-0709",
+      "CC-1132",
+      "CC-1162",
+      "CC-3184"
+    ],
+    "summary": "The $511.94 in\u2011person purchase mirrors several prior alerts that were cleared after the cardholder verified travel to the billing region, indicating this is likely a legitimate transaction.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 2,
+      "assumed_response": "Customer confirms they made this transaction"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: single signal below 0.70, verify before blocking"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R8: uncertain with exposure over $500 or conflicting evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: customer confirmed the transaction"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.20 to 0.06; actions changed from ['VERIFY_WITH_CUSTOMER', 'ESCALATE_TO_ANALYST'] to ['CLOSE_NO_FRAUD']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "fraud not confirmed or strongly suspected, 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 1,
+  "tokens": 1196,
+  "latency_s": 6.3,
+  "_initial_probability": 0.2,
+  "_meta": {
+    "tier": "rag",
+    "t_end": "2016-09-30 23:43:30",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-0582",
+        "CC-0709",
+        "CC-1132",
+        "CC-1162",
+        "CC-3184"
+      ]
+    },
+    "card_id": "C12267-K2",
+    "customer_id": "C12267",
+    "usage_log": [
+      {
+        "prompt": 917,
+        "completion": 279
+      }
+    ]
+  }
+}

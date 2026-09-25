@@ -1,0 +1,150 @@
+{
+  "case_id": "CC-4086",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.85,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3305526",
+      "3305559",
+      "3305646",
+      "3305579"
+    ],
+    "first_suspicious_txn_id": "3305526",
+    "connected_card_ids": [],
+    "connected_device_profiles": [
+      "rv:11.0 |  | ie 11.0 for desktop | "
+    ],
+    "exposure_usd": 1871.13,
+    "evidence": [
+      {
+        "claim": "Flagged transaction $470.99 is 6.1\u00d7 the card's average and uses a product never seen before",
+        "source": "graph",
+        "ref": "FLAGGED 3305526",
+        "entity_ids": [
+          "3305526"
+        ]
+      },
+      {
+        "claim": "Three additional online purchases of similar high amounts occurred within 4\u202fhours, two on a newly seen device",
+        "source": "graph",
+        "ref": "LAST 72H ON CARD",
+        "entity_ids": [
+          "3305559",
+          "3305646"
+        ]
+      },
+      {
+        "claim": "Device profile is used by many customers and has 28 confirmed fraud cases",
+        "source": "document",
+        "ref": "DEVICE PROFILE",
+        "entity_ids": []
+      },
+      {
+        "claim": "Similar past alerts (15) were all confirmed fraud, mostly card_not_present_fraud",
+        "source": "document",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": []
+      },
+      {
+        "claim": "No prior use of product C or email domain aol.com on this card",
+        "source": "graph",
+        "ref": "CARD C13269-K2 history",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-2369",
+      "CC-2808"
+    ],
+    "summary": "The flagged online purchase is unusually large, of a product never bought before, and is part of a burst of similar high\u2011value online transactions, some on a newly seen device. The device profile has a high fraud history, and analogous alerts have been uniformly fraudulent. These factors raise the fraud probability to about 85%.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 5 independent pieces of evidence"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "exposure $1,871.13 exceeds $1,000, 3a"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 5 independent pieces of evidence"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "exposure $1,871.13 exceeds $1,000, 3a"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": true,
+    "reason": "exposure $1,871.13 exceeds $1,000, 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 1871.13,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.85 backed by 5 independent pieces of evidence",
+  "tool_calls": 9,
+  "tokens": 2877,
+  "latency_s": 20.8,
+  "_initial_probability": 0.85,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-09-28 02:00:00",
+    "label": "fraud",
+    "label_pattern": "undocumented",
+    "eval_slice": "rare_patterns",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-3862",
+        "CC-0979",
+        "CC-1132",
+        "CC-0582",
+        "CC-1232"
+      ],
+      "precedent": [
+        "CC-1930",
+        "CC-2800",
+        "CC-0139",
+        "CC-0259",
+        "CC-0512"
+      ],
+      "prompt_chars": 5246
+    },
+    "card_id": "C13269-K2",
+    "customer_id": "C13269",
+    "usage_log": [
+      {
+        "prompt": 2360,
+        "completion": 517
+      }
+    ]
+  }
+}

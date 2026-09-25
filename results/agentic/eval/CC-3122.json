@@ -1,0 +1,141 @@
+{
+  "case_id": "CC-3122",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.857,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3240514"
+    ],
+    "first_suspicious_txn_id": "3240514",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 108.0,
+    "evidence": [
+      {
+        "claim": "Base fraud rate for similar alerts is very high (0.93) but this transaction matches the cardholder's typical region and product usage.",
+        "source": "graph",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": [
+          "3240514"
+        ]
+      },
+      {
+        "claim": "No recent online micro\u2011authorisations or device novelty that would indicate card testing or new\u2011device fraud.",
+        "source": "graph",
+        "ref": "CARD ACTIVITY",
+        "entity_ids": [
+          "3240514"
+        ]
+      },
+      {
+        "claim": "Region 485.0 has been used 8 times before on this card, and product W accounts for 56 of 82 prior transactions, showing normal behaviour.",
+        "source": "graph",
+        "ref": "",
+        "entity_ids": [
+          "C04172-K2"
+        ]
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [],
+    "summary": "Although the model flagged the $108 in\u2011person purchase with a high risk score, the transaction aligns with the cardholder's usual region and product pattern and shows no signs of testing or new\u2011device activity. The prior alert base rate is high, but the specific evidence points toward a legitimate purchase.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 7,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.60 to 0.86; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 4,
+  "tokens": 5845,
+  "latency_s": 30.9,
+  "_initial_probability": 0.6,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-09-06 03:27:30",
+    "label": "fraud",
+    "label_pattern": "out_of_region_use",
+    "eval_slice": "matched",
+    "calls": 3,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3240514"
+          }
+        },
+        {
+          "tool": "card_activity",
+          "args": {
+            "card_id": "C04172-K2",
+            "hours_before": 48
+          }
+        }
+      ]
+    },
+    "card_id": "C04172-K2",
+    "customer_id": "C04172",
+    "usage_log": [
+      {
+        "prompt": 1418,
+        "completion": 33
+      },
+      {
+        "prompt": 1791,
+        "completion": 149
+      },
+      {
+        "prompt": 1945,
+        "completion": 509
+      }
+    ]
+  }
+}

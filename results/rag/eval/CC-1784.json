@@ -1,0 +1,126 @@
+{
+  "case_id": "CC-1784",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.857,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3149244"
+    ],
+    "first_suspicious_txn_id": "3149244",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 15.07,
+    "evidence": [
+      {
+        "claim": "Transaction is online and device is marked as New",
+        "source": "graph",
+        "ref": "3149244",
+        "entity_ids": [
+          "C07518-K2"
+        ]
+      },
+      {
+        "claim": "Similar past cases with high risk scores were cleared after cardholder confirmed travel",
+        "source": "document",
+        "ref": "CC-0979,CC-0777,CC-0974,CC-1027,CC-0577",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0979",
+      "CC-0777",
+      "CC-0974",
+      "CC-1027",
+      "CC-0577"
+    ],
+    "summary": "A $15.07 online purchase from a previously unseen device raises suspicion of card\u2011not\u2011present fraud on a new device, though similar high\u2011risk alerts have been cleared when travel was confirmed, creating conflicting evidence.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 2,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R8: uncertain with exposure over $500 or conflicting evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.60 to 0.86; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER', 'ESCALATE_TO_ANALYST'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 1,
+  "tokens": 1361,
+  "latency_s": 6.7,
+  "_initial_probability": 0.6,
+  "_meta": {
+    "tier": "rag",
+    "t_end": "2016-08-07 00:01:16",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-0979",
+        "CC-0777",
+        "CC-0974",
+        "CC-1027",
+        "CC-0577"
+      ]
+    },
+    "card_id": "C07518-K2",
+    "customer_id": "C07518",
+    "usage_log": [
+      {
+        "prompt": 943,
+        "completion": 418
+      }
+    ]
+  }
+}

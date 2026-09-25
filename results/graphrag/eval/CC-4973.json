@@ -1,0 +1,139 @@
+{
+  "case_id": "CC-4973",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.92,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3374947"
+    ],
+    "first_suspicious_txn_id": "3374947",
+    "connected_card_ids": [],
+    "connected_device_profiles": [
+      "iOS Device | iOS 11.2.6 | mobile safari generic | 2208x1242"
+    ],
+    "exposure_usd": 175.05,
+    "evidence": [
+      {
+        "claim": "Transaction 3374947 was online using a device marked New\u2011to\u2011account",
+        "source": "graph",
+        "ref": "3374947",
+        "entity_ids": [
+          "3374947"
+        ]
+      },
+      {
+        "claim": "Device profile has 10 confirmed fraud cases (\u22481 per 9 customers) and is New\u2011to\u2011account in 74% of uses",
+        "source": "document",
+        "ref": "DEVICE PROFILE",
+        "entity_ids": []
+      },
+      {
+        "claim": "Cardholder C03218 has multiple recent confirmed account takeover cases (CC-3638, CC-4194, CC-4454, CC-4877)",
+        "source": "graph",
+        "ref": "CUSTOMER C03218",
+        "entity_ids": []
+      },
+      {
+        "claim": "Similar alerts with new device and online activity were 93% fraud in situation memory",
+        "source": "graph",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": []
+      },
+      {
+        "claim": "Recent online transaction 3375067 on a different new device also flagged, indicating pattern of new\u2011device usage",
+        "source": "graph",
+        "ref": "3375067",
+        "entity_ids": [
+          "3375067"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-4101",
+      "CC-4484",
+      "CC-4545",
+      "CC-4631",
+      "CC-4712"
+    ],
+    "summary": "The flagged online purchase used a device new to the account, a profile with a high fraud rate, and occurs against a backdrop of several recent account\u2011takeover frauds for this cardholder. Situation memory shows similar cases are overwhelmingly fraudulent. These factors push the fraud probability to about 0.92.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.92 with 5 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.92 with 5 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.92 backed by 5 independent pieces of evidence",
+  "tool_calls": 9,
+  "tokens": 3330,
+  "latency_s": 20.1,
+  "_initial_probability": 0.92,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-10-18 09:49:54",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-4572",
+        "CC-4631",
+        "CC-3894",
+        "CC-4712",
+        "CC-4536"
+      ],
+      "precedent": [
+        "CC-4354",
+        "CC-4101",
+        "CC-4440",
+        "CC-4484",
+        "CC-4545"
+      ],
+      "prompt_chars": 6315
+    },
+    "card_id": "C03218-K2",
+    "customer_id": "C03218",
+    "usage_log": [
+      {
+        "prompt": 2771,
+        "completion": 559
+      }
+    ]
+  }
+}

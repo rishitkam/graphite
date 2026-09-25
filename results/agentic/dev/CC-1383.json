@@ -1,0 +1,118 @@
+{
+  "case_id": "CC-1383",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.07,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Base fraud rate for similar alerts is low (4%) after correction.",
+        "source": "graph",
+        "ref": "3118964",
+        "entity_ids": []
+      },
+      {
+        "claim": "Device profile is used by many customers and has no confirmed fraud cases.",
+        "source": "graph",
+        "ref": "MacOS | Mac OS X 10_13_2 | safari generic | 2560x1440",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0840",
+      "CC-0741",
+      "CC-1081"
+    ],
+    "summary": "The alert\u2019s corrected base fraud probability is 4%; the new device is common and not linked to fraud. Transaction amount and product match the cardholder\u2019s history, so it is likely legitimate.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "ALLOW_TRANSACTION",
+        "route": "auto",
+        "reason": "probability 0.07 with 2 independent pieces of evidence"
+      },
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "evidence supports a legitimate transaction"
+      }
+    ],
+    "final": [
+      {
+        "action": "ALLOW_TRANSACTION",
+        "route": "auto",
+        "reason": "probability 0.07 with 2 independent pieces of evidence"
+      },
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "evidence supports a legitimate transaction"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "fraud not confirmed or strongly suspected, 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.07 backed by 2 independent pieces of evidence",
+  "tool_calls": 4,
+  "tokens": 5723,
+  "latency_s": 42.5,
+  "_initial_probability": 0.07,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-07-29 06:30:41",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "dev",
+    "calls": 3,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3118964"
+          }
+        },
+        {
+          "tool": "device_profile",
+          "args": {
+            "device": "MacOS | Mac OS X 10_13_2 | safari generic | 2560x1440"
+          }
+        }
+      ]
+    },
+    "card_id": "C04570-K1",
+    "customer_id": "C04570",
+    "usage_log": [
+      {
+        "prompt": 1463,
+        "completion": 33
+      },
+      {
+        "prompt": 1773,
+        "completion": 69
+      },
+      {
+        "prompt": 1986,
+        "completion": 399
+      }
+    ]
+  }
+}

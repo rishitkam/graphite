@@ -1,0 +1,137 @@
+{
+  "case_id": "CC-0934",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.17,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Transaction used a device new to this account",
+        "source": "graph",
+        "ref": "3081369",
+        "entity_ids": [
+          "C10871-K1"
+        ]
+      },
+      {
+        "claim": "Region 126.0 has not been used before on this card",
+        "source": "graph",
+        "ref": "3081369",
+        "entity_ids": [
+          "C10871-K1"
+        ]
+      },
+      {
+        "claim": "Amount $250.08 is 1.9\u00d7 the card's average transaction size",
+        "source": "graph",
+        "ref": "3081369",
+        "entity_ids": [
+          "C10871-K1"
+        ]
+      },
+      {
+        "claim": "Situation memory shows base fraud rate 0.16, but similar alerts with new devices had a higher fraud share (5/15)",
+        "source": "document",
+        "ref": "situation_memory",
+        "entity_ids": []
+      },
+      {
+        "claim": "No prior recurring pattern matching this purchase",
+        "source": "graph",
+        "ref": "3081369",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer confirms they made this transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0167"
+    ],
+    "summary": "The flagged online purchase originates from a device and region never seen on this card and is significantly larger than the cardholder's typical spend. Situation memory indicates a modest base fraud rate but a higher fraud proportion for similar new\u2011device cases, nudging the probability toward fraud.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 5,
+      "assumed_response": "Customer confirms they made this transaction"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: customer confirmed the transaction"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.45 to 0.17; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['CLOSE_NO_FRAUD']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "fraud not confirmed or strongly suspected, 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 3,
+  "tokens": 3823,
+  "latency_s": 21.6,
+  "_initial_probability": 0.45,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-07-22 07:29:43",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 2,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3081369"
+          }
+        }
+      ]
+    },
+    "card_id": "C10871-K1",
+    "customer_id": "C10871",
+    "usage_log": [
+      {
+        "prompt": 1442,
+        "completion": 33
+      },
+      {
+        "prompt": 1777,
+        "completion": 571
+      }
+    ]
+  }
+}

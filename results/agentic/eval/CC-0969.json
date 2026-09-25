@@ -1,0 +1,131 @@
+{
+  "case_id": "CC-0969",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.12,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Base fraud rate for similar alerts is low (0.08) after correction",
+        "source": "graph",
+        "ref": "situation_memory",
+        "entity_ids": [
+          "3083985"
+        ]
+      },
+      {
+        "claim": "Device profile is used by many customers and has no confirmed fraud cases",
+        "source": "graph",
+        "ref": "device_profile",
+        "entity_ids": [
+          "iOS Device | iOS 11.2.0 | mobile safari generic | 2048x1536"
+        ]
+      },
+      {
+        "claim": "Transaction amount is only 0.3\u00d7 the card's average and matches a product seen before",
+        "source": "graph",
+        "ref": "alert",
+        "entity_ids": [
+          "3083985",
+          "C04172-K2"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0170",
+      "CC-0725",
+      "CC-0630"
+    ],
+    "summary": "The alert aligns with a low\u2011risk profile: a common device, a small purchase similar to past activity, and a corrected base fraud rate of 8%. No evidence of testing, new\u2011device fraud, or out\u2011of\u2011region use is present.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "ALLOW_TRANSACTION",
+        "route": "auto",
+        "reason": "probability 0.12 with 3 independent pieces of evidence"
+      },
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "evidence supports a legitimate transaction"
+      }
+    ],
+    "final": [
+      {
+        "action": "ALLOW_TRANSACTION",
+        "route": "auto",
+        "reason": "probability 0.12 with 3 independent pieces of evidence"
+      },
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "evidence supports a legitimate transaction"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "fraud not confirmed or strongly suspected, 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.12 backed by 3 independent pieces of evidence",
+  "tool_calls": 4,
+  "tokens": 5721,
+  "latency_s": 28.2,
+  "_initial_probability": 0.12,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-07-22 23:49:29",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 3,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3083985"
+          }
+        },
+        {
+          "tool": "device_profile",
+          "args": {
+            "device": "iOS Device | iOS 11.2.0 | mobile safari generic | 2048x1536"
+          }
+        }
+      ]
+    },
+    "card_id": "C04172-K2",
+    "customer_id": "C04172",
+    "usage_log": [
+      {
+        "prompt": 1448,
+        "completion": 33
+      },
+      {
+        "prompt": 1758,
+        "completion": 77
+      },
+      {
+        "prompt": 1966,
+        "completion": 439
+      }
+    ]
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "case_id": "CC-1791",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.941,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3148097"
+    ],
+    "first_suspicious_txn_id": "3148097",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 61.85,
+    "evidence": [
+      {
+        "claim": "Alert context matches prior alerts with high fraud rate (0.87 weighted) and similar characteristics.",
+        "source": "graph",
+        "ref": "situation_memory",
+        "entity_ids": [
+          "3148097"
+        ]
+      },
+      {
+        "claim": "Card has only online history, no new device or region change.",
+        "source": "graph",
+        "ref": "card_activity",
+        "entity_ids": [
+          "C13254-K1"
+        ]
+      },
+      {
+        "claim": "Product C has been purchased in all prior transactions, indicating a repeat merchant but higher amount.",
+        "source": "graph",
+        "ref": "card_activity",
+        "entity_ids": [
+          "C13254-K1"
+        ]
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0142",
+      "CC-0012",
+      "CC-0337"
+    ],
+    "summary": "The transaction fits the common online fraud pattern seen in similar alerts, with a higher-than-average amount on a familiar merchant and no new device or region indicators. Base fraud rate for this context is 0.75, nudging the probability to about 0.8.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 5,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.80 to 0.94; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 3,
+  "tokens": 3626,
+  "latency_s": 17.4,
+  "_initial_probability": 0.8,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-08-06 10:00:22",
+    "label": "fraud",
+    "label_pattern": "card_not_present_fraud",
+    "eval_slice": "matched",
+    "calls": 2,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3148097"
+          }
+        }
+      ]
+    },
+    "card_id": "C13254-K1",
+    "customer_id": "C13254",
+    "usage_log": [
+      {
+        "prompt": 1378,
+        "completion": 33
+      },
+      {
+        "prompt": 1757,
+        "completion": 458
+      }
+    ]
+  }
+}

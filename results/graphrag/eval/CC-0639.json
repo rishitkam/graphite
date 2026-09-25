@@ -1,0 +1,164 @@
+{
+  "case_id": "CC-0639",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.85,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3047193"
+    ],
+    "first_suspicious_txn_id": "3040708",
+    "connected_card_ids": [
+      "C00450-K1",
+      "C00452-K2",
+      "C00750-K2",
+      "C00854-K2",
+      "C01040-K2",
+      "C01155-K2",
+      "C01166-K1",
+      "C01333-K2",
+      "C01347-K2",
+      "C01559-K1",
+      "C01563-K1",
+      "C01659-K1"
+    ],
+    "connected_device_profiles": [
+      "Windows | Windows 10 | chrome 62.0 | 1600x900"
+    ],
+    "exposure_usd": 49.95,
+    "evidence": [
+      {
+        "claim": "Device used for flagged txn has no prior history on this card (0 prior txns)",
+        "source": "graph",
+        "ref": "3047193",
+        "entity_ids": [
+          "C01104-K2"
+        ]
+      },
+      {
+        "claim": "Multiple recent transactions on this card were flagged as NEW-DEVICE (3040708,3041840,3041906,3045877,3045997,3048173)",
+        "source": "graph",
+        "ref": "3040708-3048173",
+        "entity_ids": [
+          "C01104-K2"
+        ]
+      },
+      {
+        "claim": "Similar alerts in memory are 87% fraud, mostly card_not_present_fraud or new_device",
+        "source": "document",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": []
+      },
+      {
+        "claim": "Device profile used by 105 customers, with 1 confirmed fraud case (CC-0153)",
+        "source": "document",
+        "ref": "DEVICE PROFILE",
+        "entity_ids": [
+          "CC-0153"
+        ]
+      },
+      {
+        "claim": "Customer has prior confirmed fraud case (CC-0358) for out_of_region_use, indicating susceptibility",
+        "source": "graph",
+        "ref": "CC-0358",
+        "entity_ids": [
+          "CC-0358"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0048",
+      "CC-0139",
+      "CC-0467"
+    ],
+    "summary": "The transaction uses a brand\u2011new device for this card amid several recent new\u2011device purchases, matching the card_not_present_new_device pattern. Historical data shows a high fraud rate for similar situations. Combined with a known fraud\u2011prone device profile, the fraud probability is elevated.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 5 independent pieces of evidence"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "connects to another card's fraud, R2 and 3a"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 5 independent pieces of evidence"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "connects to another card's fraud, R2 and 3a"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": true,
+    "reason": "connects to another card's fraud, R2 and 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 49.95,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.85 backed by 5 independent pieces of evidence",
+  "tool_calls": 9,
+  "tokens": 3218,
+  "latency_s": 13.6,
+  "_initial_probability": 0.85,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-07-15 04:04:40",
+    "label": "fraud",
+    "label_pattern": "account_takeover",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-0042",
+        "CC-0443",
+        "CC-0065",
+        "CC-0384",
+        "CC-0082"
+      ],
+      "precedent": [
+        "CC-0153",
+        "CC-0021",
+        "CC-0029",
+        "CC-0048",
+        "CC-0063"
+      ],
+      "prompt_chars": 5681
+    },
+    "card_id": "C01104-K2",
+    "customer_id": "C01104",
+    "usage_log": [
+      {
+        "prompt": 2518,
+        "completion": 700
+      }
+    ]
+  }
+}

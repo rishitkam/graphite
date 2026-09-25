@@ -1,0 +1,158 @@
+{
+  "case_id": "CC-4932",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.934,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3371763"
+    ],
+    "first_suspicious_txn_id": "3371763",
+    "connected_card_ids": [],
+    "connected_device_profiles": [
+      "iOS Device | iOS 11.1.2 | mobile safari generic | 1334x750"
+    ],
+    "exposure_usd": 100.02,
+    "evidence": [
+      {
+        "claim": "Transaction uses a device new to the account",
+        "source": "graph",
+        "ref": "FLAGGED 3371763",
+        "entity_ids": [
+          "3371763"
+        ]
+      },
+      {
+        "claim": "Similar recent cases with the same device profile were confirmed fraud",
+        "source": "document",
+        "ref": "DEVICE PROFILE",
+        "entity_ids": [
+          "CC-0322",
+          "CC-0595",
+          "CC-1073",
+          "CC-3791"
+        ]
+      },
+      {
+        "claim": "Customer's prior fraud history includes out_of_region_use, indicating susceptibility",
+        "source": "graph",
+        "ref": "CUSTOMER C03992",
+        "entity_ids": [
+          "CC-0457",
+          "CC-2889"
+        ]
+      },
+      {
+        "claim": "Situation memory shows 71% fraud share for similar alerts, especially card_not_present_new_device",
+        "source": "document",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": []
+      },
+      {
+        "claim": "No small test authorizations preceding the purchase, but amount is modest relative to average, consistent with single fraudulent online use",
+        "source": "graph",
+        "ref": "LAST 72H ON CARD",
+        "entity_ids": [
+          "3371759",
+          "3371763"
+        ]
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-3036",
+      "CC-4333",
+      "CC-2065"
+    ],
+    "summary": "The flagged $100.02 online purchase was made from a device new to the account, a pattern that matches many recent confirmed fraud cases using the same device profile. Situation memory and prior similar alerts indicate a high fraud likelihood, raising the probability to about 78%.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 10,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.78 to 0.93; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 9,
+  "tokens": 3085,
+  "latency_s": 17.0,
+  "_initial_probability": 0.78,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-10-17 08:12:59",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-3421",
+        "CC-3246",
+        "CC-4631",
+        "CC-4572",
+        "CC-4018"
+      ],
+      "precedent": [
+        "CC-0322",
+        "CC-0595",
+        "CC-3791",
+        "CC-0300",
+        "CC-1073"
+      ],
+      "prompt_chars": 5808
+    },
+    "card_id": "C03992-K2",
+    "customer_id": "C03992",
+    "usage_log": [
+      {
+        "prompt": 2549,
+        "completion": 536
+      }
+    ]
+  }
+}

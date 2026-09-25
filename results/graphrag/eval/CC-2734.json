@@ -1,0 +1,140 @@
+{
+  "case_id": "CC-2734",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.934,
+    "pattern": "out_of_region_use",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3200119"
+    ],
+    "first_suspicious_txn_id": "3200119",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 49.01,
+    "evidence": [
+      {
+        "claim": "Transaction 3200119 occurred in region 226.0, a region with zero prior transactions for this card",
+        "source": "graph",
+        "ref": "FLAGGED 3200119",
+        "entity_ids": [
+          "C01996-K2",
+          "3200119"
+        ]
+      },
+      {
+        "claim": "Recent history shows the card is used in many other regions, with region 226 never seen before",
+        "source": "graph",
+        "ref": "CARD C01996-K2 history",
+        "entity_ids": [
+          "C01996-K2"
+        ]
+      },
+      {
+        "claim": "Similar past alerts with out_of_region_use were confirmed fraud (CC-2148, CC-1823, CC-1956)",
+        "source": "document",
+        "ref": "nearest CC-2148, CC-1823, CC-1956",
+        "entity_ids": [
+          "CC-2148",
+          "CC-1823",
+          "CC-1956"
+        ]
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-2148",
+      "CC-1823",
+      "CC-1956"
+    ],
+    "summary": "The $49.01 in\u2011person purchase occurs in a region never seen before for this card, a hallmark of out\u2011of\u2011region fraud. Past similar alerts were all confirmed fraud, raising the likelihood of fraud despite the modest amount.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 10,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.78 to 0.93; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 9,
+  "tokens": 2739,
+  "latency_s": 20.8,
+  "_initial_probability": 0.78,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-08-23 23:58:50",
+    "label": "fraud",
+    "label_pattern": "out_of_region_use",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-1132",
+        "CC-0692",
+        "CC-0196",
+        "CC-1136",
+        "CC-0261"
+      ],
+      "precedent": [
+        "CC-0323",
+        "CC-0358",
+        "CC-0373",
+        "CC-0484",
+        "CC-0498"
+      ],
+      "prompt_chars": 4881
+    },
+    "card_id": "C01996-K2",
+    "customer_id": "C01996",
+    "usage_log": [
+      {
+        "prompt": 2278,
+        "completion": 461
+      }
+    ]
+  }
+}

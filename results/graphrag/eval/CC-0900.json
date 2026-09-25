@@ -1,0 +1,143 @@
+{
+  "case_id": "CC-0900",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.867,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3078479"
+    ],
+    "first_suspicious_txn_id": "3078479",
+    "connected_card_ids": [],
+    "connected_device_profiles": [
+      "MacOS | Mac OS X 10_12_6 | chrome 63.0 | 1920x1080"
+    ],
+    "exposure_usd": 250.06,
+    "evidence": [
+      {
+        "claim": "Transaction 3078479 used a MacOS device never seen on this card",
+        "source": "graph",
+        "ref": "FLAGGED 3078479",
+        "entity_ids": [
+          "3078479"
+        ]
+      },
+      {
+        "claim": "Device profile is new-to-account for 47% of uses and has no confirmed fraud cases",
+        "source": "document",
+        "ref": "DEVICE PROFILE",
+        "entity_ids": []
+      },
+      {
+        "claim": "Region 384.0 has never been used on this card before",
+        "source": "graph",
+        "ref": "FLAGGED 3078479",
+        "entity_ids": [
+          "3078479"
+        ]
+      },
+      {
+        "claim": "Similar recent alerts with new-device online fraud were confirmed as card_not_present_new_device (e.g., CC-0071)",
+        "source": "graph",
+        "ref": "nearest CC-0071",
+        "entity_ids": [
+          "CC-0071"
+        ]
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0071"
+    ],
+    "summary": "The flagged $250.06 online purchase was made from a device new to the account and in a region never used before, matching the card_not_present_new_device pattern seen in similar recent fraud cases. While the amount is typical for the card, the novel device and region raise suspicion. Probability of fraud is estimated at 62%.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 10,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.62 to 0.87; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 9,
+  "tokens": 2754,
+  "latency_s": 1.7,
+  "_initial_probability": 0.62,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-07-21 23:49:53",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-0261",
+        "CC-0582",
+        "CC-0601",
+        "CC-0768",
+        "CC-0637"
+      ],
+      "precedent": [
+        "CC-0343",
+        "CC-0378",
+        "CC-0478",
+        "CC-0508",
+        "CC-0568"
+      ],
+      "prompt_chars": 4810
+    },
+    "card_id": "C04968-K1",
+    "customer_id": "C04968",
+    "usage_log": [
+      {
+        "prompt": 2172,
+        "completion": 582
+      }
+    ]
+  }
+}

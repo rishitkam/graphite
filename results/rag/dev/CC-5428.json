@@ -1,0 +1,120 @@
+{
+  "case_id": "CC-5428",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.941,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3408140"
+    ],
+    "first_suspicious_txn_id": "3408140",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 150.05,
+    "evidence": [
+      {
+        "claim": "Transaction uses a new iOS device not seen before for this card",
+        "source": "graph",
+        "ref": "3408140",
+        "entity_ids": [
+          "C13478-K1"
+        ]
+      },
+      {
+        "claim": "Similar confirmed fraud cases involved new iOS devices for online purchases",
+        "source": "document",
+        "ref": "CC-4894",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-4894",
+      "CC-4631",
+      "CC-4866",
+      "CC-3090"
+    ],
+    "summary": "The flagged $150.05 online transaction was made from a new iOS device, matching a known pattern of card\u2011not\u2011present fraud on new devices. Similar confirmed cases show this behavior leads to fraud. Likely fraudulent.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 2,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.80 to 0.94; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 1,
+  "tokens": 1591,
+  "latency_s": 11.9,
+  "_initial_probability": 0.8,
+  "_meta": {
+    "tier": "rag",
+    "t_end": "2016-10-29 12:29:53",
+    "label": "fraud",
+    "label_pattern": "card_not_present_new_device",
+    "eval_slice": "dev",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-4894",
+        "CC-4631",
+        "CC-4572",
+        "CC-4866",
+        "CC-3090"
+      ]
+    },
+    "card_id": "C13478-K1",
+    "customer_id": "C13478",
+    "usage_log": [
+      {
+        "prompt": 1272,
+        "completion": 319
+      }
+    ]
+  }
+}

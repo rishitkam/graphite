@@ -1,0 +1,122 @@
+{
+  "case_id": "HHG-013",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.033,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Base fraud rate for similar alerts is low (0.08)",
+        "source": "graph",
+        "ref": "",
+        "entity_ids": [
+          "3526826"
+        ]
+      },
+      {
+        "claim": "New device for the account",
+        "source": "graph",
+        "ref": "",
+        "entity_ids": [
+          "3526826"
+        ]
+      },
+      {
+        "claim": "Product C never seen before on this card",
+        "source": "graph",
+        "ref": "",
+        "entity_ids": [
+          "3526826"
+        ]
+      },
+      {
+        "claim": "Customer confirms they made this transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-1382",
+      "CC-0796",
+      "CC-3793"
+    ],
+    "summary": "The alert\u2019s risk score is high but similar past alerts were mostly cleared, giving a low corrected base fraud rate. The new device and unseen product are minor flags, insufficient to outweigh the low base rate.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-HHG-013"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 5,
+      "assumed_response": "Customer confirms they made this transaction"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: single signal below 0.70, verify before blocking"
+      }
+    ],
+    "final": [
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: customer confirmed the transaction"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.12 to 0.03; actions changed from ['VERIFY_WITH_CUSTOMER'] to ['CLOSE_NO_FRAUD']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "fraud not confirmed or strongly suspected, 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 3,
+  "tokens": 3626,
+  "latency_s": 19.1,
+  "_initial_probability": 0.12,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-12-09 05:39:29",
+    "label": null,
+    "label_pattern": null,
+    "eval_slice": null,
+    "calls": 2,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3526826"
+          }
+        }
+      ]
+    },
+    "card_id": "C07671-K2",
+    "customer_id": "C07671",
+    "usage_log": [
+      {
+        "prompt": 1445,
+        "completion": 33
+      },
+      {
+        "prompt": 1756,
+        "completion": 392
+      }
+    ]
+  }
+}

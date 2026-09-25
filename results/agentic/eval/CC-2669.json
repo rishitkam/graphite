@@ -1,0 +1,138 @@
+{
+  "case_id": "CC-2669",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.867,
+    "pattern": "out_of_region_use",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3210976"
+    ],
+    "first_suspicious_txn_id": "3210976",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 774.09,
+    "evidence": [
+      {
+        "claim": "Region 327.0 has never been used on this card (0 of 367 prior transactions).",
+        "source": "graph",
+        "ref": "",
+        "entity_ids": [
+          "C03363-K2"
+        ]
+      },
+      {
+        "claim": "Transaction amount $774.09 is 8.0\u00d7 the card's average spend.",
+        "source": "graph",
+        "ref": "",
+        "entity_ids": [
+          "C03363-K2"
+        ]
+      },
+      {
+        "claim": "Situation memory indicates similar alerts have a corrected base fraud rate of 0.32 and 62% of similar past alerts were fraud, many out_of_region_use.",
+        "source": "document",
+        "ref": "",
+        "entity_ids": [
+          "3210976"
+        ]
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-1456",
+      "CC-2423"
+    ],
+    "summary": "The flagged in\u2011person purchase occurs in a region never used before and is unusually large, matching the out_of_region_use pattern. Situation memory shows a higher fraud propensity for such alerts. No evidence of device novelty, testing, or coordination.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 5,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: single signal below 0.70, verify before blocking"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R8: uncertain with exposure over $500 or conflicting evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.62 to 0.87; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER', 'ESCALATE_TO_ANALYST'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 3,
+  "tokens": 3722,
+  "latency_s": 27.7,
+  "_initial_probability": 0.62,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-08-27 22:32:14",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 2,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3210976"
+          }
+        }
+      ]
+    },
+    "card_id": "C03363-K2",
+    "customer_id": "C03363",
+    "usage_log": [
+      {
+        "prompt": 1417,
+        "completion": 33
+      },
+      {
+        "prompt": 1772,
+        "completion": 500
+      }
+    ]
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "case_id": "CC-1981",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.94,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3162747"
+    ],
+    "first_suspicious_txn_id": "3162747",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 40.78,
+    "evidence": [
+      {
+        "claim": "first transaction on this card, online purchase from a device used in multiple fraud cases",
+        "source": "graph",
+        "ref": "FLAGGED 3162747",
+        "entity_ids": [
+          "3162747",
+          "C12412-K1"
+        ]
+      },
+      {
+        "claim": "device profile has 3 confirmed fraud cases out of 10 customers",
+        "source": "graph",
+        "ref": "DEVICE PROFILE",
+        "entity_ids": []
+      },
+      {
+        "claim": "similar alerts (15) were all fraud, base rate 0.95",
+        "source": "graph",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": []
+      },
+      {
+        "claim": "nearest past cases CC-1684 and CC-1832 were card_not_present_new_device frauds on same device",
+        "source": "graph",
+        "ref": "CLOSED CASES SHARING STRUCTURE",
+        "entity_ids": [
+          "CC-1684",
+          "CC-1832"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-1684",
+      "CC-1832"
+    ],
+    "summary": "The $40.78 online purchase is the card's first activity and occurs on a device linked to multiple confirmed fraud cases, including prior card\u2011not\u2011present new\u2011device frauds. Situation memory shows a 95% fraud base rate for this context. Evidence strongly points to a card\u2011not\u2011present fraud using a new device.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.94 with 4 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.94 with 4 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.94 backed by 4 independent pieces of evidence",
+  "tool_calls": 9,
+  "tokens": 2379,
+  "latency_s": 14.0,
+  "_initial_probability": 0.94,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-08-11 02:34:21",
+    "label": "fraud",
+    "label_pattern": "card_not_present_fraud",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-0281",
+        "CC-0587",
+        "CC-1182",
+        "CC-0814",
+        "CC-0260"
+      ],
+      "precedent": [
+        "CC-1684",
+        "CC-1704",
+        "CC-1832"
+      ],
+      "prompt_chars": 4080
+    },
+    "card_id": "C12412-K1",
+    "customer_id": "C12412",
+    "usage_log": [
+      {
+        "prompt": 1884,
+        "completion": 495
+      }
+    ]
+  }
+}

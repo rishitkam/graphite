@@ -1,0 +1,131 @@
+{
+  "case_id": "CC-3672",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.85,
+    "pattern": "out_of_region_use",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3280084"
+    ],
+    "first_suspicious_txn_id": "3280084",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 116.96,
+    "evidence": [
+      {
+        "claim": "Region 225.0 has never been used on this card before.",
+        "source": "graph",
+        "ref": "card activity",
+        "entity_ids": [
+          "C01119-K2"
+        ]
+      },
+      {
+        "claim": "Recent activity shows many in-person purchases in other regions, indicating the card is usually used locally.",
+        "source": "graph",
+        "ref": "card activity",
+        "entity_ids": [
+          "C01119-K2"
+        ]
+      },
+      {
+        "claim": "Situation memory shows similar alerts are 92% fraud, mostly out_of_region_use.",
+        "source": "document",
+        "ref": "situation_memory",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-3377",
+      "CC-2327",
+      "CC-3083"
+    ],
+    "summary": "The flagged in-person purchase occurs in a region never seen on this card, matching the out_of_region_use pattern. Situation memory indicates a high fraud base rate for such alerts. No other evidence suggests a legitimate explanation.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 2 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 2 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.85 backed by 2 independent pieces of evidence",
+  "tool_calls": 4,
+  "tokens": 6138,
+  "latency_s": 31.7,
+  "_initial_probability": 0.85,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-09-19 06:15:36",
+    "label": "fraud",
+    "label_pattern": "out_of_region_use",
+    "eval_slice": "matched",
+    "calls": 3,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3280084"
+          }
+        },
+        {
+          "tool": "card_activity",
+          "args": {
+            "card_id": "C01119-K2",
+            "hours_before": 48
+          }
+        }
+      ]
+    },
+    "card_id": "C01119-K2",
+    "customer_id": "C01119",
+    "usage_log": [
+      {
+        "prompt": 1423,
+        "completion": 33
+      },
+      {
+        "prompt": 1798,
+        "completion": 72
+      },
+      {
+        "prompt": 2320,
+        "completion": 492
+      }
+    ]
+  }
+}

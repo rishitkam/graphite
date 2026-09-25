@@ -1,0 +1,147 @@
+{
+  "case_id": "CC-4197",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.907,
+    "pattern": "account_takeover",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3315344"
+    ],
+    "first_suspicious_txn_id": "3315344",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 511.94,
+    "evidence": [
+      {
+        "claim": "Amount is 6.5\u00d7 the card's average",
+        "source": "graph",
+        "ref": "FLAGGED 3315344",
+        "entity_ids": []
+      },
+      {
+        "claim": "Region 441.0 used in only 49 of 328 prior txns (15%)",
+        "source": "graph",
+        "ref": "FLAGGED 3315344",
+        "entity_ids": []
+      },
+      {
+        "claim": "Three prior confirmed fraud cases on this card (card_not_present_fraud and undocumented)",
+        "source": "document",
+        "ref": "CUSTOMER C12267",
+        "entity_ids": []
+      },
+      {
+        "claim": "Similar alerts have 60% fraud share, many out_of_region_use or account_takeover",
+        "source": "document",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": []
+      },
+      {
+        "claim": "No device record, making device\u2011new anomaly impossible to assess",
+        "source": "graph",
+        "ref": "DEVICE",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-2917",
+      "CC-1425"
+    ],
+    "summary": "The transaction is unusually large for this card and occurs in a region used infrequently. The card has a history of confirmed fraud, and the alert context aligns with patterns of account takeover seen in similar cases. These factors raise the fraud probability to about 71%.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 10,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R8: uncertain with exposure over $500 or conflicting evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.71 to 0.91; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER', 'ESCALATE_TO_ANALYST'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 9,
+  "tokens": 2658,
+  "latency_s": 15.9,
+  "_initial_probability": 0.71,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-09-30 23:43:30",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-0582",
+        "CC-0709",
+        "CC-1132",
+        "CC-1162",
+        "CC-3184"
+      ],
+      "precedent": [
+        "CC-0036",
+        "CC-0046",
+        "CC-0047",
+        "CC-0049",
+        "CC-0057"
+      ],
+      "prompt_chars": 4694
+    },
+    "card_id": "C12267-K2",
+    "customer_id": "C12267",
+    "usage_log": [
+      {
+        "prompt": 2147,
+        "completion": 511
+      }
+    ]
+  }
+}

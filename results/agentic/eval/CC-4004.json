@@ -1,0 +1,114 @@
+{
+  "case_id": "CC-4004",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.042,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Base fraud rate for similar alerts is low (3%) after correction",
+        "source": "graph",
+        "ref": "",
+        "entity_ids": [
+          "3301813"
+        ]
+      },
+      {
+        "claim": "New device for this account but similar cases were cleared",
+        "source": "graph",
+        "ref": "",
+        "entity_ids": [
+          "3301813"
+        ]
+      },
+      {
+        "claim": "Customer confirms they made this transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-1036",
+      "CC-1490",
+      "CC-0803"
+    ],
+    "summary": "The alert matches a low\u2011risk pattern; most similar past alerts were cleared despite new devices. Probability of fraud remains low.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 5,
+      "assumed_response": "Customer confirms they made this transaction"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: single signal below 0.70, verify before blocking"
+      }
+    ],
+    "final": [
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: customer confirmed the transaction"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.15 to 0.04; actions changed from ['VERIFY_WITH_CUSTOMER'] to ['CLOSE_NO_FRAUD']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "fraud not confirmed or strongly suspected, 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 3,
+  "tokens": 3513,
+  "latency_s": 7.2,
+  "_initial_probability": 0.15,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-09-26 23:35:17",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 2,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3301813"
+          }
+        }
+      ]
+    },
+    "card_id": "C10614-K1",
+    "customer_id": "C10614",
+    "usage_log": [
+      {
+        "prompt": 1426,
+        "completion": 33
+      },
+      {
+        "prompt": 1740,
+        "completion": 314
+      }
+    ]
+  }
+}

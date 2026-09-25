@@ -1,0 +1,144 @@
+{
+  "case_id": "CC-3881",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.867,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3292777"
+    ],
+    "first_suspicious_txn_id": "3292777",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 160.01,
+    "evidence": [
+      {
+        "claim": "Region 315.0 is the card's most frequent region (230 of 503 prior transactions).",
+        "source": "graph",
+        "ref": "",
+        "entity_ids": [
+          "C10127-K2"
+        ]
+      },
+      {
+        "claim": "Product W accounts for 407 of 503 prior transactions.",
+        "source": "graph",
+        "ref": "",
+        "entity_ids": [
+          "C10127-K2"
+        ]
+      },
+      {
+        "claim": "Email domain yahoo.com appears in 148 prior transactions on this card.",
+        "source": "graph",
+        "ref": "",
+        "entity_ids": [
+          "C10127-K2"
+        ]
+      },
+      {
+        "claim": "No new device or proxy flags; device novelty = 0.",
+        "source": "graph",
+        "ref": "",
+        "entity_ids": [
+          "3292777"
+        ]
+      },
+      {
+        "claim": "Situation memory base fraud rate 0.91, but this specific transaction aligns with historical patterns, reducing suspicion.",
+        "source": "document",
+        "ref": "",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [],
+    "summary": "The flagged purchase is consistent with the cardholder's usual region, product, and email usage, and no new device or proxy is involved. Although the model score is high, the transaction lacks atypical indicators, lowering the fraud probability to a moderate level.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 5,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: single signal below 0.70, verify before blocking"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.62 to 0.87; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 3,
+  "tokens": 3819,
+  "latency_s": 29.5,
+  "_initial_probability": 0.62,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-09-23 23:07:04",
+    "label": "fraud",
+    "label_pattern": "account_takeover",
+    "eval_slice": "dev",
+    "calls": 2,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3292777"
+          }
+        }
+      ]
+    },
+    "card_id": "C10127-K2",
+    "customer_id": "C10127",
+    "usage_log": [
+      {
+        "prompt": 1415,
+        "completion": 33
+      },
+      {
+        "prompt": 1787,
+        "completion": 584
+      }
+    ]
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "case_id": "CC-2206",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.867,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3179056"
+    ],
+    "first_suspicious_txn_id": "3179056",
+    "connected_card_ids": [],
+    "connected_device_profiles": [
+      "Windows | Windows 7 | chrome 63.0 | 1600x900"
+    ],
+    "exposure_usd": 149.98,
+    "evidence": [
+      {
+        "claim": "Device is new for this card",
+        "source": "graph",
+        "ref": "3179056",
+        "entity_ids": [
+          "C04258-K1"
+        ]
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [],
+    "summary": "The flagged $149.98 online transaction was made from a device not previously seen on card C04258\u2011K1. This matches the card_not_present_new_device pattern, raising moderate fraud risk despite lack of additional suspicious activity.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 2,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: single signal below 0.70, verify before blocking"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.62 to 0.87; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 1,
+  "tokens": 1265,
+  "latency_s": 5.2,
+  "_initial_probability": 0.62,
+  "_meta": {
+    "tier": "rag",
+    "t_end": "2016-08-16 20:37:13",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-0987",
+        "CC-1471",
+        "CC-0979",
+        "CC-0443",
+        "CC-0841"
+      ]
+    },
+    "card_id": "C04258-K1",
+    "customer_id": "C04258",
+    "usage_log": [
+      {
+        "prompt": 946,
+        "completion": 319
+      }
+    ]
+  }
+}

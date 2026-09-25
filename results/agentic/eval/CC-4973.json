@@ -1,0 +1,137 @@
+{
+  "case_id": "CC-4973",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.85,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3374947"
+    ],
+    "first_suspicious_txn_id": "3374947",
+    "connected_card_ids": [],
+    "connected_device_profiles": [
+      "iOS Device | iOS 11.2.6 | mobile safari generic | 2208x1242"
+    ],
+    "exposure_usd": 175.05,
+    "evidence": [
+      {
+        "claim": "Base fraud rate for similar alerts is high (0.72) and most prior cases were fraud, often card_not_present_new_device or account_takeover.",
+        "source": "graph",
+        "ref": "3374947",
+        "entity_ids": []
+      },
+      {
+        "claim": "The device used is new for this account and has been associated with 10 confirmed fraud cases across 88 customers.",
+        "source": "graph",
+        "ref": "iOS Device | iOS 11.2.6 | mobile safari generic | 2208x1242",
+        "entity_ids": []
+      },
+      {
+        "claim": "Transaction amount is only modestly above average (1.3\u00d7) and the region is the cardholder's primary region, so amount or region alone are not strong fraud signals.",
+        "source": "graph",
+        "ref": "3374947",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-2279",
+      "CC-2661"
+    ],
+    "summary": "The alert aligns with a pattern of card\u2011not\u2011present fraud on a device new to the account; the device has a notable fraud history and the situation memory shows a 72% fraud base rate for similar alerts.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 2 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 2 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.85 backed by 2 independent pieces of evidence",
+  "tool_calls": 5,
+  "tokens": 8314,
+  "latency_s": 37.8,
+  "_initial_probability": 0.85,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-10-18 09:49:54",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 4,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3374947"
+          }
+        },
+        {
+          "tool": "device_profile",
+          "args": {
+            "device": "iOS Device | iOS 11.2.6 | mobile safari generic | 2208x1242"
+          }
+        },
+        {
+          "tool": "recurring_check",
+          "args": {
+            "txn_id": "3374947"
+          }
+        }
+      ]
+    },
+    "card_id": "C03218-K2",
+    "customer_id": "C03218",
+    "usage_log": [
+      {
+        "prompt": 1471,
+        "completion": 33
+      },
+      {
+        "prompt": 1848,
+        "completion": 77
+      },
+      {
+        "prompt": 2117,
+        "completion": 60
+      },
+      {
+        "prompt": 2178,
+        "completion": 530
+      }
+    ]
+  }
+}

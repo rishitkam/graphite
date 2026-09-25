@@ -1,0 +1,144 @@
+{
+  "case_id": "CC-5143",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.85,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3385335"
+    ],
+    "first_suspicious_txn_id": "3385335",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 110.26,
+    "evidence": [
+      {
+        "claim": "Base rate for similar alerts is 90% fraud, mostly card\u2011not\u2011present fraud.",
+        "source": "graph",
+        "ref": "memory",
+        "entity_ids": [
+          "3385335"
+        ]
+      },
+      {
+        "claim": "Only two transactions on the card in the prior 72\u202fh, none are tiny authorisations; the flagged $110.26 purchase is 1.4\u00d7 the card\u2019s average.",
+        "source": "graph",
+        "ref": "activity",
+        "entity_ids": [
+          "3380978",
+          "3385335"
+        ]
+      },
+      {
+        "claim": "Device SM\u2011G920P Build/NRD90M has never been used on this card before (0 prior txns on the card).",
+        "source": "graph",
+        "ref": "device_new",
+        "entity_ids": [
+          "3385335"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-2751",
+      "CC-4126",
+      "CC-4402"
+    ],
+    "summary": "The alert matches a high\u2011risk pattern: a new device for the card used in an online purchase, with a model score of 0.91 and a base fraud rate of 90% for similar cases. No small\u2011auth testing or recurring legitimate pattern is present, supporting a card\u2011not\u2011present fraud hypothesis.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 3 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 3 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.85 backed by 3 independent pieces of evidence",
+  "tool_calls": 5,
+  "tokens": 7809,
+  "latency_s": 50.4,
+  "_initial_probability": 0.85,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-10-22 01:49:11",
+    "label": "fraud",
+    "label_pattern": "card_not_present_fraud",
+    "eval_slice": "dev",
+    "calls": 4,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3385335"
+          }
+        },
+        {
+          "tool": "device_profile",
+          "args": {
+            "device": "SM-G920P Build/NRD90M"
+          }
+        },
+        {
+          "tool": "card_activity",
+          "args": {
+            "card_id": "C10644-K1",
+            "hours_before": 72
+          }
+        }
+      ]
+    },
+    "card_id": "C10644-K1",
+    "customer_id": "C10644",
+    "usage_log": [
+      {
+        "prompt": 1420,
+        "completion": 33
+      },
+      {
+        "prompt": 1795,
+        "completion": 82
+      },
+      {
+        "prompt": 1848,
+        "completion": 92
+      },
+      {
+        "prompt": 1957,
+        "completion": 582
+      }
+    ]
+  }
+}

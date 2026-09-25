@@ -1,0 +1,136 @@
+{
+  "case_id": "CC-2971",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.923,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3207649"
+    ],
+    "first_suspicious_txn_id": "3207649",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 50.44,
+    "evidence": [
+      {
+        "claim": "Transaction flagged online from a new device with anonymous proxy",
+        "source": "graph",
+        "ref": "3207649",
+        "entity_ids": [
+          "C09998-K1"
+        ]
+      },
+      {
+        "claim": "Device_seen is New",
+        "source": "graph",
+        "ref": "3207649",
+        "entity_ids": []
+      },
+      {
+        "claim": "Proxy is IP_PROXY:ANONYMOUS",
+        "source": "graph",
+        "ref": "3207649",
+        "entity_ids": []
+      },
+      {
+        "claim": "Similar confirmed fraud case CC-1720 involved new device and online fraud",
+        "source": "document",
+        "ref": "CC-1720",
+        "entity_ids": []
+      },
+      {
+        "claim": "Similar confirmed fraud case CC-0973 involved new device and online fraud",
+        "source": "document",
+        "ref": "CC-0973",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-1720",
+      "CC-0973"
+    ],
+    "summary": "The $50.44 online transaction was made from a newly seen device using an anonymous proxy, mirroring prior confirmed fraud cases involving new devices. This pattern suggests card\u2011not\u2011present fraud with a new device. Probability of fraud is high.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 2,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.75 to 0.92; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 1,
+  "tokens": 1623,
+  "latency_s": 11.5,
+  "_initial_probability": 0.75,
+  "_meta": {
+    "tier": "rag",
+    "t_end": "2016-08-26 14:10:00",
+    "label": "fraud",
+    "label_pattern": "undocumented",
+    "eval_slice": "rare_patterns",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-1720",
+        "CC-0973",
+        "CC-0991",
+        "CC-0997",
+        "CC-1423"
+      ]
+    },
+    "card_id": "C09998-K1",
+    "customer_id": "C09998",
+    "usage_log": [
+      {
+        "prompt": 1200,
+        "completion": 423
+      }
+    ]
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "case_id": "CC-0270",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.85,
+    "pattern": "out_of_region_use",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3023542"
+    ],
+    "first_suspicious_txn_id": "3023542",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 1504.02,
+    "evidence": [
+      {
+        "claim": "Transaction 3023542 is in region 441.0, which has 0 prior transactions for this card",
+        "source": "graph",
+        "ref": "FLAGGED 3023542",
+        "entity_ids": [
+          "3023542"
+        ]
+      },
+      {
+        "claim": "Amount $1504.02 is 7.2\u00d7 the card's average transaction size",
+        "source": "graph",
+        "ref": "CARD C07871-K1 history",
+        "entity_ids": [
+          "3023542"
+        ]
+      },
+      {
+        "claim": "Recent history shows no other transactions in region 441, indicating a sudden out\u2011of\u2011region use",
+        "source": "graph",
+        "ref": "region 441.0 stats",
+        "entity_ids": [
+          "3023542"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0006",
+      "CC-0100"
+    ],
+    "summary": "The flagged in\u2011person purchase occurs in a region never used before and is far above the cardholder\u2019s typical spend, matching the out_of_region_use pattern seen in prior fraud cases. Situation memory shows a high fraud base rate (0.58) and similar alerts were mostly fraud. Therefore the transaction is likely fraudulent.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 3 independent pieces of evidence"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "exposure $1,504.02 exceeds $1,000, 3a"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 3 independent pieces of evidence"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "exposure $1,504.02 exceeds $1,000, 3a"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": true,
+    "reason": "exposure $1,504.02 exceeds $1,000, 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 1504.02,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.85 backed by 3 independent pieces of evidence",
+  "tool_calls": 9,
+  "tokens": 2549,
+  "latency_s": 3.3,
+  "_initial_probability": 0.85,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-07-09 04:38:21",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-0042",
+        "CC-0082",
+        "CC-0091",
+        "CC-0208",
+        "CC-0224"
+      ],
+      "precedent": [
+        "CC-0036",
+        "CC-0046",
+        "CC-0047",
+        "CC-0049",
+        "CC-0057"
+      ],
+      "prompt_chars": 4627
+    },
+    "card_id": "C07871-K1",
+    "customer_id": "C07871",
+    "usage_log": [
+      {
+        "prompt": 2135,
+        "completion": 414
+      }
+    ]
+  }
+}

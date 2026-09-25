@@ -1,0 +1,122 @@
+{
+  "case_id": "CC-4245",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.85,
+    "pattern": "account_takeover",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3318194"
+    ],
+    "first_suspicious_txn_id": "3318194",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 107.96,
+    "evidence": [
+      {
+        "claim": "Base rate for similar alerts is very high (0.91) and all past similar alerts were fraud.",
+        "source": "graph",
+        "ref": "situation_memory",
+        "entity_ids": [
+          "3318194"
+        ]
+      },
+      {
+        "claim": "Prior cases on this card (CC-3363, CC-1897) were confirmed account takeover.",
+        "source": "document",
+        "ref": "situation_memory",
+        "entity_ids": [
+          "CC-3363",
+          "CC-1897"
+        ]
+      },
+      {
+        "claim": "Transaction is in-person but the card has a strong online usage pattern, indicating mixed-channel usage.",
+        "source": "graph",
+        "ref": "card_activity",
+        "entity_ids": [
+          "C12991-K1"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-3363",
+      "CC-1897"
+    ],
+    "summary": "The alert matches a high\u2011fraud base rate and similar past alerts on this card were account takeover. Mixed in\u2011person and online usage further supports takeover suspicion.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 2 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 2 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.85 backed by 2 independent pieces of evidence",
+  "tool_calls": 3,
+  "tokens": 3658,
+  "latency_s": 24.5,
+  "_initial_probability": 0.85,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-10-01 18:59:19",
+    "label": "fraud",
+    "label_pattern": "account_takeover",
+    "eval_slice": "matched",
+    "calls": 2,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3318194"
+          }
+        }
+      ]
+    },
+    "card_id": "C12991-K1",
+    "customer_id": "C12991",
+    "usage_log": [
+      {
+        "prompt": 1401,
+        "completion": 33
+      },
+      {
+        "prompt": 1773,
+        "completion": 451
+      }
+    ]
+  }
+}

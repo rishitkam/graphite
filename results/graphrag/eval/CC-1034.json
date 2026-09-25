@@ -1,0 +1,152 @@
+{
+  "case_id": "CC-1034",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.86,
+    "pattern": "account_takeover",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3088468"
+    ],
+    "first_suspicious_txn_id": "3088468",
+    "connected_card_ids": [
+      "C06224-K1"
+    ],
+    "connected_device_profiles": [
+      "Windows | Windows 10 | edge 16.0 | 1366x768"
+    ],
+    "exposure_usd": 19.96,
+    "evidence": [
+      {
+        "claim": "Device is new for this account and has been used by many other customers, with no prior fraud through this profile",
+        "source": "graph",
+        "ref": "FLAGGED 3088468",
+        "entity_ids": [
+          "C06224-K2"
+        ]
+      },
+      {
+        "claim": "Region 330.0 has never been used on this card (0 of 1736 prior txns)",
+        "source": "graph",
+        "ref": "FLAGGED 3088468",
+        "entity_ids": [
+          "C06224-K2"
+        ]
+      },
+      {
+        "claim": "Card has three prior confirmed fraud cases (account takeover and card_not_present_new_device)",
+        "source": "document",
+        "ref": "CUSTOMER C06224",
+        "entity_ids": [
+          "C06224-K2"
+        ]
+      },
+      {
+        "claim": "Similar situation alerts have 73% fraud, with account takeover common",
+        "source": "document",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": []
+      },
+      {
+        "claim": "Recent burst of 449 transactions in 72h, many from new devices, indicating abnormal activity",
+        "source": "graph",
+        "ref": "LAST 72H ON CARD",
+        "entity_ids": [
+          "C06224-K2"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0291",
+      "CC-0364"
+    ],
+    "summary": "The flagged $19.96 online purchase uses a brand\u2011new device and an unseen billing region on a card with a history of confirmed fraud, matching patterns of account takeover. Recent high\u2011volume activity from multiple new devices further supports this. Probability of fraud is high.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.86 with 4 independent pieces of evidence"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "connects to another card's fraud, R2 and 3a"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.86 with 4 independent pieces of evidence"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "connects to another card's fraud, R2 and 3a"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": true,
+    "reason": "connects to another card's fraud, R2 and 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 19.96,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.86 backed by 4 independent pieces of evidence",
+  "tool_calls": 9,
+  "tokens": 3023,
+  "latency_s": 23.0,
+  "_initial_probability": 0.86,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-07-23 20:31:39",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-0963",
+        "CC-0582",
+        "CC-0807",
+        "CC-0384",
+        "CC-0874"
+      ],
+      "precedent": [
+        "CC-0006",
+        "CC-0016",
+        "CC-0051",
+        "CC-0053",
+        "CC-0058"
+      ],
+      "prompt_chars": 5626
+    },
+    "card_id": "C06224-K2",
+    "customer_id": "C06224",
+    "usage_log": [
+      {
+        "prompt": 2511,
+        "completion": 512
+      }
+    ]
+  }
+}

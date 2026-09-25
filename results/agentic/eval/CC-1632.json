@@ -1,0 +1,120 @@
+{
+  "case_id": "CC-1632",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.02,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Similar alerts were all cleared, indicating low fraud likelihood",
+        "source": "graph",
+        "ref": "situation_memory",
+        "entity_ids": [
+          "3139185"
+        ]
+      },
+      {
+        "claim": "Product H appears in 5 of 8 prior transactions, showing normal usage",
+        "source": "graph",
+        "ref": "transaction_history",
+        "entity_ids": [
+          "C05174-K1"
+        ]
+      },
+      {
+        "claim": "Amount is only 0.2x the card's average, not typical for testing pattern",
+        "source": "graph",
+        "ref": "transaction_summary",
+        "entity_ids": [
+          "3139185"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-1434",
+      "CC-1419",
+      "CC-1522"
+    ],
+    "summary": "Situation memory shows 0% fraud for similar alerts; the cardholder frequently purchases product H, and the low amount is consistent with their pattern, so the transaction is likely legitimate.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "ALLOW_TRANSACTION",
+        "route": "auto",
+        "reason": "probability 0.02 with 3 independent pieces of evidence"
+      },
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "evidence supports a legitimate transaction"
+      }
+    ],
+    "final": [
+      {
+        "action": "ALLOW_TRANSACTION",
+        "route": "auto",
+        "reason": "probability 0.02 with 3 independent pieces of evidence"
+      },
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "evidence supports a legitimate transaction"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "fraud not confirmed or strongly suspected, 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.02 backed by 3 independent pieces of evidence",
+  "tool_calls": 3,
+  "tokens": 3661,
+  "latency_s": 11.7,
+  "_initial_probability": 0.02,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-08-04 00:54:51",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 2,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3139185"
+          }
+        }
+      ]
+    },
+    "card_id": "C05174-K1",
+    "customer_id": "C05174",
+    "usage_log": [
+      {
+        "prompt": 1453,
+        "completion": 33
+      },
+      {
+        "prompt": 1753,
+        "completion": 422
+      }
+    ]
+  }
+}

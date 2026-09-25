@@ -1,0 +1,136 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Graphite Explained</title>
+<style>
+@page { size: A4; margin: 18mm 16mm; }
+body { font: 10.5pt/1.55 Georgia, serif; color:#1b1b1b; }
+h1 { font: 700 26pt/1.1 Helvetica, Arial, sans-serif; margin:0 0 4px; }
+h2 { font: 700 15pt Helvetica, Arial, sans-serif; margin:26px 0 6px; border-bottom:2px solid #222; padding-bottom:3px; page-break-after: avoid; }
+h3 { font: 700 11.5pt Helvetica, Arial, sans-serif; margin:16px 0 4px; page-break-after: avoid; }
+.sub { font: 12pt Helvetica, Arial, sans-serif; color:#555; margin-bottom:18px; }
+table { border-collapse: collapse; width:100%; margin:8px 0 12px; font: 9.5pt Helvetica, Arial, sans-serif; page-break-inside: avoid; }
+th, td { border:1px solid #bbb; padding:4px 7px; text-align:left; vertical-align:top; }
+th { background:#eee; }
+.box { background:#f4f4ef; border-left:4px solid #555; padding:8px 12px; margin:10px 0; page-break-inside: avoid; }
+.flow { font: 9.5pt Menlo, monospace; background:#f7f7f7; padding:10px; white-space:pre; page-break-inside: avoid; }
+code { font: 9pt Menlo, monospace; background:#f1f1f1; padding:0 3px; }
+.pb { page-break-before: always; }
+</style></head><body>
+
+<h1>Graphite</h1>
+<div class="sub">The whole project from zero: what the problem is, what we built, why, and where it stands.<br>
+Repo: github.com/rishitkam/graphite</div>
+
+<h2>1. The problem in plain words</h2>
+<p>A bank watches every card payment. Some payments look odd: a new phone, a different city, a strange amount at 3am. The bank's system raises an <b>alert</b> on those. A human fraud analyst then opens the case and has to decide: did the real cardholder make this payment, or did someone else?</p>
+<p>To decide, the analyst looks around the payment. What does this card normally do? Has this phone been used by other people? Were those people victims of fraud before? Has the bank seen a case like this in the past, and how did it end? Then the analyst writes up a verdict, blocks the card or clears it, and if it is fraud, files a report for regulators (a <b>SAR</b>, suspicious activity report).</p>
+<p>This is slow, repetitive work. The hackathon asks: can an AI agent do this investigation, using a <b>graph database</b> (TigerGraph) to look around the payment the way an analyst would?</p>
+
+<h2>2. What the hackathon asks for</h2>
+<ul>
+<li><b>20 exam cases</b>, named HHG-001 to HHG-020. Each is one alert. We must produce an answer file per case in a fixed JSON format: verdict, fraud probability, pattern, which transactions are affected, connected cards and devices, evidence, similar past cases, and a SAR if needed.</li>
+<li><b>Three pipelines</b>, each a different way of letting the AI look things up:
+  <ol><li><b>RAG</b>: search old case notes by text similarity, hand the closest ones to the model.</li>
+  <li><b>GraphRAG</b>: pull a fixed set of facts out of the graph (card history, device, customer, similar cases) and hand them to the model.</li>
+  <li><b>Agentic GraphRAG</b>: give the model tools that query the graph and let it decide what to look at, step by step.</li></ol></li>
+<li><b>Same model for all three.</b> The organizers said they score the <b>improvement between pipelines</b>, not raw accuracy, plus architecture, token efficiency and engineering. A cheap model with a smart pipeline can beat an expensive model with a lazy one.</li>
+<li><b>TigerGraph is mandatory</b>, including its official MCP server (the standard way AI tools talk to it).</li>
+</ul>
+
+<h2>3. The data</h2>
+<p>An anonymised card payments dataset loaded into TigerGraph:</p>
+<table>
+<tr><th>Thing</th><th>Count</th><th>What it is</th></tr>
+<tr><td>Transactions</td><td>590,742</td><td>Every payment, with amount, time, product, channel, region</td></tr>
+<tr><td>Customers / Cards</td><td>13,553 / 14,317</td><td>Who owns what. Cards are named like C08623-K2</td></tr>
+<tr><td>Device profiles</td><td>9,436</td><td>A fingerprint of the phone or browser used (not unique per person)</td></tr>
+<tr><td>Billing regions</td><td>332</td><td>Rough location of the card's billing address</td></tr>
+<tr><td>Email domains</td><td>59</td><td>gmail.com, anonymous.com and so on</td></tr>
+<tr><td>Closed cases</td><td>5,565</td><td>Past investigations with outcome and analyst notes: the bank's memory</td></tr>
+</table>
+<p>In the graph these are all <b>nodes</b>, joined by <b>edges</b>: card MADE transaction, transaction FROM_DEVICE device, customer OWNS card, case INVOLVES transaction. About 2.3 million edges in total. The point of a graph is that "who else used this phone, and did any of them get defrauded?" is a two-hop walk instead of a slow multi-table join.</p>
+
+<h2>4. Why a graph at all</h2>
+<div class="box">Fraud is relational. One stolen card on its own looks almost normal. What gives it away is the <b>connections</b>: the same device showing up on eight strangers' cards in one week, all "new device", all through a proxy. A text search over notes cannot see that. A graph walk sees it immediately.</div>
+<p>That is the thesis Graphite tests: the more the pipeline can use graph structure, the better it should do, with the same model.</p>
+
+<h2 class="pb">5. How Graphite works</h2>
+<div class="flow">  alert  -->  gather evidence  -->  model proposes  -->  policy engine decides  -->  write back
+              (differs per tier)    (same prompt,       (same rules R1-R10,          (case node in
+                                     same JSON)          no model involved)           graph, SAR)</div>
+
+<h3>5.1 Only the evidence differs between tiers</h3>
+<p>All three pipelines share the <b>same prompt, the same output format and the same rule engine</b>. The only thing that changes is how evidence is gathered. So any difference in results is caused by retrieval, which is exactly what the judges want measured. Most teams write three different prompts, which makes their comparison meaningless.</p>
+
+<h3>5.2 The model proposes, rules decide</h3>
+<p>The model never blocks a card or files a report itself. It outputs an assessment (probability, pattern, evidence). A plain Python <b>policy engine</b> with ten written rules (R1 to R10) turns that into actions: freeze card, escalate, clear, file SAR. This is how real banks keep AI auditable, and it means a hallucination cannot trigger an action on its own.</p>
+
+<h3>5.3 Situation memory</h3>
+<p>For every past case we build a small 15-number "fingerprint" of its graph situation: was the device new, was there a proxy, how many strangers share the device, how far from the usual region, and so on. These are stored as vectors inside TigerGraph. For a new alert we find the most similar past situations and see how they ended. This alone, with zero model calls, is a strong baseline.</p>
+
+<h3>5.4 Correcting the bank's own bias</h3>
+<p>The bank only investigated a legitimate payment when its own model flagged it, so 85% of past cases are fraud. Read naively, memory says "almost everything is fraud". We correct for this mathematically (compare a neighbourhood's fraud share against the 85% overall share). Before the fix, memory called 18 of 20 exam cases fraud; after, 9. The README says about half are legitimate.</p>
+
+<h3>5.5 Recurring charge check (disputes)</h3>
+<p>When a customer says "I never made this purchase", sometimes it is their own forgotten subscription. Past data has no legitimate disputes, so memory cannot recognise this. We added a check: has this card paid the same amount for the same product many times before? HHG-003 disputes $49.00 on a card with 53 earlier $49.00 charges. Policy rule R7 covers exactly this. We now run this check automatically on every dispute, because on the first run the agent skipped it despite being told to.</p>
+
+<h3>5.6 Finding fraud rings before anyone reports them</h3>
+<p>A standout extra: Graphite does not just wait for alerts. It builds links between customers who share a suspicious device (new to both, mostly through proxies) and runs TigerGraph's connected-components algorithm to find <b>rings</b>. In Nov to Dec it found 6 rings covering 61 customers, 5 of which contain no exam case at all. These become proactive cases PRO-002 to PRO-006; three were judged fraud with SARs (8, 5 and 3 cards).</p>
+
+<h3>5.7 Everything through MCP</h3>
+<p>Every graph query in every pipeline goes through TigerGraph's official MCP server. We verified results are byte-identical to calling the database directly.</p>
+
+<h2 class="pb">6. Testing honestly</h2>
+<p>A fraud eval is easy to fake by accident. We found and closed these leaks, each of which inflated scores:</p>
+<table>
+<tr><th>Leak</th><th>Why it cheated</th><th>Fix</th></tr>
+<tr><td>Alert trigger type</td><td>Predicted the label 100% in history</td><td>Neutral trigger text in eval</td></tr>
+<tr><td>Risk score</td><td>91% predictive on its own; the model learns nothing</td><td>Eval cases are score-matched: fraud and cleared cases with the same score (within 0.01)</td></tr>
+<tr><td>Timing</td><td>Case open time differed by outcome</td><td>Investigate at flagged time + 6 hours for all</td></tr>
+<tr><td>Future data</td><td>Memory could contain the answer</td><td>Every query takes an "as of" time; eval cases are excluded from memory</td></tr>
+<tr><td>Tuning on test</td><td>Overfitting the reported numbers</td><td>Separate dev split for tuning; code frozen before the held-out run</td></tr>
+</table>
+<p>The held-out set: 160 score-matched cases (80 fraud, 80 cleared) plus 8 rare-pattern cases. The dev set: 40 separate cases. Seventeen automated tests enforce the no-leak rules.</p>
+
+<h2>7. Where things stand</h2>
+<h3>Exam (done)</h3>
+<p>All 20 answered by the agentic pipeline, validated against the required format, written into the graph with SARs. Result: 10 fraud, 9 legitimate, 1 uncertain (HHG-009). About 1.8k to 6k tokens per case.</p>
+<h3>Held-out results (final)</h3>
+<p>168 cases never used for tuning, same model (gpt-oss-120b) for all three, run once on frozen code.</p>
+<table>
+<tr><th></th><th>Memory only (no LLM)</th><th>RAG</th><th>GraphRAG</th><th>Agentic</th></tr>
+<tr><td>Accuracy</td><td>85.7%</td><td>44.0%</td><td>73.8%</td><td><b>75.6%</b></td></tr>
+<tr><td>AUC (0.5 = coin flip)</td><td>0.919</td><td>0.433</td><td>0.805</td><td><b>0.852</b></td></tr>
+<tr><td>Brier (lower is better)</td><td>0.109</td><td>0.341</td><td>0.179</td><td><b>0.158</b></td></tr>
+<tr><td>Fraud pattern named correctly</td><td>n/a</td><td>8%</td><td>44%</td><td><b>51%</b></td></tr>
+<tr><td>Tokens / case</td><td>0</td><td>1,296</td><td>2,679</td><td>4,818</td></tr>
+</table>
+<p>Each step up the ladder helps: GraphRAG is +29.8 points over RAG, the agent +31.5, and the agent also ranks, calibrates and names patterns better than GraphRAG. RAG is below a coin flip because matched risk scores remove the easy signal, and notes that read alike are not situations that are alike. The no-model memory row scores highest, which is the finding: the signal lives in the graph, and the model explains it and proposes actions.</p>
+<h3>Still to do</h3>
+<ul>
+<li>Public demo site (static build is ready; publishing needs your go-ahead).</li>
+<li>Demo video, blog post and social post (you).</li>
+<li>Rotate the Groq keys after the hackathon.</li>
+</ul>
+
+<h2>8. Why this can win</h2>
+<ol>
+<li><b>A fair comparison.</b> One prompt, one rule engine, one model; only retrieval changes. The improvement numbers mean something.</li>
+<li><b>An honest eval.</b> Score-matched, leak-audited, frozen. Most submissions will report numbers that the risk score alone would get.</li>
+<li><b>Calibrated verdicts.</b> We do not call everything fraud. The bias correction and R7 check produce a believable split.</li>
+<li><b>Proactive ring detection</b> using TigerGraph's own graph algorithms: finds fraud no alert pointed at.</li>
+<li><b>Token efficiency.</b> A few thousand tokens per case, with a zero-token memory baseline to show what the graph gives for free.</li>
+<li><b>Auditable actions.</b> The model proposes, deterministic policy decides.</li>
+</ol>
+
+<h2>9. Glossary</h2>
+<table>
+<tr><td><b>AUC</b></td><td>How well the probabilities rank fraud above legitimate. 1.0 perfect, 0.5 random.</td></tr>
+<tr><td><b>Brier</b></td><td>Error of the probabilities themselves. Lower is better.</td></tr>
+<tr><td><b>Recall / specificity</b></td><td>Share of fraud caught / share of legitimate correctly cleared.</td></tr>
+<tr><td><b>GSQL</b></td><td>TigerGraph's query language. Our queries are installed in the database.</td></tr>
+<tr><td><b>MCP</b></td><td>Model Context Protocol, a standard way for AI apps to call tools like a database.</td></tr>
+<tr><td><b>Vector / kNN</b></td><td>Numbers describing a thing; kNN finds the nearest ones. Used for notes and situations.</td></tr>
+<tr><td><b>SAR</b></td><td>Suspicious Activity Report, the regulator filing for confirmed fraud.</td></tr>
+<tr><td><b>Token</b></td><td>A chunk of text the model reads or writes; what model usage is billed and scored in.</td></tr>
+</table>
+</body></html>

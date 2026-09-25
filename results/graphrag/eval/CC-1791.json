@@ -1,0 +1,147 @@
+{
+  "case_id": "CC-1791",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.867,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3148097"
+    ],
+    "first_suspicious_txn_id": "3148097",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 61.85,
+    "evidence": [
+      {
+        "claim": "Transaction amount is only 1.7x the card's average and matches the sole product historically used",
+        "source": "graph",
+        "ref": "FLAGGED 3148097",
+        "entity_ids": [
+          "3148097"
+        ]
+      },
+      {
+        "claim": "All prior 6 transactions were online purchases of product C with the same email",
+        "source": "graph",
+        "ref": "CARD C13254-K1 history",
+        "entity_ids": [
+          "C13254-K1"
+        ]
+      },
+      {
+        "claim": "No new device or proxy evidence; device record absent",
+        "source": "graph",
+        "ref": "DEVICE",
+        "entity_ids": []
+      },
+      {
+        "claim": "Situation memory shows 87% fraud in similar cases but base rate corrected to 75%; however many similar cases involved new devices which are absent here",
+        "source": "document",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": []
+      },
+      {
+        "claim": "Recent cleared cases with similar high scores involved travel confirmation, not applicable here",
+        "source": "document",
+        "ref": "SIMILAR PAST CASES BY TEXT",
+        "entity_ids": [
+          "CC-1471",
+          "CC-0987",
+          "CC-0657",
+          "CC-0933",
+          "CC-1527"
+        ]
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0142",
+      "CC-0012",
+      "CC-0337"
+    ],
+    "summary": "The flagged $61.85 online purchase fits the cardholder\u2019s normal pattern of product C purchases, uses the same email, and shows no new device or proxy signals. While similar alerts have a high fraud share, the lack of device anomalies and modest amount deviation suggest a lower fraud likelihood. Accordingly, the probability is set at 0.62, leaning toward a legitimate transaction.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 10,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.62 to 0.87; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 9,
+  "tokens": 2160,
+  "latency_s": 14.9,
+  "_initial_probability": 0.62,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-08-06 10:00:22",
+    "label": "fraud",
+    "label_pattern": "card_not_present_fraud",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-1471",
+        "CC-0987",
+        "CC-0657",
+        "CC-0933",
+        "CC-1527"
+      ],
+      "precedent": [],
+      "prompt_chars": 3062
+    },
+    "card_id": "C13254-K1",
+    "customer_id": "C13254",
+    "usage_log": [
+      {
+        "prompt": 1570,
+        "completion": 590
+      }
+    ]
+  }
+}

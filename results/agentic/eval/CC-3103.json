@@ -1,0 +1,148 @@
+{
+  "case_id": "CC-3103",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.867,
+    "pattern": "out_of_region_use",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3240209"
+    ],
+    "first_suspicious_txn_id": "3240209",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 752.89,
+    "evidence": [
+      {
+        "claim": "Transaction 3240209 occurred in region 441.0, which the card has never used in its 503\u2011transaction history.",
+        "source": "graph",
+        "ref": "3240209",
+        "entity_ids": [
+          "C10344-K2"
+        ]
+      },
+      {
+        "claim": "Amount $752.89 is 8.3\u00d7 the card's average transaction size, a notable deviation.",
+        "source": "graph",
+        "ref": "3240209",
+        "entity_ids": [
+          "C10344-K2"
+        ]
+      },
+      {
+        "claim": "Model risk score is high (0.92).",
+        "source": "graph",
+        "ref": "3240209",
+        "entity_ids": []
+      },
+      {
+        "claim": "Situation\u2011memory shows that alerts with this profile (new region, high amount) have a corrected base fraud rate of 0.37, and 11 of 15 similar past alerts were fraud, mostly out_of_region_use.",
+        "source": "document",
+        "ref": "situation_memory",
+        "entity_ids": []
+      },
+      {
+        "claim": "Prior cases CC\u20112932 and CC\u20112423 (both confirmed fraud) involved out\u2011of\u2011region in\u2011person purchases with similar characteristics.",
+        "source": "document",
+        "ref": "CC-2932, CC-2423",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-2932",
+      "CC-2423"
+    ],
+    "summary": "The flagged in\u2011person purchase occurs in a region never seen before for this card and is far above the card's typical spend, matching the out_of_region_use pattern. Situation memory and two prior confirmed cases with the same pattern raise the fraud probability to about 62%.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 5,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R8: uncertain with exposure over $500 or conflicting evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.62 to 0.87; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER', 'ESCALATE_TO_ANALYST'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 3,
+  "tokens": 3996,
+  "latency_s": 20.4,
+  "_initial_probability": 0.62,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-09-06 02:13:51",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 2,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3240209"
+          }
+        }
+      ]
+    },
+    "card_id": "C10344-K2",
+    "customer_id": "C10344",
+    "usage_log": [
+      {
+        "prompt": 1418,
+        "completion": 33
+      },
+      {
+        "prompt": 1773,
+        "completion": 772
+      }
+    ]
+  }
+}

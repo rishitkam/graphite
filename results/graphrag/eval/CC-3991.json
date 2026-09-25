@@ -1,0 +1,136 @@
+{
+  "case_id": "CC-3991",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.17,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Transaction 3301292 was made online with a brand\u2011new iOS device for this card",
+        "source": "graph",
+        "ref": "FLAGGED 3301292",
+        "entity_ids": [
+          "3301292"
+        ]
+      },
+      {
+        "claim": "The device profile has been linked to 11 confirmed fraud cases, many of which were card\u2011not\u2011present new\u2011device fraud",
+        "source": "document",
+        "ref": "DEVICE PROFILE",
+        "entity_ids": []
+      },
+      {
+        "claim": "Similar past alerts with the same context (online=1, device_new=1) had a 40% fraud rate, most classified as card_not_present_new_device",
+        "source": "document",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": []
+      },
+      {
+        "claim": "No prior transactions on this card used this device, indicating a new\u2011to\u2011account usage",
+        "source": "graph",
+        "ref": "FLAGGED 3301292",
+        "entity_ids": [
+          "3301292"
+        ]
+      },
+      {
+        "claim": "Customer confirms they made this transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-2559",
+      "CC-2581",
+      "CC-1103",
+      "CC-3894",
+      "CC-3090"
+    ],
+    "summary": "The flagged $100.09 online purchase was made from a device never seen on this account, a hallmark of card\u2011not\u2011present new\u2011device fraud. The device profile is associated with multiple confirmed fraud cases, and similar alerts show a 40% fraud rate. These factors raise the fraud probability above the baseline.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 10,
+      "assumed_response": "Customer confirms they made this transaction"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: customer confirmed the transaction"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.45 to 0.17; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['CLOSE_NO_FRAUD']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "fraud not confirmed or strongly suspected, 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 9,
+  "tokens": 2819,
+  "latency_s": 21.1,
+  "_initial_probability": 0.45,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-09-26 20:32:12",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-1103",
+        "CC-3894",
+        "CC-3090",
+        "CC-3421",
+        "CC-3204"
+      ],
+      "precedent": [
+        "CC-0989",
+        "CC-3310",
+        "CC-3360",
+        "CC-3516",
+        "CC-3528"
+      ],
+      "prompt_chars": 5266
+    },
+    "card_id": "C08999-K1",
+    "customer_id": "C08999",
+    "usage_log": [
+      {
+        "prompt": 2324,
+        "completion": 495
+      }
+    ]
+  }
+}

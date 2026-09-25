@@ -1,0 +1,115 @@
+{
+  "case_id": "CC-1383",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.85,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3118964"
+    ],
+    "first_suspicious_txn_id": "3118964",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 99.98,
+    "evidence": [
+      {
+        "claim": "Transaction flagged with high risk and new device",
+        "source": "graph",
+        "ref": "3118964",
+        "entity_ids": [
+          "C04570-K1"
+        ]
+      },
+      {
+        "claim": "Similar confirmed fraud case CC-1103 involved new MacOS device",
+        "source": "document",
+        "ref": "CC-1103",
+        "entity_ids": []
+      },
+      {
+        "claim": "Similar confirmed fraud case CC-0629 involved new MacOS device",
+        "source": "document",
+        "ref": "CC-0629",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-1103",
+      "CC-0629",
+      "CC-0857",
+      "CC-0810",
+      "CC-0609"
+    ],
+    "summary": "The $99.98 online transaction was made from a newly seen MacOS device, matching several prior confirmed fraud cases of card\u2011not\u2011present activity on new devices. The high model risk score and pattern similarity suggest fraud.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 3 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 3 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.85 backed by 3 independent pieces of evidence",
+  "tool_calls": 1,
+  "tokens": 1679,
+  "latency_s": 12.8,
+  "_initial_probability": 0.85,
+  "_meta": {
+    "tier": "rag",
+    "t_end": "2016-07-29 06:30:41",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "dev",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-1103",
+        "CC-0629",
+        "CC-0857",
+        "CC-0810",
+        "CC-0609"
+      ]
+    },
+    "card_id": "C04570-K1",
+    "customer_id": "C04570",
+    "usage_log": [
+      {
+        "prompt": 1268,
+        "completion": 411
+      }
+    ]
+  }
+}

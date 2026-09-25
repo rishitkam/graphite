@@ -1,0 +1,119 @@
+{
+  "case_id": "CC-5078",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.911,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3381279"
+    ],
+    "first_suspicious_txn_id": "3381279",
+    "connected_card_ids": [],
+    "connected_device_profiles": [
+      "Windows | Windows 10 | chrome 65.0 | 2160x1440"
+    ],
+    "exposure_usd": 100.02,
+    "evidence": [
+      {
+        "claim": "device_seen is New for this card",
+        "source": "graph",
+        "ref": "3381279",
+        "entity_ids": [
+          "C01393-K1"
+        ]
+      },
+      {
+        "claim": "high model risk score 0.91",
+        "source": "graph",
+        "ref": "3381279",
+        "entity_ids": [
+          "C01393-K1"
+        ]
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [],
+    "summary": "The $100.02 online transaction was made from a new device for card C01393-K1 and received a high risk score (0.91). No prior activity or similar cases suggest legitimate travel, pointing to a possible card\u2011not\u2011present fraud from a new device. Recommend further verification or decline.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 2,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.72 to 0.91; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 1,
+  "tokens": 1302,
+  "latency_s": 9.5,
+  "_initial_probability": 0.72,
+  "_meta": {
+    "tier": "rag",
+    "t_end": "2016-10-20 19:41:44",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "dev",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-0910",
+        "CC-0979",
+        "CC-0987",
+        "CC-0339",
+        "CC-3966"
+      ]
+    },
+    "card_id": "C01393-K1",
+    "customer_id": "C01393",
+    "usage_log": [
+      {
+        "prompt": 947,
+        "completion": 355
+      }
+    ]
+  }
+}

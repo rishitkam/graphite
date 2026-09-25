@@ -1,0 +1,157 @@
+{
+  "case_id": "CC-0750",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.88,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3048717"
+    ],
+    "first_suspicious_txn_id": "3048717",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 144.63,
+    "evidence": [
+      {
+        "claim": "High base fraud rate for similar alerts (0.82) and 14/15 past similar alerts were fraud.",
+        "source": "graph",
+        "ref": "situation_memory",
+        "entity_ids": [
+          "3048717"
+        ]
+      },
+      {
+        "claim": "Flagged amount $144.63 is 3.4\u00d7 the card's average transaction size.",
+        "source": "document",
+        "ref": "alert",
+        "entity_ids": [
+          "3048717"
+        ]
+      },
+      {
+        "claim": "Recent history shows many online purchases of product C, but no small test authorisations; pattern matches typical card\u2011not\u2011present fraud.",
+        "source": "graph",
+        "ref": "card_activity",
+        "entity_ids": [
+          "3048717"
+        ]
+      },
+      {
+        "claim": "A prior confirmed fraud case (CC-0211) on the same card within days, also card\u2011not\u2011present fraud.",
+        "source": "graph",
+        "ref": "situation_memory",
+        "entity_ids": [
+          "CC-0211"
+        ]
+      },
+      {
+        "claim": "Region 130.0 is used infrequently (7/160 prior txns) but not unique; the alert\u2019s region share is low (0.04) contributing to out\u2011of\u2011region risk.",
+        "source": "document",
+        "ref": "alert",
+        "entity_ids": [
+          "3048717"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0211"
+    ],
+    "summary": "The alert aligns with a high\u2011risk card\u2011not\u2011present fraud pattern: a large online purchase on a card that only does online product C, with a recent history of similar fraud alerts on the same card and a high base fraud probability.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.88 with 3 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.88 with 3 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.88 backed by 3 independent pieces of evidence",
+  "tool_calls": 5,
+  "tokens": 8301,
+  "latency_s": 60.9,
+  "_initial_probability": 0.88,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-07-15 10:50:08",
+    "label": "fraud",
+    "label_pattern": "card_not_present_fraud",
+    "eval_slice": "matched",
+    "calls": 4,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3048717"
+          }
+        },
+        {
+          "tool": "recurring_check",
+          "args": {
+            "txn_id": "3048717"
+          }
+        },
+        {
+          "tool": "card_activity",
+          "args": {
+            "card_id": "C11509-K2",
+            "hours_before": 48
+          }
+        }
+      ]
+    },
+    "card_id": "C11509-K2",
+    "customer_id": "C11509",
+    "usage_log": [
+      {
+        "prompt": 1406,
+        "completion": 33
+      },
+      {
+        "prompt": 1784,
+        "completion": 85
+      },
+      {
+        "prompt": 1845,
+        "completion": 105
+      },
+      {
+        "prompt": 2400,
+        "completion": 643
+      }
+    ]
+  }
+}

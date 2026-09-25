@@ -1,0 +1,136 @@
+{
+  "case_id": "CC-4729",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.867,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3354788"
+    ],
+    "first_suspicious_txn_id": "3354788",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 116.96,
+    "evidence": [
+      {
+        "claim": "Region 143.0 is the card's most frequent region (446 of 1195 prior transactions).",
+        "source": "graph",
+        "ref": "alert",
+        "entity_ids": [
+          "C11496-K2"
+        ]
+      },
+      {
+        "claim": "Product W accounts for 1094 of 1195 prior transactions.",
+        "source": "graph",
+        "ref": "alert",
+        "entity_ids": [
+          "C11496-K2"
+        ]
+      },
+      {
+        "claim": "Transaction amount $116.96 is 1.0\u00d7 the card's average spend.",
+        "source": "graph",
+        "ref": "alert",
+        "entity_ids": [
+          "C11496-K2"
+        ]
+      },
+      {
+        "claim": "Situation memory indicates a high base fraud rate (0.90) for similar alerts, but those alerts were often out_of_region_use or account_takeover, which do not apply here.",
+        "source": "document",
+        "ref": "situation_memory",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [],
+    "summary": "The flagged purchase aligns with the cardholder's normal behavior in region, product, and amount, making fraud less likely despite a high model risk score.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 5,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.62 to 0.87; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 3,
+  "tokens": 3788,
+  "latency_s": 24.5,
+  "_initial_probability": 0.62,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-10-11 22:06:33",
+    "label": "fraud",
+    "label_pattern": "account_takeover",
+    "eval_slice": "matched",
+    "calls": 2,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3354788"
+          }
+        }
+      ]
+    },
+    "card_id": "C11496-K2",
+    "customer_id": "C11496",
+    "usage_log": [
+      {
+        "prompt": 1423,
+        "completion": 33
+      },
+      {
+        "prompt": 1797,
+        "completion": 535
+      }
+    ]
+  }
+}

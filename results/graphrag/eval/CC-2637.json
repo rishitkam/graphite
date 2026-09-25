@@ -1,0 +1,118 @@
+{
+  "case_id": "CC-2637",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.92,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3203175"
+    ],
+    "first_suspicious_txn_id": "3203175",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 97.38,
+    "evidence": [
+      {
+        "claim": "Device ALE-L23 is new to this card (0 prior txns)",
+        "source": "graph",
+        "ref": "FLAGGED 3203175",
+        "entity_ids": [
+          "C11595-K1"
+        ]
+      },
+      {
+        "claim": "Amount $97.38 is 2.4\u00d7 the card's average transaction size",
+        "source": "graph",
+        "ref": "FLAGGED 3203175",
+        "entity_ids": [
+          "C11595-K1"
+        ]
+      },
+      {
+        "claim": "Card has four prior confirmed fraud cases, two of which were card_not_present_new_device",
+        "source": "graph",
+        "ref": "CUSTOMER C11595",
+        "entity_ids": [
+          "C11595-K1"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-1170",
+      "CC-1649"
+    ],
+    "summary": "The transaction uses a previously unseen device and is significantly larger than the card\u2019s typical spend. The cardholder\u2019s history includes multiple confirmed card\u2011not\u2011present frauds, including new\u2011device cases. Combined with the high model score, this points to a card_not_present_new_device pattern.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.92 with 2 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.92 with 2 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.92 backed by 2 independent pieces of evidence",
+  "tool_calls": 9,
+  "tokens": 2285,
+  "latency_s": 15.3,
+  "_initial_probability": 0.92,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-08-25 01:32:45",
+    "label": "fraud",
+    "label_pattern": "card_not_present_fraud",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-1692",
+        "CC-1182",
+        "CC-2105",
+        "CC-1131",
+        "CC-1327"
+      ],
+      "precedent": [],
+      "prompt_chars": 4003
+    },
+    "card_id": "C11595-K1",
+    "customer_id": "C11595",
+    "usage_log": [
+      {
+        "prompt": 1878,
+        "completion": 407
+      }
+    ]
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "case_id": "CC-2546",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.059,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "In\u2011person transaction flagged with high model risk but no other suspicious activity",
+        "source": "graph",
+        "ref": "3200997",
+        "entity_ids": [
+          "C08945-K2"
+        ]
+      },
+      {
+        "claim": "Similar past cases with high risk scores were cleared after travel confirmation",
+        "source": "document",
+        "ref": "CC-0987,CC-0979,CC-0443,CC-0692,CC-1132",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer confirms they made this transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0987",
+      "CC-0979",
+      "CC-0443",
+      "CC-0692",
+      "CC-1132"
+    ],
+    "summary": "The $91.98 in\u2011person purchase on card C08945\u2011K2 mirrors several prior alerts that were cleared after the cardholder confirmed travel to the billing region, suggesting this is a legitimate transaction.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 2,
+      "assumed_response": "Customer confirms they made this transaction"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: customer confirmed the transaction"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.20 to 0.06; actions changed from ['VERIFY_WITH_CUSTOMER'] to ['CLOSE_NO_FRAUD']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "fraud not confirmed or strongly suspected, 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 1,
+  "tokens": 1260,
+  "latency_s": 27.5,
+  "_initial_probability": 0.2,
+  "_meta": {
+    "tier": "rag",
+    "t_end": "2016-08-24 04:03:16",
+    "label": "fraud",
+    "label_pattern": "out_of_region_use",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-0987",
+        "CC-0979",
+        "CC-0443",
+        "CC-0692",
+        "CC-1132"
+      ]
+    },
+    "card_id": "C08945-K2",
+    "customer_id": "C08945",
+    "usage_log": [
+      {
+        "prompt": 916,
+        "completion": 344
+      }
+    ]
+  }
+}

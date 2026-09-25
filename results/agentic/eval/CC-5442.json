@@ -1,0 +1,142 @@
+{
+  "case_id": "CC-5442",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.867,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3399527"
+    ],
+    "first_suspicious_txn_id": "3399527",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 525.01,
+    "evidence": [
+      {
+        "claim": "Transaction is in a commonly used region and product for this card.",
+        "source": "graph",
+        "ref": "card_activity",
+        "entity_ids": [
+          "C03019-K2"
+        ]
+      },
+      {
+        "claim": "No recent low\u2011value test authorisations or new device usage.",
+        "source": "graph",
+        "ref": "card_activity",
+        "entity_ids": []
+      },
+      {
+        "claim": "Situation memory shows high base fraud rate for similar alerts, but many of those were out_of_region_use; this txn is not out\u2011of\u2011region.",
+        "source": "document",
+        "ref": "situation_memory",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [],
+    "summary": "The flagged purchase aligns with the cardholder's usual in\u2011person spending pattern and region, and there is no evidence of device novelty or testing. While the model\u2019s risk score is high and the base fraud rate for similar alerts is elevated, the specifics point to a legitimate transaction.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 7,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R8: uncertain with exposure over $500 or conflicting evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.62 to 0.87; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER', 'ESCALATE_TO_ANALYST'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 4,
+  "tokens": 5941,
+  "latency_s": 29.4,
+  "_initial_probability": 0.62,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-10-26 21:28:06",
+    "label": "fraud",
+    "label_pattern": "out_of_region_use",
+    "eval_slice": "matched",
+    "calls": 3,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3399527"
+          }
+        },
+        {
+          "tool": "card_activity",
+          "args": {
+            "card_id": "C03019-K2",
+            "hours_before": 72
+          }
+        }
+      ]
+    },
+    "card_id": "C03019-K2",
+    "customer_id": "C03019",
+    "usage_log": [
+      {
+        "prompt": 1418,
+        "completion": 33
+      },
+      {
+        "prompt": 1792,
+        "completion": 132
+      },
+      {
+        "prompt": 2044,
+        "completion": 522
+      }
+    ]
+  }
+}

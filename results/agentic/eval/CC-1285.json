@@ -1,0 +1,146 @@
+{
+  "case_id": "CC-1285",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.9,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3105314"
+    ],
+    "first_suspicious_txn_id": "3105314",
+    "connected_card_ids": [
+      "C00750-K2"
+    ],
+    "connected_device_profiles": [
+      "iOS Device | iOS 11.2.5 | mobile safari generic | 2208x1242"
+    ],
+    "exposure_usd": 400.07,
+    "evidence": [
+      {
+        "claim": "Alert context matches high\u2011fraud base rate (0.96) for online, non\u2011new device transactions.",
+        "source": "graph",
+        "ref": "situation_memory",
+        "entity_ids": [
+          "3105314"
+        ]
+      },
+      {
+        "claim": "Device profile has been used on another card with a confirmed fraud case (CC-0989).",
+        "source": "graph",
+        "ref": "device_profile",
+        "entity_ids": [
+          "C00750-K2"
+        ]
+      },
+      {
+        "claim": "Transaction is online, amount 2.3\u00d7 card average, product S seen in prior history, but no prior use of this device on the card.",
+        "source": "graph",
+        "ref": "transaction",
+        "entity_ids": [
+          "3105314"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0262",
+      "CC-0139",
+      "CC-0812"
+    ],
+    "summary": "The transaction fits the high\u2011risk online pattern seen in similar past alerts, uses a device linked to a known fraud case, and shows no legitimate recurring behavior, making card\u2011not\u2011present fraud the most likely explanation.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.90 with 3 independent pieces of evidence"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "connects to another card's fraud, R2 and 3a"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.90 with 3 independent pieces of evidence"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "connects to another card's fraud, R2 and 3a"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": true,
+    "reason": "connects to another card's fraud, R2 and 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 400.07,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.90 backed by 3 independent pieces of evidence",
+  "tool_calls": 4,
+  "tokens": 5903,
+  "latency_s": 12.2,
+  "_initial_probability": 0.9,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-07-26 15:55:33",
+    "label": "fraud",
+    "label_pattern": "card_not_present_new_device",
+    "eval_slice": "matched",
+    "calls": 3,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3105314"
+          }
+        },
+        {
+          "tool": "device_profile",
+          "args": {
+            "device": "iOS Device | iOS 11.2.5 | mobile safari generic | 2208x1242"
+          }
+        }
+      ]
+    },
+    "card_id": "C01755-K2",
+    "customer_id": "C01755",
+    "usage_log": [
+      {
+        "prompt": 1448,
+        "completion": 33
+      },
+      {
+        "prompt": 1827,
+        "completion": 87
+      },
+      {
+        "prompt": 1994,
+        "completion": 514
+      }
+    ]
+  }
+}

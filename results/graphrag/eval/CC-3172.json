@@ -1,0 +1,132 @@
+{
+  "case_id": "CC-3172",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.92,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3240011"
+    ],
+    "first_suspicious_txn_id": "3240011",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 19.38,
+    "evidence": [
+      {
+        "claim": "Recent transaction is online and matches the card's usual product but occurs after multiple confirmed fraud incidents on the same card",
+        "source": "graph",
+        "ref": "3240011",
+        "entity_ids": [
+          "C11847-K2"
+        ]
+      },
+      {
+        "claim": "Card has four prior confirmed fraud cases of card_not_present_fraud and one of card_not_present_new_device within the last two months",
+        "source": "document",
+        "ref": "CC-1641,CC-1926,CC-2227,CC-2489",
+        "entity_ids": [
+          "C11847-K2"
+        ]
+      },
+      {
+        "claim": "Situation memory shows 100% fraud for similar alerts (15/15) with a corrected base rate of 0.93",
+        "source": "document",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": []
+      },
+      {
+        "claim": "No new device was recorded for this transaction, reducing evidence for a new-device pattern",
+        "source": "graph",
+        "ref": "3240011",
+        "entity_ids": []
+      },
+      {
+        "claim": "Amount is 0.4x the card's average, which is typical for this card's spending pattern, so amount alone is not suspicious",
+        "source": "graph",
+        "ref": "3240011",
+        "entity_ids": [
+          "C11847-K2"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-1641",
+      "CC-1926",
+      "CC-2227",
+      "CC-2489"
+    ],
+    "summary": "The flagged $19.38 online purchase occurs on a card with a recent history of multiple confirmed card\u2011not\u2011present frauds. Situation memory indicates a very high fraud rate for similar alerts, and no new device evidence points to the usual card\u2011not\u2011present pattern. Therefore the transaction is likely fraudulent.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.92 with 3 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.92 with 3 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.92 backed by 3 independent pieces of evidence",
+  "tool_calls": 9,
+  "tokens": 2352,
+  "latency_s": 20.8,
+  "_initial_probability": 0.92,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-09-06 01:27:27",
+    "label": "fraud",
+    "label_pattern": "card_not_present_fraud",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-0893",
+        "CC-2091",
+        "CC-1232",
+        "CC-0493",
+        "CC-0657"
+      ],
+      "precedent": [],
+      "prompt_chars": 3725
+    },
+    "card_id": "C11847-K2",
+    "customer_id": "C11847",
+    "usage_log": [
+      {
+        "prompt": 1811,
+        "completion": 541
+      }
+    ]
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "case_id": "CC-4820",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.93,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3352296"
+    ],
+    "first_suspicious_txn_id": "3352296",
+    "connected_card_ids": [],
+    "connected_device_profiles": [
+      "iOS Device | iOS 11.2.2 | mobile safari generic | 2208x1242"
+    ],
+    "exposure_usd": 300.03,
+    "evidence": [
+      {
+        "claim": "device is new to this card (0 prior txns) and has high fraud incidence",
+        "source": "graph",
+        "ref": "3352296",
+        "entity_ids": [
+          "C04108-K2"
+        ]
+      },
+      {
+        "claim": "similar recent online purchases of product H, but in a region never used before",
+        "source": "graph",
+        "ref": "3352296",
+        "entity_ids": [
+          "C04108-K2"
+        ]
+      },
+      {
+        "claim": "customer has multiple prior confirmed fraud cases of the same pattern on this card",
+        "source": "document",
+        "ref": "CC-3623,CC-3696,CC-3878,CC-4085,CC-4332",
+        "entity_ids": [
+          "C04108-K2"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-3623",
+      "CC-3696",
+      "CC-3878",
+      "CC-4085",
+      "CC-4332"
+    ],
+    "summary": "The flagged $300.03 online purchase uses a brand\u2011new device for this card, a device profile linked to multiple fraud cases, and occurs in a region never seen before. The cardholder has a history of confirmed card\u2011not\u2011present fraud with new devices. These factors raise the fraud probability to about 93%.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.93 with 2 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.93 with 2 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.93 backed by 2 independent pieces of evidence",
+  "tool_calls": 9,
+  "tokens": 3325,
+  "latency_s": 24.9,
+  "_initial_probability": 0.93,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-10-11 01:45:24",
+    "label": "fraud",
+    "label_pattern": "account_takeover",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-3246",
+        "CC-3894",
+        "CC-3421",
+        "CC-4168",
+        "CC-4484"
+      ],
+      "precedent": [
+        "CC-3246",
+        "CC-3278",
+        "CC-3342",
+        "CC-3398",
+        "CC-3443"
+      ],
+      "prompt_chars": 6484
+    },
+    "card_id": "C04108-K2",
+    "customer_id": "C04108",
+    "usage_log": [
+      {
+        "prompt": 2821,
+        "completion": 504
+      }
+    ]
+  }
+}

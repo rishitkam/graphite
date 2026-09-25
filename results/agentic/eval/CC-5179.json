@@ -1,0 +1,112 @@
+{
+  "case_id": "CC-5179",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.92,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3389595"
+    ],
+    "first_suspicious_txn_id": "3389595",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 10.47,
+    "evidence": [
+      {
+        "claim": "Online transaction on a new device with product never seen before and amount 0.1\u00d7 average",
+        "source": "graph",
+        "ref": "3389595",
+        "entity_ids": [
+          "C02393-K2"
+        ]
+      },
+      {
+        "claim": "Situation memory shows 100% fraud for similar alerts, base rate 0.90",
+        "source": "document",
+        "ref": "situation_memory",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-3669",
+      "CC-3856",
+      "CC-2584"
+    ],
+    "summary": "The flagged $10.47 online purchase is on a device never used before, for a product not seen in the card's history, and is far below the card's average spend. Situation memory indicates alerts with this profile are almost always fraud. No evidence of recurring legitimate pattern or coordinated activity.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.92 with 2 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.92 with 2 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.92 backed by 2 independent pieces of evidence",
+  "tool_calls": 3,
+  "tokens": 3734,
+  "latency_s": 21.7,
+  "_initial_probability": 0.92,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-10-23 07:55:40",
+    "label": "fraud",
+    "label_pattern": "card_not_present_fraud",
+    "eval_slice": "matched",
+    "calls": 2,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3389595"
+          }
+        }
+      ]
+    },
+    "card_id": "C02393-K2",
+    "customer_id": "C02393",
+    "usage_log": [
+      {
+        "prompt": 1458,
+        "completion": 33
+      },
+      {
+        "prompt": 1833,
+        "completion": 410
+      }
+    ]
+  }
+}

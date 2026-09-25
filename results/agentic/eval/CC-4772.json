@@ -1,0 +1,132 @@
+{
+  "case_id": "CC-4772",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.92,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3348416"
+    ],
+    "first_suspicious_txn_id": "3348416",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 26.47,
+    "evidence": [
+      {
+        "claim": "Device profile is new for this card (0 prior transactions on this device).",
+        "source": "graph",
+        "ref": "device_profile",
+        "entity_ids": []
+      },
+      {
+        "claim": "Alert context matches historical alerts that were 100% fraud (situation memory).",
+        "source": "document",
+        "ref": "situation_memory",
+        "entity_ids": [
+          "CC-3149",
+          "CC-0738",
+          "CC-4036"
+        ]
+      },
+      {
+        "claim": "Transaction amount is within normal range (0.6x average) and product is common, so not a benign pattern.",
+        "source": "graph",
+        "ref": "transaction",
+        "entity_ids": [
+          "3348416"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-3149",
+      "CC-0738",
+      "CC-4036"
+    ],
+    "summary": "The flagged online purchase uses a device never seen on this card and aligns with a pattern of alerts that were all confirmed fraud, giving a high fraud probability and matching the card_not_present_new_device pattern.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.92 with 3 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.92 with 3 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.92 backed by 3 independent pieces of evidence",
+  "tool_calls": 4,
+  "tokens": 5814,
+  "latency_s": 35.7,
+  "_initial_probability": 0.92,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-10-09 22:02:49",
+    "label": "fraud",
+    "label_pattern": "card_not_present_new_device",
+    "eval_slice": "matched",
+    "calls": 3,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3348416"
+          }
+        },
+        {
+          "tool": "device_profile",
+          "args": {
+            "device": "SAMSUNG SM-A510M Build/MMB29K"
+          }
+        }
+      ]
+    },
+    "card_id": "C05381-K2",
+    "customer_id": "C05381",
+    "usage_log": [
+      {
+        "prompt": 1451,
+        "completion": 33
+      },
+      {
+        "prompt": 1832,
+        "completion": 82
+      },
+      {
+        "prompt": 1887,
+        "completion": 529
+      }
+    ]
+  }
+}

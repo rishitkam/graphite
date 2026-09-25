@@ -1,0 +1,132 @@
+{
+  "case_id": "CC-3873",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.934,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3294265"
+    ],
+    "first_suspicious_txn_id": "3294265",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 21.58,
+    "evidence": [
+      {
+        "claim": "Device is new for this account",
+        "source": "graph",
+        "ref": "alert",
+        "entity_ids": [
+          "C08962-K2"
+        ]
+      },
+      {
+        "claim": "Online channel, product C matches historic usage but device is novel",
+        "source": "graph",
+        "ref": "alert",
+        "entity_ids": [
+          "C08962-K2"
+        ]
+      },
+      {
+        "claim": "Situation memory shows 94% fraud in similar alerts, base rate 0.76",
+        "source": "document",
+        "ref": "situation_memory",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-3206",
+      "CC-2590",
+      "CC-2417"
+    ],
+    "summary": "The transaction is an online purchase using a device never seen on this card, matching the pattern of card-not-present fraud on a new device. Situation memory indicates a high fraud base rate for such alerts. No evidence of recurring legitimate pattern or testing.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 5,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.78 to 0.93; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 3,
+  "tokens": 3729,
+  "latency_s": 12.5,
+  "_initial_probability": 0.78,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-09-24 06:29:25",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 2,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3294265"
+          }
+        }
+      ]
+    },
+    "card_id": "C08962-K2",
+    "customer_id": "C08962",
+    "usage_log": [
+      {
+        "prompt": 1453,
+        "completion": 33
+      },
+      {
+        "prompt": 1831,
+        "completion": 412
+      }
+    ]
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "case_id": "CC-3944",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.059,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Transaction is in\u2011person and low amount, typical for legitimate use",
+        "source": "document",
+        "ref": "FLAGGED TRANSACTION RECORD",
+        "entity_ids": [
+          "3297061"
+        ]
+      },
+      {
+        "claim": "Past similar alerts with same billing region were cleared as legitimate travel",
+        "source": "document",
+        "ref": "SIMILAR PAST CASES",
+        "entity_ids": [
+          "CC-2641",
+          "CC-0261",
+          "CC-0987",
+          "CC-0979",
+          "CC-0443"
+        ]
+      },
+      {
+        "claim": "Customer confirms they made this transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-2641",
+      "CC-0261",
+      "CC-0987",
+      "CC-0979",
+      "CC-0443"
+    ],
+    "summary": "The $42.93 in\u2011person purchase is low\u2011value and matches a pattern of cleared alerts where the cardholder confirmed travel to the billing region. No other suspicious activity is present, so the alert is likely a false positive.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 2,
+      "assumed_response": "Customer confirms they made this transaction"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: customer confirmed the transaction"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.20 to 0.06; actions changed from ['VERIFY_WITH_CUSTOMER'] to ['CLOSE_NO_FRAUD']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "fraud not confirmed or strongly suspected, 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 1,
+  "tokens": 1269,
+  "latency_s": 9.5,
+  "_initial_probability": 0.2,
+  "_meta": {
+    "tier": "rag",
+    "t_end": "2016-09-25 05:43:50",
+    "label": "fraud",
+    "label_pattern": "account_takeover",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-2641",
+        "CC-0261",
+        "CC-0987",
+        "CC-0979",
+        "CC-0443"
+      ]
+    },
+    "card_id": "C00728-K2",
+    "customer_id": "C00728",
+    "usage_log": [
+      {
+        "prompt": 920,
+        "completion": 349
+      }
+    ]
+  }
+}

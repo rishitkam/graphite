@@ -1,0 +1,129 @@
+{
+  "case_id": "CC-3672",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.95,
+    "pattern": "out_of_region_use",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3280084"
+    ],
+    "first_suspicious_txn_id": "3280084",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 116.96,
+    "evidence": [
+      {
+        "claim": "Region 225.0 has 0 prior transactions on this card",
+        "source": "graph",
+        "ref": "FLAGGED 3280084",
+        "entity_ids": [
+          "C01119-K2"
+        ]
+      },
+      {
+        "claim": "Recent 72h activity shows many in\u2011person purchases in other regions, none in 225.0 before flagged txn",
+        "source": "graph",
+        "ref": "LAST 72H ON CARD",
+        "entity_ids": [
+          "3280084"
+        ]
+      },
+      {
+        "claim": "Cardholder has multiple confirmed out_of_region_use fraud cases (CC-1080, CC-1332, CC-2963, CC-3226)",
+        "source": "document",
+        "ref": "CUSTOMER C01119",
+        "entity_ids": [
+          "CC-1080",
+          "CC-1332",
+          "CC-2963",
+          "CC-3226"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-1080",
+      "CC-1332",
+      "CC-2963",
+      "CC-3226"
+    ],
+    "summary": "The flagged in\u2011person purchase occurs in a never\u2011used region, a hallmark of out\u2011of\u2011region fraud, and the cardholder\u2019s history includes several confirmed out\u2011of\u2011region fraud alerts. Combined with the high base fraud rate (0.92) and supporting evidence, the transaction is highly likely fraudulent.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.95 with 3 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.95 with 3 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.95 backed by 3 independent pieces of evidence",
+  "tool_calls": 9,
+  "tokens": 2876,
+  "latency_s": 16.1,
+  "_initial_probability": 0.95,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-09-19 06:15:36",
+    "label": "fraud",
+    "label_pattern": "out_of_region_use",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-1164",
+        "CC-3281",
+        "CC-1022",
+        "CC-1162",
+        "CC-3184"
+      ],
+      "precedent": [
+        "CC-0011",
+        "CC-0063",
+        "CC-0347",
+        "CC-0548",
+        "CC-0554"
+      ],
+      "prompt_chars": 5247
+    },
+    "card_id": "C01119-K2",
+    "customer_id": "C01119",
+    "usage_log": [
+      {
+        "prompt": 2410,
+        "completion": 466
+      }
+    ]
+  }
+}

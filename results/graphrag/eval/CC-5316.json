@@ -1,0 +1,131 @@
+{
+  "case_id": "CC-5316",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.867,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3396398"
+    ],
+    "first_suspicious_txn_id": "3396398",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 17.91,
+    "evidence": [
+      {
+        "claim": "Amount is 0.1x average but product and region are common for this card",
+        "source": "graph",
+        "ref": "FLAGGED 3396398",
+        "entity_ids": [
+          "C03218-K2"
+        ]
+      },
+      {
+        "claim": "No online or new\u2011device activity surrounding the transaction",
+        "source": "graph",
+        "ref": "LAST 72H ON CARD",
+        "entity_ids": []
+      },
+      {
+        "claim": "Card has extensive prior history with similar in\u2011person purchases",
+        "source": "graph",
+        "ref": "CARD C03218-K2 history before this",
+        "entity_ids": [
+          "C03218-K2"
+        ]
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [],
+    "summary": "The $17.91 in\u2011person purchase matches the card\u2019s usual product and region, and there is no evidence of new device or out\u2011of\u2011region use. Although the card has a history of fraud alerts, this specific transaction shows no anomalous behavior.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 10,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.62 to 0.87; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 9,
+  "tokens": 2775,
+  "latency_s": 20.8,
+  "_initial_probability": 0.62,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-10-25 20:54:59",
+    "label": "fraud",
+    "label_pattern": "out_of_region_use",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-4148",
+        "CC-3482",
+        "CC-0988",
+        "CC-2641",
+        "CC-1545"
+      ],
+      "precedent": [
+        "CC-0134",
+        "CC-0267",
+        "CC-0439",
+        "CC-0518",
+        "CC-0661"
+      ],
+      "prompt_chars": 5163
+    },
+    "card_id": "C03218-K2",
+    "customer_id": "C03218",
+    "usage_log": [
+      {
+        "prompt": 2369,
+        "completion": 406
+      }
+    ]
+  }
+}

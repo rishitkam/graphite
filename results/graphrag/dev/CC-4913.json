@@ -1,0 +1,120 @@
+{
+  "case_id": "CC-4913",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.95,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3367194"
+    ],
+    "first_suspicious_txn_id": "3367194",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 91.32,
+    "evidence": [
+      {
+        "claim": "Recent online transaction larger than average and similar to prior fraud cases",
+        "source": "graph",
+        "ref": "FLAGGED 3367194",
+        "entity_ids": [
+          "3367194"
+        ]
+      },
+      {
+        "claim": "Card has five confirmed fraud cases in past month, all card\u2011not\u2011present",
+        "source": "document",
+        "ref": "CC-4182,CC-4425,CC-4616,CC-4749",
+        "entity_ids": [
+          "CC-4182",
+          "CC-4425",
+          "CC-4616",
+          "CC-4749"
+        ]
+      },
+      {
+        "claim": "Situation memory shows 100% fraud in similar contexts",
+        "source": "document",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-2231",
+      "CC-0693",
+      "CC-2958"
+    ],
+    "summary": "The flagged $91.32 online purchase is 1.4\u00d7 the card\u2019s average and occurs on a card with multiple recent confirmed card\u2011not\u2011present frauds. Situation memory indicates identical alerts are always fraud, and prior cases match this pattern. Therefore the transaction is highly likely fraudulent.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.95 with 3 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.95 with 3 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.95 backed by 3 independent pieces of evidence",
+  "tool_calls": 9,
+  "tokens": 2099,
+  "latency_s": 14.7,
+  "_initial_probability": 0.95,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-10-15 23:58:46",
+    "label": "fraud",
+    "label_pattern": "card_not_present_fraud",
+    "eval_slice": "dev",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-4734",
+        "CC-3362",
+        "CC-3360",
+        "CC-3366",
+        "CC-0443"
+      ],
+      "precedent": [],
+      "prompt_chars": 3424
+    },
+    "card_id": "C09742-K2",
+    "customer_id": "C09742",
+    "usage_log": [
+      {
+        "prompt": 1691,
+        "completion": 408
+      }
+    ]
+  }
+}

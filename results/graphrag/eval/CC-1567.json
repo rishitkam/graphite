@@ -1,0 +1,131 @@
+{
+  "case_id": "CC-1567",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.15,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Device is new for this account",
+        "source": "graph",
+        "ref": "FLAGGED 3134120",
+        "entity_ids": [
+          "iOS Device | iOS 10.3.3 | mobile safari 10.0 | 2048x1536"
+        ]
+      },
+      {
+        "claim": "Transaction amount is 4.3\u00d7 the card's average",
+        "source": "graph",
+        "ref": "FLAGGED 3134120",
+        "entity_ids": [
+          "C04350-K1"
+        ]
+      },
+      {
+        "claim": "No low\u2011value authorisations in prior 72\u202fh",
+        "source": "graph",
+        "ref": "FLAGGED 3134120",
+        "entity_ids": []
+      },
+      {
+        "claim": "Similar past alert CC-0606 confirmed fraud with new device",
+        "source": "document",
+        "ref": "CC-0606",
+        "entity_ids": []
+      },
+      {
+        "claim": "Device used by many customers, rarely linked to fraud",
+        "source": "document",
+        "ref": "DEVICE PROFILE",
+        "entity_ids": [
+          "iOS Device | iOS 10.3.3 | mobile safari 10.0 | 2048x1536"
+        ]
+      }
+    ],
+    "similar_prior_cases": [],
+    "summary": "The flagged $499.97 online purchase is unusually large and made from a device never seen on this card, matching the card_not_present_new_device pattern. Most comparable alerts were cleared, but a confirmed fraud case with a new device raises modest risk. Overall probability is set slightly above the base rate at 0.15.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "ALLOW_TRANSACTION",
+        "route": "auto",
+        "reason": "probability 0.15 with 3 independent pieces of evidence"
+      },
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "evidence supports a legitimate transaction"
+      }
+    ],
+    "final": [
+      {
+        "action": "ALLOW_TRANSACTION",
+        "route": "auto",
+        "reason": "probability 0.15 with 3 independent pieces of evidence"
+      },
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "evidence supports a legitimate transaction"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "fraud not confirmed or strongly suspected, 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.15 backed by 3 independent pieces of evidence",
+  "tool_calls": 9,
+  "tokens": 2517,
+  "latency_s": 14.2,
+  "_initial_probability": 0.15,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-08-02 08:33:33",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-1336",
+        "CC-0994",
+        "CC-0933",
+        "CC-0594",
+        "CC-0979"
+      ],
+      "precedent": [
+        "CC-0400",
+        "CC-0673",
+        "CC-0725",
+        "CC-0839",
+        "CC-1111"
+      ],
+      "prompt_chars": 4356
+    },
+    "card_id": "C04350-K1",
+    "customer_id": "C04350",
+    "usage_log": [
+      {
+        "prompt": 1965,
+        "completion": 552
+      }
+    ]
+  }
+}

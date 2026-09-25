@@ -1,0 +1,146 @@
+{
+  "case_id": "CC-2247",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.934,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3103128"
+    ],
+    "first_suspicious_txn_id": "3103128",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 18.25,
+    "evidence": [
+      {
+        "claim": "Base fraud rate for similar alerts is high (0.76)",
+        "source": "graph",
+        "ref": "3103128",
+        "entity_ids": []
+      },
+      {
+        "claim": "Device has not been used before on this card",
+        "source": "graph",
+        "ref": "3103128",
+        "entity_ids": []
+      },
+      {
+        "claim": "Transaction is online, matching prior channel distribution",
+        "source": "graph",
+        "ref": "3103128",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0535"
+    ],
+    "summary": "The alert aligns with a high\u2011fraud base rate and involves a new device for this card in an online purchase, fitting the card_not_present_fraud pattern.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 9,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.78 to 0.93; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 5,
+  "tokens": 7853,
+  "latency_s": 27.2,
+  "_initial_probability": 0.78,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-07-26 03:49:43",
+    "label": "fraud",
+    "label_pattern": "card_testing",
+    "eval_slice": "rare_patterns",
+    "calls": 4,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3103128"
+          }
+        },
+        {
+          "tool": "recurring_check",
+          "args": {
+            "txn_id": "3103128"
+          }
+        },
+        {
+          "tool": "device_profile",
+          "args": {
+            "device": "Moto G (4) Build/NPJ25.93-14.5"
+          }
+        }
+      ]
+    },
+    "card_id": "C11923-K2",
+    "customer_id": "C11923",
+    "usage_log": [
+      {
+        "prompt": 1453,
+        "completion": 33
+      },
+      {
+        "prompt": 1833,
+        "completion": 148
+      },
+      {
+        "prompt": 1894,
+        "completion": 114
+      },
+      {
+        "prompt": 1952,
+        "completion": 426
+      }
+    ]
+  }
+}

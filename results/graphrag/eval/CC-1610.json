@@ -1,0 +1,142 @@
+{
+  "case_id": "CC-1610",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.88,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3137741"
+    ],
+    "first_suspicious_txn_id": "3137741",
+    "connected_card_ids": [],
+    "connected_device_profiles": [
+      "Windows |  | chrome 63.0 | "
+    ],
+    "exposure_usd": 14.49,
+    "evidence": [
+      {
+        "claim": "Transaction used a device marked New-to-account for this card.",
+        "source": "graph",
+        "ref": "FLAGGED 3137741",
+        "entity_ids": [
+          "3137741"
+        ]
+      },
+      {
+        "claim": "Card C04034\u2011K2 has three prior confirmed fraud cases, all card_not_present_new_device.",
+        "source": "graph",
+        "ref": "CUSTOMER C04034",
+        "entity_ids": [
+          "CC-0463",
+          "CC-1217",
+          "CC-1514"
+        ]
+      },
+      {
+        "claim": "Device profile (Windows | chrome 63.0) has 64 confirmed fraud cases (\u22481 per 6 customers).",
+        "source": "graph",
+        "ref": "DEVICE PROFILE",
+        "entity_ids": []
+      },
+      {
+        "claim": "Situation memory shows 86% fraud rate for similar alerts (13/15 fraud).",
+        "source": "document",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": []
+      },
+      {
+        "claim": "Amount ($14.49) is only 0.3\u00d7 the card\u2019s average, matching the low\u2011amount pattern seen in many fraud cases.",
+        "source": "graph",
+        "ref": "FLAGGED 3137741",
+        "entity_ids": [
+          "3137741"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0463",
+      "CC-1217",
+      "CC-1514",
+      "CC-0453"
+    ],
+    "summary": "The transaction was made online from a device new to the account, and the card has multiple recent confirmed fraud cases of the same type. The device profile is associated with a high fraud rate, and similar alerts have a 86% fraud share. These factors raise the fraud probability to about 0.88, indicating likely card\u2011not\u2011present fraud with a new device.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.88 with 4 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.88 with 4 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.88 backed by 4 independent pieces of evidence",
+  "tool_calls": 9,
+  "tokens": 2992,
+  "latency_s": 22.5,
+  "_initial_probability": 0.88,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-08-03 10:39:17",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-1182",
+        "CC-1142",
+        "CC-0034",
+        "CC-0997",
+        "CC-0814"
+      ],
+      "precedent": [
+        "CC-0230",
+        "CC-0401",
+        "CC-0417",
+        "CC-0437",
+        "CC-0453"
+      ],
+      "prompt_chars": 5503
+    },
+    "card_id": "C04034-K2",
+    "customer_id": "C04034",
+    "usage_log": [
+      {
+        "prompt": 2363,
+        "completion": 629
+      }
+    ]
+  }
+}

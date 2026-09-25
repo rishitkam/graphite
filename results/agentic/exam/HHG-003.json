@@ -1,0 +1,102 @@
+{
+  "case_id": "HHG-003",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.033,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Recurring charge matches cardholder's own pattern",
+        "source": "graph",
+        "ref": "recurring_check",
+        "entity_ids": [
+          "C08623-K2",
+          "3530164"
+        ]
+      },
+      {
+        "claim": "Customer, shown the merchant and date, recognizes the transaction and withdraws the dispute",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [],
+    "summary": "The $49 in\u2011person purchase is part of a long\u2011standing $49 recurring pattern (53 prior identical charges). This strongly indicates a legitimate transaction, making fraud unlikely.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-HHG-003"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 4,
+      "assumed_response": "Customer, shown the merchant and date, recognizes the transaction and withdraws the dispute"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R7: disputed charge"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: matches the customer's own recurring pattern"
+      },
+      {
+        "action": "WARN_CUSTOMER",
+        "route": "auto",
+        "reason": "R7: remind customer of the recurring charge, do not block"
+      }
+    ],
+    "final": [
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: customer confirmed the transaction"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.12 to 0.03; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER', 'WARN_CUSTOMER'] to ['CLOSE_NO_FRAUD']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "fraud not confirmed or strongly suspected, 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 3,
+  "tokens": 1775,
+  "latency_s": 1.7,
+  "_initial_probability": 0.12,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-12-10 15:01:21",
+    "label": null,
+    "label_pattern": null,
+    "eval_slice": null,
+    "calls": 1,
+    "trace": {
+      "steps": []
+    },
+    "card_id": "C08623-K2",
+    "customer_id": "C08623",
+    "usage_log": [
+      {
+        "prompt": 1478,
+        "completion": 297
+      }
+    ]
+  }
+}

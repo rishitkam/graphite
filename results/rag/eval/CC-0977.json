@@ -1,0 +1,113 @@
+{
+  "case_id": "CC-0977",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.903,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3085784"
+    ],
+    "first_suspicious_txn_id": "3085784",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 99.97,
+    "evidence": [
+      {
+        "claim": "Transaction used a new device (MacOS Safari) not seen before for this card",
+        "source": "graph",
+        "ref": "3085784",
+        "entity_ids": [
+          "C00235-K2"
+        ]
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0629",
+      "CC-0609",
+      "CC-0663"
+    ],
+    "summary": "The flagged $99.97 online transaction was made from a new MacOS Safari device, matching known patterns of card\u2011not\u2011present fraud on new devices. Similar confirmed cases involve single online purchases from unseen devices. Given the high risk score and device anomaly, fraud is likely.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 2,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.70 to 0.90; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 1,
+  "tokens": 1569,
+  "latency_s": 1.2,
+  "_initial_probability": 0.7,
+  "_meta": {
+    "tier": "rag",
+    "t_end": "2016-07-23 04:19:42",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-0629",
+        "CC-0810",
+        "CC-0609",
+        "CC-0663",
+        "CC-0279"
+      ]
+    },
+    "card_id": "C00235-K2",
+    "customer_id": "C00235",
+    "usage_log": [
+      {
+        "prompt": 1260,
+        "completion": 309
+      }
+    ]
+  }
+}

@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Graphite</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Lora:wght@400;500&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.2/cytoscape.min.js"></script>
+<style>
+  :root{--paper:#EEF0F0;--panel:#F7F8F7;--sunken:#E1E5E3;--ink:#1E2226;--soft:#4B5359;--faint:#838C8F;--line:#CBD0CD;
+    --accent:#A6392A;--low:#3E7A63;--med:#A9791F;--high:#A6392A;}
+  @media (prefers-color-scheme: dark){:root{--paper:#15181B;--panel:#1D2124;--sunken:#0F1214;--ink:#E8E6E0;--soft:#AEB5B2;
+    --faint:#6E7577;--line:#33393C;--accent:#D9654E;--low:#63AE8F;--med:#D2A24C;--high:#D9654E;}}
+  *{box-sizing:border-box} body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.55 Lora,Georgia,serif}
+  .mono{font-family:'IBM Plex Mono',monospace} h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;margin:0}
+  header{display:flex;align-items:center;gap:24px;padding:14px 24px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--paper);z-index:5}
+  header h1{font-size:1.4rem} header h1 span{color:var(--accent)}
+  nav button,select{font:500 .78rem 'IBM Plex Mono',monospace;background:none;border:1px solid var(--line);color:var(--soft);padding:6px 12px;border-radius:5px;cursor:pointer}
+  nav button.on{color:var(--accent);border-color:var(--accent)} .grow{flex:1}
+  main{display:grid;grid-template-columns:330px minmax(0,1fr);min-height:calc(100vh - 60px)}
+  aside{border-right:1px solid var(--line);overflow-y:auto;max-height:calc(100vh - 60px)}
+  .row{padding:11px 18px;border-bottom:1px solid var(--line);cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:2px 10px}
+  .row:hover,.row.on{background:var(--panel)} .row .id{font:600 .82rem 'IBM Plex Mono',monospace}
+  .row .sub{grid-column:1/-1;font-size:.78rem;color:var(--faint);font-family:'IBM Plex Mono',monospace}
+  .tag{font:600 .66rem 'IBM Plex Mono',monospace;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:10px}
+  .fraud{color:var(--high);background:color-mix(in srgb,var(--high) 14%,transparent)}
+  .legitimate{color:var(--low);background:color-mix(in srgb,var(--low) 14%,transparent)}
+  .uncertain{color:var(--med);background:color-mix(in srgb,var(--med) 16%,transparent)}
+  section{padding:24px 32px;overflow-y:auto;max-height:calc(100vh - 60px)}
+  .eyebrow{font:.7rem 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+  .head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
+  .stamp{border:2px solid currentColor;padding:6px 14px;transform:rotate(-2deg);font:700 .9rem 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase}
+  .trigger{color:var(--soft);max-width:70ch;margin:8px 0 0}
+  .prob{display:flex;align-items:center;gap:12px;margin:18px 0;font:.8rem 'IBM Plex Mono',monospace;color:var(--soft)}
+  .track{position:relative;flex:1;max-width:420px;height:8px;background:var(--sunken);border-radius:4px}
+  .dot{position:absolute;top:-4px;width:16px;height:16px;border-radius:50%;transform:translateX(-50%)}
+  .dot.p0{border:2px dashed var(--faint);background:var(--paper)} .dot.p1{background:var(--accent)}
+  #cy{height:420px;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+  .grid2{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center;margin-top:22px}
+  .card{border-radius:10px;padding:16px 18px;background:var(--panel);border:1px solid var(--line)}
+  .pencil{border:1.5px dashed var(--faint);background:transparent} .ink{border:1.5px solid var(--accent)}
+  .act{display:flex;justify-content:space-between;gap:10px;font:.8rem 'IBM Plex Mono',monospace;padding:4px 0;border-bottom:1px dotted var(--line)}
+  .act .why{grid-column:1/-1;color:var(--faint);font-size:.72rem}
+  .route{font-weight:600} .route.L1{color:var(--med)} .route.L2{color:var(--high)} .route.auto{color:var(--low)}
+  .changed{font-size:.85rem;color:var(--soft);max-width:18ch;text-align:center}
+  h3{font-size:1.02rem;margin:28px 0 10px} ul.ev{padding-left:1.1em;margin:0} ul.ev li{margin:6px 0;font-size:.92rem}
+  .src{font:.68rem 'IBM Plex Mono',monospace;color:var(--faint);margin-left:6px}
+  .sar{white-space:pre-wrap;font-size:.93rem;border-left:3px solid var(--accent);padding:12px 16px;background:var(--panel);border-radius:0 8px 8px 0}
+  .trace{font:.78rem 'IBM Plex Mono',monospace;color:var(--soft)} .trace span{display:inline-block;border:1px solid var(--line);border-radius:4px;padding:2px 7px;margin:3px}
+  table{border-collapse:collapse;width:100%;max-width:880px;font-size:.9rem} th,td{padding:10px 14px;border-bottom:1px solid var(--line);text-align:right}
+  th:first-child,td:first-child{text-align:left} th{font:.7rem 'IBM Plex Mono',monospace;text-transform:uppercase;color:var(--faint)}
+  .bars{display:flex;flex-direction:column;gap:14px;max-width:700px;margin:24px 0}
+  .bar{display:grid;grid-template-columns:160px 1fr 60px;gap:12px;align-items:center;font:.82rem 'IBM Plex Mono',monospace}
+  .bar .fill{height:22px;background:var(--accent);border-radius:4px} .bar .fill.base{background:var(--faint)}
+  .empty{color:var(--faint);padding:60px 0;text-align:center}
+  #scoreView{display:block} [hidden]{display:none !important}
+</style>
+</head>
+<body>
+<header>
+  <h1>Graphite<span>.</span></h1>
+  <nav><button id="t-cases" class="on">Cases</button> <button id="t-score">Scoreboard</button></nav>
+  <div class="grow"></div>
+  <select id="tier"><option value="agentic">Agentic GraphRAG</option><option value="graphrag">GraphRAG</option><option value="rag">RAG</option></select>
+  <select id="which"><option value="exam">20 exam cases</option><option value="dev">dev split</option><option value="eval">held-out eval</option><option value="proactive">proactive rings</option></select>
+</header>
+<main id="casesView"><aside id="list"></aside><section id="detail"><div class="empty">Pick a case.</div></section></main>
+<main id="scoreView" hidden><section id="score"></section></main>
+
+<script>
+const $ = s => document.querySelector(s);
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let current = null;
+// Live API on localhost; frozen JSON (scripts/build_site.py) anywhere else.
+const LIVE = ["localhost", "127.0.0.1"].includes(location.hostname);
+const api = {
+  cases: (t, w) => LIVE ? `/api/cases?tier=${t}&which=${w}` : `data/cases/${t}/${w}.json`,
+  case: (t, w, id) => LIVE ? `/api/case/${t}/${w}/${id}` : `data/case/${t}/${w}/${id}.json`,
+  preview: id => LIVE ? `/api/preview/${id}` : `data/preview/${id}.json`,
+  graph: (t, w, id) => LIVE ? `/api/graph/${t}/${w}/${id}` : `data/graph/${t}/${w}/${id}.json`,
+  compare: w => LIVE ? `/api/compare?which=${w}` : `data/compare/${w}.json`,
+};
+
+async function loadList() {
+  const tier = $("#tier").value, which = $("#which").value;
+  const rows = await (await fetch(api.cases(tier, which))).json();
+  $("#list").innerHTML = rows.map(r => `
+    <div class="row" data-id="${r.case_id}">
+      <span class="id">${r.case_id}</span>
+      ${r.done ? `<span class="tag ${r.verdict}">${r.verdict}</span>` : `<span class="tag">pending</span>`}
+      <span class="sub">${r.trigger}${r.done ? ` · p ${r.p.toFixed(2)} · ${r.pattern}${r.sar ? " · SAR" : ""}` : ""}${r.label ? ` · truth: ${r.label}` : ""}</span>
+    </div>`).join("");
+  document.querySelectorAll(".row").forEach(el => el.onclick = () => show(el.dataset.id));
+  if (current && rows.some(r => r.case_id === current && r.done)) show(current);
+}
+
+function actions(list) {
+  return list.map(a => `<div class="act"><span>${a.action}</span><span class="route ${a.route}">${a.route}</span></div>
+    <div class="act" style="border:0;padding-top:0"><span class="why">${esc(a.reason)}</span></div>`).join("");
+}
+
+async function show(id) {
+  current = id;
+  document.querySelectorAll(".row").forEach(el => el.classList.toggle("on", el.dataset.id === id));
+  const tier = $("#tier").value, which = $("#which").value;
+  const res = await fetch(api.case(tier, which, id));
+  if (!res.ok) {
+    if (which !== "exam") { $("#detail").innerHTML = `<div class="empty">Not run yet for this tier.</div>`; return; }
+    $("#detail").innerHTML = `<div class="empty">Reading the graph…</div>`;
+    const p = await (await fetch(api.preview(id))).json();
+    $("#detail").innerHTML = `
+      <p class="eyebrow">${id} · ${p.trigger} · graph evidence, no model yet</p>
+      <h2>What the investigator starts from</h2>
+      <p class="trigger">${esc(p.trigger_text)}</p>
+      <h3>From TigerGraph</h3>
+      <ul class="ev">${p.lines.map(l => `<li class="mono" style="font-size:.8rem">${esc(l)}</li>`).join("")}</ul>
+      <p style="color:var(--faint);margin-top:18px">The ${esc($("#tier").selectedOptions[0].text)} verdict for this case appears here once it has run.</p>`;
+    return;
+  }
+  const r = await res.json(), c = r.case, nba = r.next_best_actions;
+  const alertRow = [...document.querySelectorAll(".row")].find(e => e.dataset.id === id);
+  $("#detail").innerHTML = `
+    <div class="head">
+      <div><p class="eyebrow">${id} · ${esc(r._meta.tier)} · ${c.status.replace("_", " ")}</p>
+        <h2>${c.pattern === "none" ? "No fraud pattern" : c.pattern.replaceAll("_", " ")}</h2>
+        <p class="trigger">${esc(c.summary)}</p></div>
+      <div class="stamp ${c.verdict}" style="color:var(--${c.verdict === "fraud" ? "high" : c.verdict === "legitimate" ? "low" : "med"})">${c.verdict}</div>
+    </div>
+    <div class="prob"><span>fraud probability</span>
+      <div class="track"><div class="dot p0" style="left:${r._initial_probability * 100}%" title="before evidence request"></div>
+        <div class="dot p1" style="left:${c.fraud_probability * 100}%" title="final"></div></div>
+      <span>${r._initial_probability.toFixed(2)} → ${c.fraud_probability.toFixed(2)}</span>
+      <span>exposure $${c.exposure_usd.toLocaleString()}</span></div>
+    ${c.pattern_description ? `<p class="trigger"><b>Pattern in our own words:</b> ${esc(c.pattern_description)}</p>` : ""}
+    <div id="cy"></div>
+    <div class="grid2">
+      <div class="card pencil"><p class="eyebrow">Step 1 · pencil draft</p>${actions(nba.initial)}</div>
+      <div class="changed">${r.evidence_requests.length ? esc(r.evidence_requests[0].assumed_response) : "no evidence requested"}</div>
+      <div class="card ink"><p class="eyebrow" style="color:var(--accent)">Step 2 · inked verdict</p>${actions(nba.final)}</div>
+    </div>
+    <h3>Evidence</h3><ul class="ev">${c.evidence.map(e => `<li>${esc(e.claim)}<span class="src">${e.source} · ${esc(e.ref)}</span></li>`).join("")}</ul>
+    ${c.similar_prior_cases.length ? `<h3>Case memory used</h3><p class="mono" style="font-size:.82rem">${c.similar_prior_cases.join(" · ")}</p>` : ""}
+    ${r.sar.file ? `<h3>Suspicious activity report</h3><div class="sar">${esc(r.sar.narrative || r.sar.reason)}</div>
+      <p class="mono" style="font-size:.75rem;color:var(--faint)">${esc(r.sar.reason)} · $${r.sar.total_amount_usd} · ${r.sar.activity_dates.join(" to ")}</p>`
+      : `<h3>No report</h3><p style="color:var(--soft)">${esc(r.sar.reason)}</p>`}
+    <h3>How the investigation ran</h3>
+    <div class="trace">${(r._meta.trace.steps || []).map(s => `<span>${s.tool}</span>`).join("") || "fixed retrieval, one model call"}
+      <p>${r.tokens.toLocaleString()} tokens · ${r._meta.calls} model calls · ${r.tool_calls} graph and retrieval calls · ${r.latency_s}s · stop: ${esc(r.stop_reason)}</p></div>`;
+  drawGraph(tier, which, id);
+}
+
+async function drawGraph(tier, which, id) {
+  const gr = await (await fetch(api.graph(tier, which, id))).json();
+  const ink = css("--ink"), accent = css("--accent"), faint = css("--faint"), low = css("--low");
+  const color = n => n.flagged ? accent : n.kind === "closed" ? (n.outcome === "cleared" ? low : accent) : ink;
+  cytoscape({
+    container: $("#cy"),
+    elements: [...gr.nodes.map(n => ({data: {...n, c: color(n)}})),
+               ...gr.edges.map((e, i) => ({data: {id: "e" + i, ...e}}))],
+    style: [
+      {selector: "node", style: {"background-color": "data(c)", "label": "data(label)", "color": ink, "font-family": "IBM Plex Mono",
+        "font-size": 9, "text-valign": "bottom", "text-margin-y": 4, "opacity": "mapData(weight, 0, 1, 0.25, 1)",
+        "width": "mapData(weight, 0, 1, 10, 28)", "height": "mapData(weight, 0, 1, 10, 28)"}},
+      {selector: "node[kind='device']", style: {"shape": "round-rectangle", "background-color": accent}},
+      {selector: "node[kind='closed']", style: {"shape": "diamond"}},
+      {selector: "node[kind='customer']", style: {"shape": "hexagon"}},
+      {selector: "edge", style: {"width": "mapData(weight, 0, 1, 0.5, 3.5)", "line-color": faint, "opacity": "mapData(weight, 0, 1, 0.25, 1)",
+        "curve-style": "bezier", "label": "data(label)", "font-size": 7, "color": faint, "font-family": "IBM Plex Mono"}},
+    ],
+    layout: {name: "cose", animate: false, nodeRepulsion: 9000, idealEdgeLength: 70},
+    userZoomingEnabled: false,
+  });
+}
+
+async function loadScore() {
+  const which = $("#which").value === "exam" ? "dev" : $("#which").value;
+  const s = await (await fetch(api.compare(which))).json();
+  const names = {rag: "RAG", graphrag: "GraphRAG", agentic: "Agentic GraphRAG"};
+  const pct = v => v == null ? "n/a" : (100 * v).toFixed(1) + "%", num = (v, d = 3) => v == null ? "n/a" : v.toFixed(d);
+  const tiers = Object.keys(names);
+  const metric = (label, key, f) => `<tr><td>${label}</td>${tiers.map(t => `<td>${f(s[t][key])}</td>`).join("")}</tr>`;
+  const base = s.rag.accuracy;
+  $("#score").innerHTML = `
+    <p class="eyebrow">${which === "eval" ? "held-out eval, score matched" : "dev split, score matched"} · same model for every tier</p>
+    <h2>Does the graph, and then the agent, actually earn their cost?</h2>
+    <div class="bars">${tiers.map(t => `<div class="bar"><span>${names[t]}</span>
+      <div><div class="fill ${t === "rag" ? "base" : ""}" style="width:${100 * (s[t].accuracy || 0)}%"></div></div>
+      <span>${pct(s[t].accuracy)}</span></div>`).join("")}</div>
+    ${base ? `<p style="color:var(--soft)">${tiers.slice(1).filter(t => s[t].accuracy != null).map(t =>
+      `${names[t]}: ${(100 * (s[t].accuracy - base)).toFixed(1)} points over RAG`).join(" · ")}. A risk-score-only rule scores exactly 50% on this set.</p>` : ""}
+    <table><tr><th>metric</th>${tiers.map(t => `<th>${names[t]}</th>`).join("")}</tr>
+      ${metric("cases", "n", v => v ?? 0)}${metric("accuracy", "accuracy", pct)}${metric("AUC", "auc", num)}
+      ${metric("Brier (lower better)", "brier", num)}${metric("fraud recall", "fraud_recall", pct)}
+      ${metric("legit specificity", "legit_specificity", pct)}${metric("pattern accuracy", "pattern_accuracy", pct)}
+      ${metric("tokens / case", "tokens", v => v == null ? "n/a" : Math.round(v).toLocaleString())}
+      ${metric("model calls / case", "llm_calls", v => num(v, 2))}${metric("seconds / case", "latency_s", v => num(v, 1))}</table>`;
+}
+
+function tab(which) {
+  $("#t-cases").classList.toggle("on", which === "cases"); $("#t-score").classList.toggle("on", which === "score");
+  $("#casesView").hidden = which !== "cases"; $("#scoreView").hidden = which !== "score";
+  which === "cases" ? loadList() : loadScore();
+}
+$("#t-cases").onclick = () => tab("cases"); $("#t-score").onclick = () => tab("score");
+$("#tier").onchange = $("#which").onchange = () => ($("#scoreView").hidden ? loadList() : loadScore());
+loadList();
+</script>
+</body>
+</html>

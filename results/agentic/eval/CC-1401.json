@@ -1,0 +1,151 @@
+{
+  "case_id": "CC-1401",
+  "case": {
+    "status": "open",
+    "verdict": "uncertain",
+    "fraud_probability": 0.83,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3114582"
+    ],
+    "first_suspicious_txn_id": "3114582",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 29.01,
+    "evidence": [
+      {
+        "claim": "Card has long history of online purchases of product C, amount typical for cardholder",
+        "source": "graph",
+        "ref": "",
+        "entity_ids": [
+          "C08962-K2"
+        ]
+      },
+      {
+        "claim": "Recent 72h activity shows many transactions on varied devices, but this is consistent with card's prior behavior (164 devices total, 103 prior txns on this device)",
+        "source": "graph",
+        "ref": "",
+        "entity_ids": [
+          "3114950",
+          "3114966",
+          "3114989"
+        ]
+      },
+      {
+        "claim": "Situation memory base fraud rate for similar alerts is 0.69, but 3 of 15 similar past alerts were cleared, indicating non\u2011fraud is possible",
+        "source": "document",
+        "ref": "",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [],
+    "summary": "The transaction matches the cardholder's typical online purchase pattern and amount. Recent activity shows many new devices, but this aligns with the card's historical device diversity. Base fraud rate is moderate, but evidence leans toward a legitimate transaction.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 9,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: single signal below 0.70, verify before blocking"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.55 to 0.83; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 5,
+  "tokens": 8276,
+  "latency_s": 52.8,
+  "_initial_probability": 0.55,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-07-28 07:07:37",
+    "label": "fraud",
+    "label_pattern": "card_not_present_new_device",
+    "eval_slice": "matched",
+    "calls": 4,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3114582"
+          }
+        },
+        {
+          "tool": "recurring_check",
+          "args": {
+            "txn_id": "3114582"
+          }
+        },
+        {
+          "tool": "card_activity",
+          "args": {
+            "card_id": "C08962-K2",
+            "hours_before": 72
+          }
+        }
+      ]
+    },
+    "card_id": "C08962-K2",
+    "customer_id": "C08962",
+    "usage_log": [
+      {
+        "prompt": 1438,
+        "completion": 33
+      },
+      {
+        "prompt": 1818,
+        "completion": 51
+      },
+      {
+        "prompt": 1879,
+        "completion": 177
+      },
+      {
+        "prompt": 2376,
+        "completion": 504
+      }
+    ]
+  }
+}

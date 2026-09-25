@@ -1,0 +1,126 @@
+{
+  "case_id": "CC-4257",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.86,
+    "pattern": "out_of_region_use",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3320310"
+    ],
+    "first_suspicious_txn_id": "3320310",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 113.04,
+    "evidence": [
+      {
+        "claim": "Region 498.0 has never been used before on this card (0 of 16 prior txns)",
+        "source": "graph",
+        "ref": "FLAGGED 3320310",
+        "entity_ids": [
+          "C07591-K1"
+        ]
+      },
+      {
+        "claim": "Amount $113.04 is 1.3\u00d7 the card's average, higher than typical spend",
+        "source": "graph",
+        "ref": "CARD C07591-K1 history",
+        "entity_ids": [
+          "C07591-K1"
+        ]
+      },
+      {
+        "claim": "Recent similar transaction 3320233 also in region 498.0, indicating a sudden shift to this region",
+        "source": "graph",
+        "ref": "LAST 72H ON CARD",
+        "entity_ids": [
+          "3320233",
+          "3320310"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0402",
+      "CC-2804",
+      "CC-0163"
+    ],
+    "summary": "The transaction occurs in a region never seen before for this card and is higher than the cardholder\u2019s average spend, matching out\u2011of\u2011region use patterns seen in prior fraud cases. Recent activity shows a sudden shift to this new region. Given the high base fraud rate for similar alerts, the fraud probability is high.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.86 with 3 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.86 with 3 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.86 backed by 3 independent pieces of evidence",
+  "tool_calls": 9,
+  "tokens": 2425,
+  "latency_s": 17.8,
+  "_initial_probability": 0.86,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-10-02 02:50:24",
+    "label": "fraud",
+    "label_pattern": "out_of_region_use",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-1136",
+        "CC-1132",
+        "CC-1130",
+        "CC-1134",
+        "CC-1138"
+      ],
+      "precedent": [
+        "CC-0145",
+        "CC-0551",
+        "CC-0605",
+        "CC-0854",
+        "CC-0875"
+      ],
+      "prompt_chars": 4262
+    },
+    "card_id": "C07591-K1",
+    "customer_id": "C07591",
+    "usage_log": [
+      {
+        "prompt": 1982,
+        "completion": 443
+      }
+    ]
+  }
+}

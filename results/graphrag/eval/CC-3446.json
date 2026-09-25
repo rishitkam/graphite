@@ -1,0 +1,142 @@
+{
+  "case_id": "CC-3446",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.96,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3264686"
+    ],
+    "first_suspicious_txn_id": "3264686",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 10.06,
+    "evidence": [
+      {
+        "claim": "Four consecutive online transactions of $10.02\u2011$10.06 for product S within 0.4\u202fh, amount 0.1\u00d7 average spend",
+        "source": "graph",
+        "ref": "FLAGGED 3264686, 3264752, 3264765, 3264771",
+        "entity_ids": [
+          "3264686",
+          "3264752",
+          "3264765",
+          "3264771"
+        ]
+      },
+      {
+        "claim": "Card C00938\u2011K1 has a history of higher\u2011value purchases (avg $130) and only 7 of 15 prior transactions were product S",
+        "source": "graph",
+        "ref": "CARD C00938-K1 history",
+        "entity_ids": [
+          "C00938-K1"
+        ]
+      },
+      {
+        "claim": "Three prior confirmed fraud cases on the same card (CC\u20110416, CC\u20112048, CC\u20112215) were all card\u2011not\u2011present fraud",
+        "source": "document",
+        "ref": "CLOSED CASES",
+        "entity_ids": [
+          "CC-0416",
+          "CC-2048",
+          "CC-2215"
+        ]
+      },
+      {
+        "claim": "Situation memory shows 100\u202f% of similar past alerts were fraud, base rate 0.92",
+        "source": "document",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": []
+      },
+      {
+        "claim": "No device record, eliminating a new\u2011device signal",
+        "source": "document",
+        "ref": "DEVICE",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0416",
+      "CC-2048",
+      "CC-2215"
+    ],
+    "summary": "The alert shows a burst of low\u2011value online purchases for product S that are far below the cardholder\u2019s typical spend and mirror three earlier confirmed card\u2011not\u2011present fraud cases on the same card. Situation memory and the card\u2019s fraud history both push the probability toward fraud. No device or travel context mitigates the risk.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.96 with 5 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.96 with 5 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.96 backed by 5 independent pieces of evidence",
+  "tool_calls": 9,
+  "tokens": 2780,
+  "latency_s": 20.4,
+  "_initial_probability": 0.96,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-09-14 04:07:30",
+    "label": "fraud",
+    "label_pattern": "card_not_present_fraud",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-0443",
+        "CC-2641",
+        "CC-0637",
+        "CC-0438",
+        "CC-2911"
+      ],
+      "precedent": [
+        "CC-0006",
+        "CC-0016",
+        "CC-0051",
+        "CC-0053",
+        "CC-0058"
+      ],
+      "prompt_chars": 4585
+    },
+    "card_id": "C00938-K1",
+    "customer_id": "C00938",
+    "usage_log": [
+      {
+        "prompt": 2082,
+        "completion": 698
+      }
+    ]
+  }
+}

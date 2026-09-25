@@ -1,0 +1,130 @@
+{
+  "case_id": "CC-3122",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.85,
+    "pattern": "out_of_region_use",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3240514"
+    ],
+    "first_suspicious_txn_id": "3240514",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 108.0,
+    "evidence": [
+      {
+        "claim": "Region 485.0 used only 8 of 82 prior transactions, low recent frequency",
+        "source": "graph",
+        "ref": "FLAGGED 3240514",
+        "entity_ids": [
+          "C04172-K2"
+        ]
+      },
+      {
+        "claim": "Similar alerts (15) were all fraud, mostly out_of_region_use",
+        "source": "document",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": []
+      },
+      {
+        "claim": "Card C04172\u2011K2 has a prior confirmed out_of_region_use fraud case (CC\u20112112)",
+        "source": "document",
+        "ref": "CUSTOMER C04172",
+        "entity_ids": [
+          "CC-2112"
+        ]
+      },
+      {
+        "claim": "Product W is common (56/82) so purchase type is typical, but region is atypical",
+        "source": "graph",
+        "ref": "CARD C04172-K2 history",
+        "entity_ids": [
+          "C04172-K2"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-2112",
+      "CC-0661"
+    ],
+    "summary": "The transaction occurs in a rarely used billing region for this card, mirroring a prior confirmed out_of_region_use fraud (CC\u20112112) and matching the pattern of all similar alerts in memory. Although the purchase amount and product are typical, the region anomaly drives a high fraud probability.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 4 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 4 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.85 backed by 4 independent pieces of evidence",
+  "tool_calls": 9,
+  "tokens": 2507,
+  "latency_s": 14.7,
+  "_initial_probability": 0.85,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-09-06 03:27:30",
+    "label": "fraud",
+    "label_pattern": "out_of_region_use",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-1232",
+        "CC-0082",
+        "CC-1022",
+        "CC-1132",
+        "CC-1402"
+      ],
+      "precedent": [
+        "CC-0134",
+        "CC-0267",
+        "CC-0439",
+        "CC-0518",
+        "CC-0661"
+      ],
+      "prompt_chars": 4313
+    },
+    "card_id": "C04172-K2",
+    "customer_id": "C04172",
+    "usage_log": [
+      {
+        "prompt": 2002,
+        "completion": 505
+      }
+    ]
+  }
+}

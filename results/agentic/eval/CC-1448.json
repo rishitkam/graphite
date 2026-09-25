@@ -1,0 +1,130 @@
+{
+  "case_id": "CC-1448",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.867,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3122654"
+    ],
+    "first_suspicious_txn_id": "3122654",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 41.48,
+    "evidence": [
+      {
+        "claim": "Transaction used a device new to the account",
+        "source": "graph",
+        "ref": "3122654",
+        "entity_ids": [
+          "C11597-K2"
+        ]
+      },
+      {
+        "claim": "Alert context matches prior cases where fraud was confirmed, especially card_not_present_new_device",
+        "source": "document",
+        "ref": "situation_memory",
+        "entity_ids": []
+      },
+      {
+        "claim": "Online channel with no region anomaly; amount is typical for the card",
+        "source": "graph",
+        "ref": "3122654",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-1217",
+      "CC-0073",
+      "CC-0307"
+    ],
+    "summary": "The flagged $41.48 online purchase uses a device never seen on this card. Situation memory shows a 38% base fraud rate for similar alerts, with most confirmed frauds being card_not_present_new_device. This raises the fraud probability to about 62%.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 5,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.62 to 0.87; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 3,
+  "tokens": 3766,
+  "latency_s": 22.5,
+  "_initial_probability": 0.62,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-07-30 04:40:56",
+    "label": "fraud",
+    "label_pattern": "card_not_present_new_device",
+    "eval_slice": "matched",
+    "calls": 2,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3122654"
+          }
+        }
+      ]
+    },
+    "card_id": "C11597-K2",
+    "customer_id": "C11597",
+    "usage_log": [
+      {
+        "prompt": 1447,
+        "completion": 33
+      },
+      {
+        "prompt": 1821,
+        "completion": 465
+      }
+    ]
+  }
+}

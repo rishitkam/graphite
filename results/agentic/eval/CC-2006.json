@@ -1,0 +1,144 @@
+{
+  "case_id": "CC-2006",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.941,
+    "pattern": "account_takeover",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3161726"
+    ],
+    "first_suspicious_txn_id": "3161726",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 87.01,
+    "evidence": [
+      {
+        "claim": "Base fraud rate for similar alerts is 95%",
+        "source": "graph",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": [
+          "3161726"
+        ]
+      },
+      {
+        "claim": "Recent alerts with similar profile were all confirmed fraud, mainly account takeover",
+        "source": "graph",
+        "ref": "CC-1276, CC-1564, CC-1716",
+        "entity_ids": [
+          "3161726"
+        ]
+      },
+      {
+        "claim": "Transaction is in\u2011person, product and region are common for the card",
+        "source": "document",
+        "ref": "Alert details",
+        "entity_ids": [
+          "C03047-K2"
+        ]
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-1276",
+      "CC-1564",
+      "CC-1716"
+    ],
+    "summary": "The alert aligns with a high\u2011fraud base rate and prior similar cases were all fraud, suggesting account takeover despite the transaction appearing typical.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 7,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.80 to 0.94; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 4,
+  "tokens": 5702,
+  "latency_s": 36.5,
+  "_initial_probability": 0.8,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-08-10 21:38:42",
+    "label": "fraud",
+    "label_pattern": "account_takeover",
+    "eval_slice": "matched",
+    "calls": 3,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3161726"
+          }
+        },
+        {
+          "tool": "recurring_check",
+          "args": {
+            "txn_id": "3161726"
+          }
+        }
+      ]
+    },
+    "card_id": "C03047-K2",
+    "customer_id": "C03047",
+    "usage_log": [
+      {
+        "prompt": 1418,
+        "completion": 33
+      },
+      {
+        "prompt": 1790,
+        "completion": 84
+      },
+      {
+        "prompt": 1851,
+        "completion": 526
+      }
+    ]
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "case_id": "CC-4338",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.85,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3329175"
+    ],
+    "first_suspicious_txn_id": "3329175",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 9.01,
+    "evidence": [
+      {
+        "claim": "New device and email for this card",
+        "source": "graph",
+        "ref": "device profile query failed (no prior use)",
+        "entity_ids": [
+          "C10165-K1"
+        ]
+      },
+      {
+        "claim": "Amount 0.2x average, product C common but transaction flagged",
+        "source": "graph",
+        "ref": "",
+        "entity_ids": [
+          "3329175"
+        ]
+      },
+      {
+        "claim": "Situation memory base fraud rate 0.91 for similar alerts",
+        "source": "document",
+        "ref": "situation_memory",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-3009",
+      "CC-4211",
+      "CC-0706"
+    ],
+    "summary": "The transaction is a low\u2011value online purchase on a device and email never used before on this card, matching the card_not_present_new_device pattern. Situation memory shows a very high fraud base rate for similar alerts, supporting a high fraud probability.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 3 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 3 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.85 backed by 3 independent pieces of evidence",
+  "tool_calls": 4,
+  "tokens": 5634,
+  "latency_s": 14.0,
+  "_initial_probability": 0.85,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-10-04 05:22:35",
+    "label": "fraud",
+    "label_pattern": "card_not_present_fraud",
+    "eval_slice": "dev",
+    "calls": 3,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3329175"
+          }
+        },
+        {
+          "tool": "device_profile",
+          "args": {
+            "device": "Lenovo PB2-650Y Build/MRA58K"
+          }
+        }
+      ]
+    },
+    "card_id": "C10165-K1",
+    "customer_id": "C10165",
+    "usage_log": [
+      {
+        "prompt": 1417,
+        "completion": 33
+      },
+      {
+        "prompt": 1798,
+        "completion": 58
+      },
+      {
+        "prompt": 1853,
+        "completion": 475
+      }
+    ]
+  }
+}

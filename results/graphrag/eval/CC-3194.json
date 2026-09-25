@@ -1,0 +1,149 @@
+{
+  "case_id": "CC-3194",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.867,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3247295"
+    ],
+    "first_suspicious_txn_id": "3247295",
+    "connected_card_ids": [],
+    "connected_device_profiles": [
+      "MacOS | Mac OS X 10_11_6 | chrome 63.0 | 2560x1600"
+    ],
+    "exposure_usd": 94.92,
+    "evidence": [
+      {
+        "claim": "Device profile is new for this card",
+        "source": "graph",
+        "ref": "FLAGGED 3247295",
+        "entity_ids": [
+          "C13060-K1"
+        ]
+      },
+      {
+        "claim": "Three similar $95 online purchases in minutes on same new device",
+        "source": "graph",
+        "ref": "LAST 72H ON CARD",
+        "entity_ids": [
+          "3247173",
+          "3247211",
+          "3247295"
+        ]
+      },
+      {
+        "claim": "Device profile has prior confirmed fraud case (CC-2865)",
+        "source": "document",
+        "ref": "DEVICE PROFILE",
+        "entity_ids": [
+          "CC-2865"
+        ]
+      },
+      {
+        "claim": "Situation memory shows 53% fraud share, with most fraud cases being card_not_present_new_device",
+        "source": "document",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": []
+      },
+      {
+        "claim": "Region 324.0 used rarely (2 of 21 prior txns) and device is new, increasing anomaly",
+        "source": "graph",
+        "ref": "region 324.0",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [],
+    "summary": "The transaction is an online purchase on a device new to the account, matching a pattern seen in prior fraud cases. Similar rapid purchases and a device linked to a confirmed fraud increase suspicion. Fraud probability is elevated above the base rate.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 10,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.62 to 0.87; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 9,
+  "tokens": 2697,
+  "latency_s": 9.0,
+  "_initial_probability": 0.62,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-09-08 05:08:02",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-1336",
+        "CC-1061",
+        "CC-2091",
+        "CC-0591",
+        "CC-0933"
+      ],
+      "precedent": [
+        "CC-2865",
+        "CC-0045",
+        "CC-0309",
+        "CC-0981",
+        "CC-1119"
+      ],
+      "prompt_chars": 4779
+    },
+    "card_id": "C13060-K1",
+    "customer_id": "C13060",
+    "usage_log": [
+      {
+        "prompt": 2161,
+        "completion": 536
+      }
+    ]
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "case_id": "CC-0993",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.94,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3081608"
+    ],
+    "first_suspicious_txn_id": "3081608",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 56.41,
+    "evidence": [
+      {
+        "claim": "Base fraud rate for similar alerts is 95%",
+        "source": "graph",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": [
+          "3081608"
+        ]
+      },
+      {
+        "claim": "Most similar past alerts were confirmed card-not-present fraud",
+        "source": "graph",
+        "ref": "CC-0603, CC-0401, CC-0302",
+        "entity_ids": [
+          "3081608"
+        ]
+      },
+      {
+        "claim": "Device has not been used on this card before",
+        "source": "graph",
+        "ref": "",
+        "entity_ids": [
+          "C13147-K1"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0603",
+      "CC-0401",
+      "CC-0302"
+    ],
+    "summary": "The alert aligns with a high\u2011fraud base rate (95%) and mirrors prior confirmed card\u2011not\u2011present fraud cases. The device is new to the card, supporting a fraud hypothesis. No evidence suggests a legitimate explanation.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.94 with 3 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.94 with 3 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.94 backed by 3 independent pieces of evidence",
+  "tool_calls": 4,
+  "tokens": 5723,
+  "latency_s": 29.1,
+  "_initial_probability": 0.94,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-07-22 08:30:52",
+    "label": "fraud",
+    "label_pattern": "card_not_present_fraud",
+    "eval_slice": "matched",
+    "calls": 3,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3081608"
+          }
+        },
+        {
+          "tool": "recurring_check",
+          "args": {
+            "txn_id": "3081608"
+          }
+        }
+      ]
+    },
+    "card_id": "C13147-K1",
+    "customer_id": "C13147",
+    "usage_log": [
+      {
+        "prompt": 1432,
+        "completion": 33
+      },
+      {
+        "prompt": 1813,
+        "completion": 82
+      },
+      {
+        "prompt": 1874,
+        "completion": 489
+      }
+    ]
+  }
+}

@@ -1,0 +1,147 @@
+{
+  "case_id": "CC-0244",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.934,
+    "pattern": "out_of_region_use",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3021039"
+    ],
+    "first_suspicious_txn_id": "3021039",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 729.95,
+    "evidence": [
+      {
+        "claim": "Transaction amount is 9.1\u00d7 the card\u2019s average and unusually high for this card.",
+        "source": "graph",
+        "ref": "3021039",
+        "entity_ids": [
+          "C01377-K1"
+        ]
+      },
+      {
+        "claim": "Region 264.0 appears in only 2 of 35 prior transactions, indicating atypical location.",
+        "source": "graph",
+        "ref": "3021039",
+        "entity_ids": [
+          "C01377-K1"
+        ]
+      },
+      {
+        "claim": "Situation memory shows similar alerts are 85% fraud, mostly out_of_region_use.",
+        "source": "document",
+        "ref": "situation_memory",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0053",
+      "CC-0002"
+    ],
+    "summary": "The flagged purchase is far larger than typical spend and occurs in a rarely used region, matching the out_of_region_use pattern. Situation memory indicates a high base fraud rate for such alerts. No evidence of testing or recurring legitimate pattern.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 7,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R8: uncertain with exposure over $500 or conflicting evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.78 to 0.93; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER', 'ESCALATE_TO_ANALYST'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 4,
+  "tokens": 5643,
+  "latency_s": 29.5,
+  "_initial_probability": 0.78,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-07-08 11:16:18",
+    "label": "fraud",
+    "label_pattern": "account_takeover",
+    "eval_slice": "matched",
+    "calls": 3,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3021039"
+          }
+        },
+        {
+          "tool": "card_activity",
+          "args": {
+            "card_id": "C01377-K1",
+            "hours_before": 6
+          }
+        }
+      ]
+    },
+    "card_id": "C01377-K1",
+    "customer_id": "C01377",
+    "usage_log": [
+      {
+        "prompt": 1417,
+        "completion": 33
+      },
+      {
+        "prompt": 1772,
+        "completion": 77
+      },
+      {
+        "prompt": 1885,
+        "completion": 459
+      }
+    ]
+  }
+}

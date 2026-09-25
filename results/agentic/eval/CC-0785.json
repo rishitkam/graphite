@@ -1,0 +1,144 @@
+{
+  "case_id": "CC-0785",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.955,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3068764"
+    ],
+    "first_suspicious_txn_id": "3068764",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 29.93,
+    "evidence": [
+      {
+        "claim": "Base fraud rate for similar alerts is high (0.82)",
+        "source": "graph",
+        "ref": "",
+        "entity_ids": [
+          "3068764"
+        ]
+      },
+      {
+        "claim": "Transaction is online, low amount (0.2x average), product S uncommon (32/211 prior)",
+        "source": "graph",
+        "ref": "",
+        "entity_ids": [
+          "3068764",
+          "C03047-K2"
+        ]
+      },
+      {
+        "claim": "No device novelty or proxy flags",
+        "source": "graph",
+        "ref": "",
+        "entity_ids": [
+          "3068764"
+        ]
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0312",
+      "CC-0679"
+    ],
+    "summary": "The alert matches a high\u2011risk pattern of online, low\u2011value purchases not typical for the cardholder, with a base fraud probability of 0.82. No device or proxy anomalies are present, supporting a card\u2011not\u2011present fraud classification.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 7,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.84 to 0.95; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 4,
+  "tokens": 5480,
+  "latency_s": 32.6,
+  "_initial_probability": 0.84,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-07-20 00:59:38",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 3,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3068764"
+          }
+        },
+        {
+          "tool": "recurring_check",
+          "args": {
+            "txn_id": "3068764"
+          }
+        }
+      ]
+    },
+    "card_id": "C03047-K2",
+    "customer_id": "C03047",
+    "usage_log": [
+      {
+        "prompt": 1400,
+        "completion": 33
+      },
+      {
+        "prompt": 1759,
+        "completion": 48
+      },
+      {
+        "prompt": 1820,
+        "completion": 420
+      }
+    ]
+  }
+}

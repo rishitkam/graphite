@@ -1,0 +1,155 @@
+{
+  "case_id": "CC-3438",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.907,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3263742"
+    ],
+    "first_suspicious_txn_id": "3263742",
+    "connected_card_ids": [],
+    "connected_device_profiles": [
+      "iOS Device | iOS 11.0.0 | mobile safari generic | 2208x1242"
+    ],
+    "exposure_usd": 249.95,
+    "evidence": [
+      {
+        "claim": "New device for account",
+        "source": "graph",
+        "ref": "FLAGGED 3263742",
+        "entity_ids": [
+          "C03047-K2"
+        ]
+      },
+      {
+        "claim": "Online transaction flagged high risk",
+        "source": "graph",
+        "ref": "FLAGGED 3263742",
+        "entity_ids": [
+          "3263742"
+        ]
+      },
+      {
+        "claim": "Customer has multiple prior account takeover cases",
+        "source": "graph",
+        "ref": "CUSTOMER C03047",
+        "entity_ids": [
+          "C03047-K2"
+        ]
+      },
+      {
+        "claim": "Similar past cases with new-device CNP fraud confirmed",
+        "source": "document",
+        "ref": "CC-1433",
+        "entity_ids": [
+          "CC-1433"
+        ]
+      },
+      {
+        "claim": "Device profile used by few customers, no prior fraud on it",
+        "source": "document",
+        "ref": "DEVICE PROFILE",
+        "entity_ids": []
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-1433",
+      "CC-0752",
+      "CC-0857",
+      "CC-3204",
+      "CC-1103"
+    ],
+    "summary": "The $249.95 online purchase was made from a brand\u2011new iOS device for this card, a pattern seen in many confirmed fraud cases. The cardholder\u2019s history of account takeover alerts further raises suspicion. Combined with the high model score, the fraud probability is elevated.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 10,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.71 to 0.91; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 9,
+  "tokens": 3027,
+  "latency_s": 22.8,
+  "_initial_probability": 0.71,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-09-13 23:22:46",
+    "label": "fraud",
+    "label_pattern": "card_not_present_new_device",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-0857",
+        "CC-1402",
+        "CC-3204",
+        "CC-1103",
+        "CC-0810"
+      ],
+      "precedent": [
+        "CC-0610",
+        "CC-0003",
+        "CC-0009",
+        "CC-0020",
+        "CC-0035"
+      ],
+      "prompt_chars": 5788
+    },
+    "card_id": "C03047-K2",
+    "customer_id": "C03047",
+    "usage_log": [
+      {
+        "prompt": 2545,
+        "completion": 482
+      }
+    ]
+  }
+}

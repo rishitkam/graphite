@@ -1,0 +1,131 @@
+{
+  "case_id": "CC-5179",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.92,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3389595"
+    ],
+    "first_suspicious_txn_id": "3389595",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 10.47,
+    "evidence": [
+      {
+        "claim": "Device SM-J111M has no prior use on this card (0 of 31 devices)",
+        "source": "graph",
+        "ref": "FLAGGED 3389595",
+        "entity_ids": [
+          "C02393-K2"
+        ]
+      },
+      {
+        "claim": "Transaction amount is only 0.1x the card's average spend",
+        "source": "graph",
+        "ref": "FLAGGED 3389595",
+        "entity_ids": [
+          "C02393-K2"
+        ]
+      },
+      {
+        "claim": "Product C and region none have never been used before on this card",
+        "source": "graph",
+        "ref": "FLAGGED 3389595",
+        "entity_ids": [
+          "C02393-K2"
+        ]
+      },
+      {
+        "claim": "Similar alerts in memory were 100% fraud, mostly card_not_present_fraud",
+        "source": "document",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": []
+      },
+      {
+        "claim": "Prior closed case CC-2939 on same card was card_not_present_new_device",
+        "source": "document",
+        "ref": "CUSTOMER C02393",
+        "entity_ids": [
+          "CC-2939"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-2939"
+    ],
+    "summary": "The $10.47 online purchase uses a device never seen on this card and a product unseen in the card's history, matching a known card\u2011not\u2011present new\u2011device fraud pattern. Memory indicates similar alerts are almost always fraud. Probability of fraud is high.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.92 with 3 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.92 with 3 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.92 backed by 3 independent pieces of evidence",
+  "tool_calls": 9,
+  "tokens": 2500,
+  "latency_s": 21.1,
+  "_initial_probability": 0.92,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-10-23 07:55:40",
+    "label": "fraud",
+    "label_pattern": "card_not_present_fraud",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-1182",
+        "CC-3972",
+        "CC-4691",
+        "CC-4442",
+        "CC-0281"
+      ],
+      "precedent": [],
+      "prompt_chars": 4107
+    },
+    "card_id": "C02393-K2",
+    "customer_id": "C02393",
+    "usage_log": [
+      {
+        "prompt": 1995,
+        "completion": 505
+      }
+    ]
+  }
+}

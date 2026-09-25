@@ -1,0 +1,133 @@
+{
+  "case_id": "CC-2950",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.85,
+    "pattern": "account_takeover",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3226289"
+    ],
+    "first_suspicious_txn_id": "3226289",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 34.0,
+    "evidence": [
+      {
+        "claim": "Flagged $34 in-person transaction is unusually low (0.3x avg) compared to card history",
+        "source": "graph",
+        "ref": "FLAGGED 3226289",
+        "entity_ids": [
+          "3226289"
+        ]
+      },
+      {
+        "claim": "All prior 12 transactions were in same region and product, making this deviation notable",
+        "source": "graph",
+        "ref": "CARD C05314-K1 history before this",
+        "entity_ids": [
+          "C05314-K1"
+        ]
+      },
+      {
+        "claim": "Situation memory shows 100% fraud share for this context, with past similar alerts all confirmed account takeover",
+        "source": "document",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": []
+      },
+      {
+        "claim": "Nearest confirmed fraud cases (CC-2140, CC-1861, CC-1933) were all account takeover",
+        "source": "document",
+        "ref": "nearest CC-2140, CC-1861, CC-1933",
+        "entity_ids": [
+          "CC-2140",
+          "CC-1861",
+          "CC-1933"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-2140",
+      "CC-1861",
+      "CC-1933"
+    ],
+    "summary": "The transaction is unusually small relative to the card\u2019s typical spend and occurs in a context where all similar past alerts were fraud, primarily account takeover. No device or region change is observed, but the strong historical pattern drives a high fraud probability.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 4 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 4 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.85 backed by 4 independent pieces of evidence",
+  "tool_calls": 9,
+  "tokens": 2423,
+  "latency_s": 14.7,
+  "_initial_probability": 0.85,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-09-02 02:27:49",
+    "label": "fraud",
+    "label_pattern": "account_takeover",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-2641",
+        "CC-0489",
+        "CC-1527",
+        "CC-0987",
+        "CC-0954"
+      ],
+      "precedent": [
+        "CC-0036",
+        "CC-0046",
+        "CC-0047",
+        "CC-0049",
+        "CC-0057"
+      ],
+      "prompt_chars": 4062
+    },
+    "card_id": "C05314-K1",
+    "customer_id": "C05314",
+    "usage_log": [
+      {
+        "prompt": 1889,
+        "completion": 534
+      }
+    ]
+  }
+}

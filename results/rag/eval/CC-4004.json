@@ -1,0 +1,123 @@
+{
+  "case_id": "CC-4004",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.903,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3301813"
+    ],
+    "first_suspicious_txn_id": "3301813",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 150.07,
+    "evidence": [
+      {
+        "claim": "Transaction is online and device is marked as New",
+        "source": "graph",
+        "ref": "3301813",
+        "entity_ids": [
+          "C10614-K1"
+        ]
+      },
+      {
+        "claim": "Email domain is anonymous.com, atypical for cardholder",
+        "source": "document",
+        "ref": "3301813",
+        "entity_ids": [
+          "C10614-K1"
+        ]
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0979",
+      "CC-0841",
+      "CC-0777",
+      "CC-3901",
+      "CC-0567"
+    ],
+    "summary": "The $150.07 online purchase was made from a newly seen device and an anonymous email domain, matching a card\u2011not\u2011present fraud pattern involving new devices. Similar past cases were cleared after travel confirmation, but no travel info is present here, raising suspicion.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 2,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.70 to 0.90; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 1,
+  "tokens": 1321,
+  "latency_s": 5.5,
+  "_initial_probability": 0.7,
+  "_meta": {
+    "tier": "rag",
+    "t_end": "2016-09-26 23:35:17",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-0979",
+        "CC-0841",
+        "CC-0777",
+        "CC-3901",
+        "CC-0567"
+      ]
+    },
+    "card_id": "C10614-K1",
+    "customer_id": "C10614",
+    "usage_log": [
+      {
+        "prompt": 958,
+        "completion": 363
+      }
+    ]
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "case_id": "CC-2533",
+  "case": {
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.153,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Amount is 8.5\u00d7 card average but product and region are common for this card",
+        "source": "graph",
+        "ref": "FLAGGED 3201581",
+        "entity_ids": [
+          "3201581",
+          "C12991-K1"
+        ]
+      },
+      {
+        "claim": "No device or proxy information; in\u2011person channel consistent with history",
+        "source": "graph",
+        "ref": "LAST 72H ON CARD",
+        "entity_ids": [
+          "3195327",
+          "3196772",
+          "3198320",
+          "3201581"
+        ]
+      },
+      {
+        "claim": "Two prior confirmed account\u2011takeover frauds on same card increase risk",
+        "source": "document",
+        "ref": "CUSTOMER C12991",
+        "entity_ids": [
+          "CC-0935",
+          "CC-1897"
+        ]
+      },
+      {
+        "claim": "Similar high\u2011value in\u2011person alerts in same region were cleared after travel confirmation",
+        "source": "document",
+        "ref": "nearest CC-2091",
+        "entity_ids": [
+          "CC-2091"
+        ]
+      },
+      {
+        "claim": "Customer confirms they made this transaction",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [],
+    "summary": "The purchase is unusually large but follows the card\u2019s normal in\u2011person pattern and region. Prior account\u2011takeover frauds on this card raise concern, yet comparable alerts were cleared after travel verification, leading to a moderate fraud probability.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 10,
+      "assumed_response": "Customer confirms they made this transaction"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R8: uncertain with exposure over $500 or conflicting evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CLOSE_NO_FRAUD",
+        "route": "auto",
+        "reason": "R3: customer confirmed the transaction"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.42 to 0.15; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER', 'ESCALATE_TO_ANALYST'] to ['CLOSE_NO_FRAUD']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "fraud not confirmed or strongly suspected, 3a",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 9,
+  "tokens": 2504,
+  "latency_s": 12.0,
+  "_initial_probability": 0.42,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-08-24 07:06:13",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "matched",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-2091",
+        "CC-0567",
+        "CC-2444",
+        "CC-0591",
+        "CC-1471"
+      ],
+      "precedent": [
+        "CC-0059",
+        "CC-0105",
+        "CC-0112",
+        "CC-0115",
+        "CC-0133"
+      ],
+      "prompt_chars": 4393
+    },
+    "card_id": "C12991-K1",
+    "customer_id": "C12991",
+    "usage_log": [
+      {
+        "prompt": 2011,
+        "completion": 493
+      }
+    ]
+  }
+}

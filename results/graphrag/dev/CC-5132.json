@@ -1,0 +1,149 @@
+{
+  "case_id": "CC-5132",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.919,
+    "pattern": "out_of_region_use",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3386736"
+    ],
+    "first_suspicious_txn_id": "3386736",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 311.89,
+    "evidence": [
+      {
+        "claim": "Transaction 3386736 was in-person in region 299.0, a region with 0 prior transactions for this card",
+        "source": "graph",
+        "ref": "FLAGGED 3386736",
+        "entity_ids": [
+          "3386736"
+        ]
+      },
+      {
+        "claim": "Amount $311.89 is 3.2\u00d7 the card's historical average",
+        "source": "graph",
+        "ref": "CARD C08540-K1 history",
+        "entity_ids": [
+          "C08540-K1"
+        ]
+      },
+      {
+        "claim": "Similar past alerts (13/15) were confirmed fraud, mostly out_of_region_use",
+        "source": "document",
+        "ref": "SITUATION MEMORY",
+        "entity_ids": []
+      },
+      {
+        "claim": "No device record, so no new device evidence to explain the region change",
+        "source": "graph",
+        "ref": "DEVICE",
+        "entity_ids": []
+      },
+      {
+        "claim": "Recent cleared cases with travel confirmation show region changes can be legitimate, but this case lacks travel evidence",
+        "source": "document",
+        "ref": "CC-0021",
+        "entity_ids": [
+          "CC-0021"
+        ]
+      },
+      {
+        "claim": "Customer states they did not make this transaction and still has the card",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-1937",
+      "CC-3044",
+      "CC-2035"
+    ],
+    "summary": "The flagged in\u2011person purchase occurs in a completely new region and is well above the card\u2019s typical spend, matching patterns of out\u2011of\u2011region fraud seen in similar past alerts. While travel\u2011related clears exist, no travel evidence is present here, raising fraud likelihood.",
+    "written_to_graph": false,
+    "graph_case_id": ""
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 10,
+      "assumed_response": "Customer states they did not make this transaction and still has the card"
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: evidence requested"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "3b: probability uncertain, verify before deciding"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Simulated customer reply moved fraud probability from 0.74 to 0.92; actions changed from ['CREATE_CASE', 'VERIFY_WITH_CUSTOMER'] to ['BLOCK_CARD', 'CREATE_CASE']."
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "verification response settled the question",
+  "tool_calls": 9,
+  "tokens": 2443,
+  "latency_s": 18.8,
+  "_initial_probability": 0.74,
+  "_meta": {
+    "tier": "graphrag",
+    "t_end": "2016-10-22 09:32:42",
+    "label": "legitimate",
+    "label_pattern": "none",
+    "eval_slice": "dev",
+    "calls": 1,
+    "trace": {
+      "retrieved": [
+        "CC-2091",
+        "CC-0979",
+        "CC-1471",
+        "CC-2641",
+        "CC-2444"
+      ],
+      "precedent": [
+        "CC-0021",
+        "CC-0029",
+        "CC-0048",
+        "CC-0063",
+        "CC-0070"
+      ],
+      "prompt_chars": 4100
+    },
+    "card_id": "C08540-K1",
+    "customer_id": "C08540",
+    "usage_log": [
+      {
+        "prompt": 1900,
+        "completion": 543
+      }
+    ]
+  }
+}

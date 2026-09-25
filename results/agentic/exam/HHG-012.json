@@ -1,0 +1,130 @@
+{
+  "case_id": "HHG-012",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.85,
+    "pattern": "out_of_region_use",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3553342"
+    ],
+    "first_suspicious_txn_id": "3553342",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 30.91,
+    "evidence": [
+      {
+        "claim": "Region 494.0 has never been used on this card before.",
+        "source": "graph",
+        "ref": "card_activity",
+        "entity_ids": [
+          "C05876-K2"
+        ]
+      },
+      {
+        "claim": "Product W is the cardholder\u2019s usual purchase type, but the amount is low (0.4\u00d7 average).",
+        "source": "graph",
+        "ref": "card_activity",
+        "entity_ids": [
+          "C05876-K2"
+        ]
+      },
+      {
+        "claim": "Situation memory shows 100% fraud for similar alerts, mostly out_of_region_use.",
+        "source": "document",
+        "ref": "situation_memory",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-2156",
+      "CC-4696"
+    ],
+    "summary": "The flagged in\u2011person transaction occurs in a region never seen on the card, matching the out_of_region_use pattern. Situation memory indicates a very high fraud base rate for such alerts. No evidence of testing or recurring legitimate pattern.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-HHG-012"
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 2 independent pieces of evidence"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "3a: fraud probability above 0.30"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "probability 0.85 with 2 independent pieces of evidence"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "no report threshold in 3a met, case only",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0,
+    "activity_dates": []
+  },
+  "stop_reason": "probability 0.85 backed by 2 independent pieces of evidence",
+  "tool_calls": 4,
+  "tokens": 5775,
+  "latency_s": 28.7,
+  "_initial_probability": 0.85,
+  "_meta": {
+    "tier": "agentic",
+    "t_end": "2016-12-18 05:00:31",
+    "label": null,
+    "label_pattern": null,
+    "eval_slice": null,
+    "calls": 3,
+    "trace": {
+      "steps": [
+        {
+          "tool": "situation_memory",
+          "args": {
+            "txn_id": "3553342"
+          }
+        },
+        {
+          "tool": "card_activity",
+          "args": {
+            "card_id": "C05876-K2",
+            "hours_before": 24
+          }
+        }
+      ]
+    },
+    "card_id": "C05876-K2",
+    "customer_id": "C05876",
+    "usage_log": [
+      {
+        "prompt": 1417,
+        "completion": 33
+      },
+      {
+        "prompt": 1791,
+        "completion": 85
+      },
+      {
+        "prompt": 1968,
+        "completion": 481
+      }
+    ]
+  }
+}
